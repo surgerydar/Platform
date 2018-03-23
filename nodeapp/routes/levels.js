@@ -8,9 +8,6 @@ module.exports = function( authentication, db ) {
     console.log( 'setting levels routes' );
     router.get( '/:id', function (req, res) {
         let _id = db.ObjectId(req.params.id);
-        //
-        // dynamic arcade
-        //
         db.findOne( 'levels', {_id:_id} ).then( function(level) {
             res.json( { status: 'OK', level: level} );
         }).catch( function( error ) {

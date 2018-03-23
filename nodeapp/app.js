@@ -66,6 +66,8 @@ db.connect(
         // game content
         //
         console.log('content routes');
+        let users = require('./routes/users')( passport.isAuthenticated, db );
+        app.use( '/users', users );
         let levels = require('./routes/levels')( passport.isAuthenticated, db );
         app.use( '/levels', levels );
         let media = require('./routes/media')( passport.isAuthenticated, db );

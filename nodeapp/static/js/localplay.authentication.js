@@ -252,6 +252,11 @@ localplay.authentication = (function () {
     }
 
     authentication.login = function (callback) {
+        var loginWindow = window.open('/login', '_blank', 'menubar=no,scrollbars=no,width=640,height=480,modal=yes');
+        loginWindow.onclose = function( evt ) {
+            getauthentication(callback)
+        };
+        /*
         var login = document.createElement("form");
         login.innerHTML = this.logintemplate;
 
@@ -279,6 +284,7 @@ localplay.authentication = (function () {
             return false;
         };
         dialog.show();
+        */
     }
 
     authentication.recoverpassword = function (callback) {
@@ -300,11 +306,18 @@ localplay.authentication = (function () {
     }
 
     authentication.logout = function () {
+        /*
         localplay.datasource.put("logout.php");
         creatorid = -1;
         creatorname = "";
         creatorrole = 0;
         adjustloginstatus(false);
+        */
+        localplay.datasource.get('/logout', {}, {
+            datasourceonloadend: function (e) {
+                adjustloginstatus(false);
+            }                                 
+        });
     }
 
     authentication.isauthenticated = function () {
@@ -325,38 +338,48 @@ localplay.authentication = (function () {
         return null;
     }
     //
+    // ping server
+    //
+    function getauthentication(callback) {
+        localplay.datasource.get("/authentication", {}, {
+            datasourceonloadend: function (e) {
+                try {
+                    var datasource = e.target.datasource;
+                    var response = JSON.parse(datasource.response);
+                    var status = response.status;
+                    if ( status === 'OK' ) {
+                        creatorid   = response.user._id;
+                        creatorname = response.user.username;
+                        creatorrole = response.user.role;
+                        adjustloginstatus(true);
+                    } else {
+                        adjustloginstatus(false);
+                    }
+                } catch (error) {
+
+                }
+                if ( callback ) callback();
+            }
+        });
+    }
+    //
     // poll server to check for session timeout
     //
     authentication.poll = function (interval) {
-        this.authenticationtimer = window.setTimeout(function () {
-            localplay.datasource.get("sessiondata.php", {}, {
-                datasourceonloadend: function (e) {
-                    try {
-                        var datasource = e.target.datasource;
-                        var response = JSON.parse(datasource.response);
-                        var status = response.status;
-                        var message = response.message;
-                        creatorid = response.creatorid;
-                        creatorname = response.creatorname;
-                        creatorrole = response.creatorrole;
-                        adjustloginstatus(status === "OK");
-                    } catch (error) {
-
-                    }
-                    //
-                    // and again
-                    //
-                    authentication.poll(1000 * 60);
-                }
+        this.authenticationtimer = window.setTimeout(function() {
+            //
+            // and again
+            //
+            getauthentication( function() {
+                authentication.poll(1000 * 60);
             });
+            
         }, interval);
-    }
-
+    };
     //
     // start authentication poll
     //
-    // TODO: **platform** replace with ws or other mechanism
-    // authentication.poll(1);
+    authentication.poll(1);
     //
     //
     //

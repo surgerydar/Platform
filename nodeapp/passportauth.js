@@ -32,9 +32,21 @@ module.exports = function( app, db ) {
         res.render('login',{title: 'Log in to Platform'});
     });
     app.get('/logout', function(req, res){
-        console.log( 'logout user : ' + JSON.stringify(req.user) );
+        console.log( 'logout user : ' + JSON.stringify(req.user) + ' : xhr : ' + req.xhr );
         req.logout();
-        res.redirect('/');
+        if( req.xhr ) {
+            res.json( { status: 'OK' } );
+        } else {
+            res.redirect('/');
+        }
+    });
+    app.get('/authentication', function( req, res ) {
+        if ( req.user && req.isAuthenticated() ) {
+            res.json( { status: 'OK', user: req.user });
+        } else {
+            res.json( { status: 'ERROR', message: 'insufficient privalages' });
+        }
+        
     });
     //
     //

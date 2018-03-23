@@ -86,8 +86,8 @@ localplay.listview = (function () {
                 <img id="item.image.{{id}}" class="creatorlistitemimage" src="{{thumbnail}}" /> \
             </div> \
             <div class="creatorpanel right"> \
-                     <h3>{{name}}</h3>\
-                    joined&nbsp;{{created}}<p />\
+                     <h3>{{username}}</h3>\
+                    joined&nbsp;{{joined}}<p />\
                     <div id="item.rating.{{id}}" style="width: 240px;"> \
                     </div>\
                     <p> \

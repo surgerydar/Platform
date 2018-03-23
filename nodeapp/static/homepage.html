@@ -184,9 +184,9 @@
 
             }
             function search(searchtext) {
-                localplay.listview.createlibrarydialog("Search Levels", "getlevel.php?listview=true",
+                localplay.listview.createlibrarydialog("Search Levels", "/levels?listview=true",
                     function (item) {
-                        window.location = "playnew.html?id=" + item.data.id;
+                        window.location = "play.html?id=" + item.data.id;
                     }, 64, searchtext);
             }
         </script>

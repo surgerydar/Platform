@@ -44,6 +44,15 @@ module.exports = function( passport, config, db ) {
     console.log( 'setting facebook routes' );
     router.get('/login', passport.authenticate('facebook', {scope:"email"}) );
     router.get('/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
+    /* TODO: configurable redirect
+    router.get('/callback', passport.authenticate('facebook'), (req, res) => { 
+        if ( req.user && req.isAuthenticated() ) {
+            res.redirect( req.query.redirect || '/' );
+        } else {
+            res.redirect( '/login' );
+        }
+    });
+    */
     //
     //
     //

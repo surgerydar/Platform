@@ -26,8 +26,6 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
 ;
 localplay = window.localplay ? window.localplay : {};
 localplay.game = localplay.game ? localplay.game : {};

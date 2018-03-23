@@ -14,7 +14,6 @@ module.exports = function( authentication, db ) {
         var limit       = req.query.limit ? parseInt(req.query.limit) : undefined;
         
         var query = {};
-        var test = filter ? new RegExp( filter, 'i' ) : undefined;
         if ( filter ) {
             var test = new RegExp(filter,'i');
             query = { $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] };
@@ -28,15 +27,17 @@ module.exports = function( authentication, db ) {
         }
         db.find( 'media', query, projection, {created: -1}, offset, limit ).then( function(media) {
             if ( listview ) {
-                db.count( 'media', query, function(count) {
+                db.count( 'media', query ).then(function(count) {
                     res.json({ status: 'OK', data: {
                         pagecount: limit ? Math.ceil( count / limit ) : 1,
                         pagenumber: limit ? Math.floor( offset / limit ) : 1,
-                        rows: levels
+                        rows: media
                     }});
+                }).catch( function( error ) {
+                    res.json({ status: 'ERROR', error: error});
                 });
             } else {
-                res.json({ status: 'OK', media: media});
+                res.json({ status: 'OK', data: media});
             }
         }).catch( function( error ) {
             res.json({ status: 'ERROR', error: error});

@@ -37,9 +37,9 @@ localplay.creator = (function () {
         '\
         <div style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; overflow: auto;"> \
             <div style="position: absolute; top: 0px; left: 0px; bottom: 0px; width: 285px; background-color: rgb(102,102,102); border-top: 2px solid white;"> \
-                <img id="creator.{{id}}.thumbnail" class="profileimage" src="{{thumbnail}}" /> \
+                <img id="creator.{{_id}}.thumbnail" class="profileimage" src="{{thumbnail}}" /> \
                 <div class="profiledetails"> \
-                    <h3 id="creator.{{id}}.name">{{name}}</h3> \
+                    <h3 id="creator.{{_id}}.name">{{username}}</h3> \
                     joined&nbsp;<b>{{created}}</b>\
                 </div> \
                 <div id="creator.ratingpanel" class="profilerating" > \
@@ -47,11 +47,11 @@ localplay.creator = (function () {
             </div> \
             </div> \
             <div class="menubar" style="left: 285px; right: 300px; border-top: 2px solid white;" > \
-                <div class="menubaritem disabled">{{name}}&#39;s Levels</div>\
+                <div class="menubaritem disabled">{{username}}&#39;s Levels</div>\
             </div> \
-            <div id="creator.{{id}}.arcades" style="position: absolute; top: 42px; bottom: 0px; left: 285px; right: 300px;"> \
+            <div id="creator.{{_id}}.arcades" style="position: absolute; top: 42px; bottom: 0px; left: 285px; right: 300px;"> \
             </div> \
-            <div id="creator.{{id}}.levelpreview" style="position: absolute; top: 0px; bottom: 0px; right: 0px; width: 285px; overflow: auto; border-top: 2px solid white; padding: 16px 0px 0px 16px;"> \
+            <div id="creator.{{_id}}.levelpreview" style="position: absolute; top: 0px; bottom: 0px; right: 0px; width: 285px; overflow: auto; border-top: 2px solid white; padding: 16px 0px 0px 16px;"> \
             </div> \
         </div> \
         ';
@@ -59,17 +59,17 @@ localplay.creator = (function () {
         '\
         <div style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; overflow: auto;"> \
             <div style="position: absolute; top: 0px; left: 0px; bottom: 0px; width: 285px; background-color: rgb(102,102,102); border-top: 2px solid white;"> \
-                <img id="creator.button.thumbnail.{{id}}" class="profileimage imagebutton" src="{{thumbnail}}" /> \
+                <img id="creator.button.thumbnail.{{_id}}" class="profileimage imagebutton" src="{{thumbnail}}" /> \
                 <div class="profiledetails"> \
-                    <div id="creator.button.setthumbnail.{{id}}" class="menubaritem" style="margin-left: 0px;"> \
+                    <div id="creator.button.setthumbnail.{{_id}}" class="menubaritem" style="margin-left: 0px;"> \
                         <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change picture \
                     </div> \
                     <p>name<br/><br/> \
-                    <input id="creator.{{id}}.name" type="text" value="{{name}}" style="width: 240px;"/></p>\
-                    <div id="creator.button.update.{{id}}" class="menubaritem" style="margin-left: 0px;"> \
+                    <input id="creator.{{_id}}.name" type="text" value="{{username}}" style="width: 240px;"/></p>\
+                    <div id="creator.button.update.{{_id}}" class="menubaritem" style="margin-left: 0px;"> \
                         <img class="menubaritem" src="images/icons/save-01.png" />&nbsp;Update profile \
                     </div> \
-                    <div id="creator.button.changepassword.{{id}}" class="menubaritem" style="margin-left: 0px; margin-top: 32px;"> \
+                    <div id="creator.button.changepassword.{{_id}}" class="menubaritem" style="margin-left: 0px; margin-top: 32px;"> \
                         <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change password \
                     </div> \
                 </div> \
@@ -77,15 +77,15 @@ localplay.creator = (function () {
             <div class="menubar" style="left: 285px; right: 300px; border-top: 2px solid white;" > \
                 <div class="menubaritem  disabled">My Levels</div>\
             </div> \
-            <div id="creator.{{id}}.arcades" style="position: absolute; top: 42px; bottom: 0px; left: 285px; right: 300px;"> \
+            <div id="creator.{{_id}}.arcades" style="position: absolute; top: 42px; bottom: 0px; left: 285px; right: 300px;"> \
             </div> \
-            <div id="creator.{{id}}.levelpreview" style="position: absolute; top: 0px; bottom: 0px; right: 0px; width: 285px; overflow: auto; border-top: 2px solid white; padding: 16px 0px 0px 16px;"> \
+            <div id="creator.{{_id}}.levelpreview" style="position: absolute; top: 0px; bottom: 0px; right: 0px; width: 285px; overflow: auto; border-top: 2px solid white; padding: 16px 0px 0px 16px;"> \
             </div> \
         </div> \
         ';
     var previewtemplate = '\
-                <div id="creator.level.{{id}}" class="playable" style="position: relative; text-align: center;"><img class="imagebutton" src="{{thumbnail}}" /></div><br />\
-                <h3>{{name}}</h3> \
+                <div id="creator.level.{{_id}}" class="playable" style="position: relative; text-align: center;"><img class="imagebutton" src="{{thumbnail}}" /></div><br />\
+                <h3>{{username}}</h3> \
                 {{#attribution}} \
                     <i><small>originally&nbsp;\
                     <span id="player.loadoriginal.{{originalid}}" class="spanbutton">{{originalname}}</span> \
@@ -101,13 +101,13 @@ localplay.creator = (function () {
                 <div id="creator.level.rating" style="margin-right: 8px;"></div>\
         ';
     var changepasswordtemplate = '\
-         <form id="creator.{{id}}.changepasswordform" style="height: 400px padding: 8px;">\
+         <form id="creator.{{_id}}.changepasswordform" style="height: 400px padding: 8px;">\
            <h4>old password</h4>\
-            <input id="creator.{{id}}.oldpassword" type="password" value="" placeholder="old password" style="width: 240px;" required/>\
+            <input id="creator.{{_id}}.oldpassword" type="password" value="" placeholder="old password" style="width: 240px;" required/>\
             <h4>new password</h4> \
-            <input id="creator.{{id}}.newpassword" type="password" value="" placeholder="new password" style="width: 240px;" required/>\
+            <input id="creator.{{_id}}.newpassword" type="password" value="" placeholder="new password" style="width: 240px;" required/>\
             <h4>confirm password</h4> \
-            <input id="creator.{{id}}.confirmpassword" type="password" value="" placeholder="confirm new password" style="width: 240px;" required/><br/>\
+            <input id="creator.{{_id}}.confirmpassword" type="password" value="" placeholder="confirm new password" style="width: 240px;" required/><br/>\
            <div style="height: 42px; width: 285px">\
                 <div id="button.creator.password.cancel" class="menubaritem" style="float: left;" > \
                     <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
@@ -118,7 +118,7 @@ localplay.creator = (function () {
                     &nbsp;Save \
                 </div> \
             </div> \
-            <input type="submit" id="creator.{{id}}.changepasswordsubmit" name="Change Password" style="position:absolute; left:-400px; visibility:collapse;"/> \
+            <input type="submit" id="creator.{{_id}}.changepasswordsubmit" name="Change Password" style="position:absolute; left:-400px; visibility:collapse;"/> \
         </form> \
    ';
     //
@@ -133,7 +133,7 @@ localplay.creator = (function () {
         // show media library
         //
         var image = document.getElementById("creator.button.thumbnail." + creatorid);
-        var contents = "getmedia.php?type=object&listview=true";
+        var contents = "/media?type=object&listview=true";
         localplay.listview.createlibrarydialog("Choose your profile image", contents, function (item) {
             image.src = item.data.url;
         }, 24, "",
@@ -160,10 +160,7 @@ localplay.creator = (function () {
                 name: name,
                 thumbnail: thumbnail
             };
-            var param = {
-                creatorid: creatorid
-            };
-            localplay.datasource.put("updatecreatorprofile.php", data, param, localplay.datasource.createprogressdialog("Updating profil...", function (e) {
+            localplay.datasource.put("/users/"+creatorid, data, {}, localplay.datasource.createprogressdialog("Updating profil...", function (e) {
                 var xhr = e.target;
                 try {
                     var response = JSON.parse(xhr.datasource.response);
@@ -215,6 +212,10 @@ localplay.creator = (function () {
                             oldpassword: MD5(oldpassword.value),
                             newpassword: MD5(newpassword.value)
                         };
+                        //
+                        // TODO: **platform**
+                        // could achieve this through WebSocket
+                        //
                         localplay.datasource.put("updatecreatorpassword.php", data, param, {
                             datasourceonloadend: function (e) {
                                 var datasource = e.target.datasource;
@@ -251,7 +252,7 @@ localplay.creator = (function () {
     //
     //
     creator.createdialog = function (creatorid,callback) {
-        localplay.datasource.get("getcreator.php", { id: creatorid }, {
+        localplay.datasource.get("/users/" + creatorid, {}, {
             datasourceonloadend: function (e) {
                 var datasource = e.target.datasource;
                 if (((datasource.status >= 200 && datasource.status < 300) || datasource.status == 304)) {
@@ -259,12 +260,12 @@ localplay.creator = (function () {
                         //
                         // parse response
                         //
-                        var data = JSON.parse(datasource.response);
+                        var response = JSON.parse(datasource.response);
                         //if (data.status && data.status === "OK") { // TODO: error handling
                         var currentcreator = localplay.authentication.getcreator();            
                         var template = (currentcreator && creatorid === currentcreator.creatorid) ? myprofiletemplate : creatortemplate;
                         var title = (currentcreator && creatorid === currentcreator.creatorid) ? "My Profile" : "Maker Profile";
-                        var dialog = localplay.dialogbox.createfullscreendialogboxwithtemplate(title, template, data, function () {
+                        var dialog = localplay.dialogbox.createfullscreendialogboxwithtemplate(title, template, response.data, function () {
                             if (callback) {
                                 return callback();
                             }
@@ -296,7 +297,7 @@ localplay.creator = (function () {
                         //
                         var arcadecontainer = document.getElementById("creator." + creatorid + ".arcades");
                         arcadecontainer.innerHTML = Mustache.render(localplay.listview.container, { filter: "" });
-                        arcadecontainer.controller = localplay.listview.createlistview("creator." + creatorid + ".arcades", "getlevel.php?creator=" + creatorid + "&listview=true", 20);
+                        arcadecontainer.controller = localplay.listview.createlistview("creator." + creatorid + ".arcades", "/levels?creator=" + creatorid + "&listview=true", 20);
                         arcadecontainer.controller.onselect = function (item) {
                             //
                             // show preview
@@ -407,7 +408,7 @@ localplay.creator = (function () {
                         //
                         // load people
                         //
-                        var source = "getcreator.php?listview=true";
+                        var source = "/users?listview=true";
                         selection = selector[2];
                         switch (selection) {
                             case "topmakers":
@@ -424,7 +425,7 @@ localplay.creator = (function () {
                 }
             }
         };
-        listcontainer = localplay.listview.createlibrarydialog("People", "getcreator.php?listview=true",
+        listcontainer = localplay.listview.createlibrarydialog("People", "/users?listview=true",
             function (item) {
                 //
                 // goto creator page
