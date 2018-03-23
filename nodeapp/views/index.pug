@@ -1,0 +1,12 @@
+html
+    head
+        title= title
+        link(rel='stylesheet', href='styles/platform.css')
+        meta( name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' )
+    body
+        h1 Welcome to Platform
+        if authorised
+            a( href='/logout' ) logout
+        else
+            a( href='/login' ) login
+        
