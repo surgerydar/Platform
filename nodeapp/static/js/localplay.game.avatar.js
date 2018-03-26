@@ -334,7 +334,7 @@ localplay.game.avatar = (function () {
             //
             // show media library
             //
-            var contents = "getmedia.php?type=object&listview=true";
+            var contents = "/media?type=object&listview=true";
             localplay.listview.createlibrarydialog("Choose your Avatar", contents, function (item) {
                 image.src = item.data.url;
             }, 20, "",

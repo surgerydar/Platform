@@ -65,7 +65,7 @@ localplay.game.itemeditor = (function () {
         // populate views
         //
         var _this = this;
-        this.medialibrary.controller = localplay.listview.createlistview("medialibrary", "getmedia.php?type=object&listview=true", 24);
+        this.medialibrary.controller = localplay.listview.createlistview("medialibrary", "/media?type=object&listview=true", 24);
         this.medialibrary.controller.onselect = function (item) {
             _this.addItem(item.data.url);
         };

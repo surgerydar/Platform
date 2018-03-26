@@ -72,6 +72,8 @@ db.connect(
         app.use( '/levels', levels );
         let media = require('./routes/media')( passport.isAuthenticated, db );
         app.use( '/media', media );
+        let audio = require('./routes/audio')( passport.isAuthenticated, db );
+        app.use( '/audio', audio );
         let arcades = require('./routes/arcades')( passport.isAuthenticated, db );
         app.use( '/arcades', arcades );
         //

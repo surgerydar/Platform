@@ -194,7 +194,7 @@ localplay.game.layouteditor = (function () {
     //
     LayoutEditor.prototype.initialise = function () {
         var _this = this;
-        this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "getmedia.php?type=object&listview=true", 20);
+        this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "/media?type=object&listview=true", 20);
         this.medialibrary.controller.onselect = function (item) {
             //
             // add sprite at the center of the current view

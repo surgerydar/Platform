@@ -90,7 +90,7 @@ localplay.objecteditor = (function () {
                     </div> \
                 </div> \
             </div> \
-            <input id="objecteditor.file" type="file" style="position: absolute; left: -400px; visibility: collapse;" /> \
+            <input id="objecteditor.file" type="file" accept=";capture=camera" style="position: absolute; left: -400px; visibility: collapse;" /> \
     ';
 
     function ObjectEditor(title,callback) {

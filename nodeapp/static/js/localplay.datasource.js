@@ -79,32 +79,29 @@ localplay.datasource = (function () {
         //
         // create request object
         //
+        var xhr = this.createrequest('PUT', target, param, delegate);
+        //
+        //
+        //
+        if (data != null) {
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
+    }
+    
+    datasource.post = function (target, data, param, delegate) {
+        //
+        // create request object
+        //
         var xhr = this.createrequest('POST', target, param, delegate);
         //
         //
         //
         if (data != null) {
-            //
-            // build request body
-            //
-            try {
-                var message = new FormData();
-                for (var key in data) {
-                    message.append(key, data[key]); // TODO: add filenames
-                }
-                xhr.send(message);
-            } catch (error) {
-                //
-                // no formdata support ( IE9 )
-                //
-                var message = "";
-                for (var key in data) {
-                    if (message.length > 0) message += "&";
-                    message += key + "=" + data[key];
-                }
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.send(message);
-            }
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify(data));
         } else {
             xhr.send();
         }

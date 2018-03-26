@@ -39,7 +39,7 @@ function PlatformEditor(bounds, game) {
     title.action[Button.state.up] = function () { _this.showhide(); };
     this.view.addchild(title.view);
     this.mediaviewer = new MediaLibraryViewer();
-    this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('getmedia.php?type=object&urlonly=true'));
+    this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('/media?type=object&urlonly=true'));
     //this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('platforms.json'));
     this.mediaviewer.selectaction = function (item) { _this.addplatform(item); };
     this.view.addchild(this.mediaviewer.view);

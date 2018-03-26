@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1, maximum-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <title>Platform</title>
 
     <!-- styles -->
     <link href="css/default.css" rel="stylesheet" />
-
-    <!-- social
-    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
-    <script>
-        stLight.options({
-            publisher: '349bbf34-a5de-4761-977c-0acc92f7971f'
-        });
-    </script>
-     -->
 
     <!-- supporting libraries -->
     <script src="lib/mustache.js"></script>
     <script src="lib/Box2dWeb-2.1.a.3.js"></script>
     <script src="lib/swfobject.js"></script>
     <script src="lib/MD5.js"></script>
+    <script src="lib/hammer.js"></script>
 
     <!-- legacy objects -->
     <script src="js/graphicsprimitives.js"></script>
@@ -89,7 +85,7 @@
     </script>
 </head>
 <body onload="init();">
-    <div style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: white;">
+    <div id="canvascontainer" style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: white;">
         <canvas id="game.canvas" class="slider" width="1024" height="723">Your browser doesn't support HTML5 canvas</canvas>
     </div>
 </body>

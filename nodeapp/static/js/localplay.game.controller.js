@@ -147,7 +147,7 @@ localplay.game.controller = (function () {
         background.url = null;
         background.onclick = function (e) {
  
-       localplay.listview.createlibrarydialog("Choose a background", "getmedia.php?type=background&listview=true",
+       localplay.listview.createlibrarydialog("Choose a background", "/media?type=background&listview=true",
                 function (item) {
                     background.url = item.data.url;
                     background.src = item.data.url;

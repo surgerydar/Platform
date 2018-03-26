@@ -412,7 +412,7 @@ localplay.game.item = (function () {
                 //
                 // show media library
                 //
-                var contents = "getmedia.php?type=object&listview=true";
+                var contents = "/media?type=object&listview=true";
                 //title, contents, onselect, limit, filter, onadd, addlabel, itemtemplate
                 localplay.listview.createlibrarydialog("Select " + _this.type, contents, function (item) {
                     //

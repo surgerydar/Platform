@@ -116,7 +116,7 @@ localplay.game.backgroundeditor = (function () {
 
     BackgroundEditor.prototype.initialise = function () {
         var _this = this;
-        this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "getmedia.php?type=background&listview=true", 20);
+        this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "/media?type=background&listview=true", 20);
         this.medialibrary.controller.onselect = function (item) {
             //image.src = item.data.url;
             //this.level.background.addimage(item.image.src);
@@ -374,7 +374,7 @@ localplay.game.backgroundeditor = (function () {
                     <canvas id="backgrounduploader.canvas" class="backgrounduploader" width="1023" height="723">Your browser doesn&apos;t support HTML5 canvas</canvas> \
                 </div> \
             </div> \
-            <input id="backgrounduploader.file" type="file" style="position: absolute; left: -400px; visibility: collapse;" /> \
+            <input id="backgrounduploader.file" accept=";capture=camera" type="file" style="position: absolute; left: -400px; visibility: collapse;" /> \
     ';
     function BackgroundUploader(callback) {
         //

@@ -209,7 +209,7 @@ localplay.game.controller.player = (function () {
                     {{instructions}}\
                     </div> \
                </div>';
-
+/*
         var playbar = '\
         <div class="playbargroup" style="margin-top: 0px;">\
             <div class="playbaritem" data-tip="Home" > \
@@ -256,7 +256,29 @@ localplay.game.controller.player = (function () {
             </div> \
         </div>\
     ';
-
+*/
+    var playbar = '\
+        <div class="playbargroup" style="margin-top: 0px;">\
+            <div class="playbaritem" data-tip="Home" > \
+                <img id="player.home" class="imagebutton playbaritem" src="images/icons/home.png" /><br />\
+            </div> \
+            <div class="playbaritem" data-tip="Pause" > \
+                <img id="player.pause" class="imagebutton playbaritem" src="images/icons/pause-game-01.png" /><br />\
+            </div>\
+            <div class="playbaritem" data-tip="Play" > \
+                <img id="player.play" class="imagebutton playbaritem" src="images/icons/play-01.png" /><br />\
+            </div> \
+            <div class="playbaritem" data-tip="Replay" > \
+                <img id="player.replay" class="imagebutton playbaritem" src="images/icons/reload-game-01.png" />\
+            </div>\
+             <div class="playbaritem" data-tip="Edit this level" > \
+                <img id="player.edit" class="playbaritem" src="images/icons/edit-01.png" data-tip="Edit level" />\
+            </div> \
+            <div class="playbaritem" data-tip="Make new level" > \
+                <img id="player.new" class="imagebutton playbaritem" src="images/icons/make-new-level-01.png" /><br />\
+            </div> \
+        </div>\
+    ';
         var ratedialog = '\
         <div style="width: 256px; height: 256px;"> \
             <div class="menubar"> \
@@ -312,17 +334,74 @@ localplay.game.controller.player = (function () {
             // TODO: support for game events ( load, start, stop ) also find a more generic way of doing the binding way 
             //
             this.boundclick = this.onclick.bind(this);
-            this.boundmousemove = this.onmousemove.bind(this);
-            this.boundkeydown = this.onkeydown.bind(this);
-            this.boundkeyup = this.onkeyup.bind(this);
             this.boundresize = this.onresize.bind(this);
             this.boundstatechange = this.onstatechange.bind(this);
-            this.game.canvas.addEventListener("mousemove", this.boundmousemove);
-            this.game.canvas.offsetParent.addEventListener("mousemove", this.boundmousemove);
-            window.addEventListener("keydown", this.boundkeydown);
-            window.addEventListener("keyup", this.boundkeyup);
             window.addEventListener("resize", this.boundresize);
             this.game.level.addEventListener("statechange", this.boundstatechange);
+            //
+            //
+            //
+            if ( ('ontouchstart' in document.documentElement) ) {
+                /*
+                this.boundtouchstart    = this.ontouchstart.bind(this);
+                this.boundtouchmove     = this.ontouchmove.bind(this);
+                this.boundtouchcancel   = this.ontouchcancel.bind(this);
+                this.boundtouchend      = this.ontouchend.bind(this);
+                this.game.canvas.addEventListener('touchstart', this.boundtouchstart, false);
+                this.game.canvas.addEventListener('touchmove', this.boundtouchmove, false);
+                this.game.canvas.addEventListener('touchcancel', this.boundtouchcancel, false);
+                this.game.canvas.addEventListener('touchend', this.boundtouchend, false);
+                */
+                this.hammer = new Hammer( this.game.canvas.parentElement );
+                this.hammer.get('pan').set({ enable: false });
+                this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+                /*
+                if (this.keys[37]) { // left
+                    this.impulse.x = -1;
+                }
+                if (this.keys[39]) { // right
+                    this.impulse.x = 1;
+                }
+                if (this.keys[32]) { // space
+                    this.impulse.y = -1;
+                }
+                */
+                
+                var _self = this;
+                this.hammer.on('press pressup', function(e) {
+                    //alert( 'press : ' + JSON.stringify(e) );
+                    if ( e.x < window.innerWidth / 2 ) {
+                        _self.game.level.keys[37] = e.type === 'press'; // left
+                    } else {
+                        _self.game.level.keys[39] = e.type === 'press'; // right
+                    }
+                    
+                });
+                this.hammer.on('swipeup', function(e) {
+                    //
+                    // spacebar equiv
+                    //
+                    //alert( 'swipe : ' + JSON.stringify(e) );
+                    if ( _self.swipeTimer ) clearTimeout(_self.swipeTimer);
+                    _self.game.level.keys[32] = true;
+                    _self.swipeTimer = setTimeout( function() {
+                        _self.swipeTimer = undefined;
+                        _self.game.level.keys[32] = false;
+                    }, 500);
+                });
+                if (window.DeviceOrientationEvent) {
+                    //window.addEventListener('deviceorientation', deviceOrientationHandler, false);
+                    
+                }
+            } else {
+                this.boundmousemove = this.onmousemove.bind(this);
+                this.boundkeydown = this.onkeydown.bind(this);
+                this.boundkeyup = this.onkeyup.bind(this);
+                this.game.canvas.addEventListener("mousemove", this.boundmousemove);
+                this.game.canvas.offsetParent.addEventListener("mousemove", this.boundmousemove);
+                window.addEventListener("keydown", this.boundkeydown);
+                window.addEventListener("keyup", this.boundkeyup);
+            }
             //
             // create ui
             //
@@ -420,7 +499,7 @@ localplay.game.controller.player = (function () {
                     // time
                     //
                     if (this.timelimit > 0) {
-                        var time = "TIME:" + this.game.level.timer.formattime(this.timelimit - this.game.level.timer.elapsed());//this.game.level.timer.elapsedstring();
+                        var time = "TIME:" + this.game.level.timer.formattime(this.timelimit - this.game.level.timer.elapsed()) + ( this.swipeTimer ? " : jump" : "" );//this.game.level.timer.elapsedstring();
                         context.font = '24px CabinSketch';
                         context.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
                         context.fillText(time, 8, 64);
@@ -628,6 +707,7 @@ localplay.game.controller.player = (function () {
                     //
                     //new RatingPanel(document.getElementById("player.rating"), "level", this.game.levelid);
                     localplay.ratingpanel.createratingpanel(document.getElementById("player.rating"), "level", this.game.levelid);
+                    /*
                     stWidget.addEntry({
                         "service": "sharethis",
                         "element": document.getElementById('player.sharethis'),
@@ -648,7 +728,7 @@ localplay.game.controller.player = (function () {
                         "summary": 'Play Southend' + this.game.metadata.name + 'by' + this.game.metadata.creator,
                         "onhover" : false
                     });
-
+                    */
                     break;
             }
 
@@ -683,7 +763,7 @@ localplay.game.controller.player = (function () {
                     case "replay":
                         this.game.level.reset();
                         this.game.level.play();
-                        localplay.showtip(controltip, this.game.canvas);
+                        //localplay.showtip(controltip, this.game.canvas);
                         this.showplaybar(false);
                         break;
                     case "play":
@@ -692,11 +772,14 @@ localplay.game.controller.player = (function () {
                         } else {
                             this.game.level.play();
                         }
-                        localplay.showtip(controltip, this.game.canvas);
+                        //localplay.showtip(controltip, this.game.canvas);
                         this.showplaybar(false);
                         break;
                     case "pause":
                         this.pausegame();
+                        break;
+                    case "fullscreen":
+                        localplay.gofullscreen();
                         break;
                     case "previouslevel":
                         this.game.previouslevel();
@@ -835,7 +918,27 @@ localplay.game.controller.player = (function () {
 
             return false;
         }
-
+        
+        PlayerController.prototype.ontouchstart = function (e) {
+            e.preventDefault();
+            return false;
+        }
+        
+        PlayerController.prototype.ontouchmove = function (e) {
+            e.preventDefault();
+            return false;
+        }
+        
+        PlayerController.prototype.ontouchcancel = function (e) {
+            e.preventDefault();
+            return false;
+        }
+        
+        PlayerController.prototype.ontouchend = function (e) {
+            e.preventDefault();
+            return false;
+        }
+        
         PlayerController.prototype.onkeydown = function (e) {
             if (e.keyCode === localplay.keycode.ESC) {
                 this.pausegame();

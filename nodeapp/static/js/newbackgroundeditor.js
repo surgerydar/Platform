@@ -96,7 +96,7 @@ function NewBackgroundEditor() {
     // populate views
     //
     this.refresh();
-    this.medialibrary.controller = new ListView("medialibrary", "getmedia.php?type=background&listview=true");
+    this.medialibrary.controller = new ListView("medialibrary", "/media?type=background&listview=true");
     this.medialibrary.controller.onselect = function (item) {
         //image.src = item.data.url;
         //game.level.properties.background.addimage(item.image.src);

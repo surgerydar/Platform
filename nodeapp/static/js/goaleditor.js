@@ -40,7 +40,7 @@ function GoalEditor(bounds, game) {
     this.view.addchild(title.view);
     this.mediaviewer = new MediaLibraryViewer();
     //this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('goals.json'));
-    this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('getmedia.php?type=object&urlonly=true'));
+    this.mediaviewer.setup(new Rectangle(0, bounds.height - 128, bounds.width, 128), new MediaLibrary('/media?type=object&urlonly=true'));
     this.mediaviewer.selectaction = function (item) { _this.addgoal(item); };
     this.view.addchild(this.mediaviewer.view);
 

@@ -477,7 +477,7 @@ localplay.game.storyeditor = (function () {
                                     container.appendChild(target);
                                     container.appendChild(StoryEditor.createTextSpan("&nbsp;with a&nbsp;"));
                                     clause = rebuild ? sentence.findClauseWithPredicate("with a") : container.sentence.addClause("with a", "");
-                                    var substitute = StoryEditor.createLibrarySelector("getmedia.php?type=object&listview=true", "Choose Replacement", clause, null, null);
+                                    var substitute = StoryEditor.createLibrarySelector("/media?type=object&listview=true", "Choose Replacement", clause, null, null);
                                     substitute.clause = clause;
                                     container.appendChild(substitute);
                                     //

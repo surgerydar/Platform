@@ -1022,24 +1022,12 @@ localplay.game.level = (function () {
      }
 
     Level.prototype.ontouchstart = function (e) {
-        e.preventDefault();
-        if (this.gameover) {
-            this.reset();
-        } else if (!this.gamestarted) {
-            this.gamestarted = true;
-            this.timer.start();
-        } else {
-            this.keys[32] = true;
-        }
     }
 
     Level.prototype.ontouchmove = function (e) {
-        e.preventDefault();
     }
 
     Level.prototype.ontouchend = function (e) {
-        e.preventDefault();
-        this.keys[32] = false;
     }
     //
     // editing 
