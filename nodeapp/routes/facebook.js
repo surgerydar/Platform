@@ -35,7 +35,8 @@ module.exports = function( passport, config, db ) {
             clientID: config.facebook.appId,
             clientSecret: config.facebook.appSecret,
             callbackURL: config.facebook.callbackUrl,
-            profileFields:['id','displayName','emails']
+            profileFields:['id','displayName','emails'],
+            display: 'page'
         }, authenticate )
     );    
     //
@@ -43,7 +44,7 @@ module.exports = function( passport, config, db ) {
     //
     console.log( 'setting facebook routes' );
     router.get('/login', passport.authenticate('facebook', {scope:"email"}) );
-    router.get('/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
+    router.get('/callback', passport.authenticate('facebook', { successRedirect: '/homepage.html', failureRedirect: '/login' }));
     /* TODO: configurable redirect
     router.get('/callback', passport.authenticate('facebook'), (req, res) => { 
         if ( req.user && req.isAuthenticated() ) {

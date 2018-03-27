@@ -66,12 +66,12 @@ localplay.listview = (function () {
 
     listview.contenttemplate =
         '{{#rows}} \
-        <div id="item.{{id}}" class="listitem"> \
+        <div id="item.{{_id}}" class="listitem"> \
             <div class="listitemheader"> \
                 <span class="listitemheader">{{name}}</span>\
                 <br />by&nbsp;{{creator}} \
             </div> \
-            <img id="item.image.{{id}}" class="listitemimage" src="{{thumbnail}}" /> \
+            <img id="item.image.{{_id}}" class="listitemimage" src="{{thumbnail}}" /> \
             <div class="listitemfooter">{{tags}}</div> \
         </div> \
         {{/rows}} \
@@ -81,14 +81,14 @@ localplay.listview = (function () {
 
     listview.creatorlisttemplate =
         '{{#rows}} \
-        <div id="item.{{id}}" class="creatorlistitem"> \
+        <div id="item.{{_id}}" class="creatorlistitem"> \
             <div class="creatorpanel left"> \
-                <img id="item.image.{{id}}" class="creatorlistitemimage" src="{{thumbnail}}" /> \
+                <img id="item.image.{{_id}}" class="creatorlistitemimage" src="{{thumbnail}}" /> \
             </div> \
             <div class="creatorpanel right"> \
                      <h3>{{username}}</h3>\
                     joined&nbsp;{{joined}}<p />\
-                    <div id="item.rating.{{id}}" style="width: 240px;"> \
+                    <div id="item.rating.{{_id}}" style="width: 240px;"> \
                     </div>\
                     <p> \
                     {{#playerranking}} \
@@ -213,7 +213,7 @@ localplay.listview = (function () {
             //
             for (var i = 0; i < rows.length; i++) {
                 var data = rows[i];
-                var item = document.getElementById("item." + data.id);
+                var item = document.getElementById("item." + data._id);
                 if (item) {
                     this.attachDataToItem(item, data);
                 }
@@ -243,7 +243,7 @@ localplay.listview = (function () {
             function (confirm) {
                 if (confirm) {
                     var command = "delete" + data.tablename + ".php";
-                    localplay.datasource.get(command, { id: data.id },
+                    localplay.datasource.get(command, { id: data._id },
                     {
                         datasourceonloadend: function (e) {
                             var xhr = e.target;
@@ -301,7 +301,7 @@ localplay.listview = (function () {
         var offset = 0;
         if (data.candelete) {
             var button = new Image();
-            button.id = "item.delete." + data.id;
+            button.id = "item.delete." + data._id;
             button.className = "imagebutton";
             button.style.position = "absolute";
             button.style.top = "8px";
@@ -316,7 +316,7 @@ localplay.listview = (function () {
 
         if (data.canflag) {
             var button = new Image();
-            button.id = "item.flag." + data.id;
+            button.id = "item.flag." + data._id;
             button.className = "imagebutton";
             button.style.position = "absolute";
             button.style.top = "8px";
@@ -331,7 +331,7 @@ localplay.listview = (function () {
         //
         // setup drag and drop
         //
-        var image = document.getElementById("item.image." + data.id);
+        var image = document.getElementById("item.image." + data._id);
         if (image) {
             image.onclick = function (e) {
                 _this.onselect(item);

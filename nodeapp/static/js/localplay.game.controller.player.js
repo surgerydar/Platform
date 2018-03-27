@@ -352,21 +352,10 @@ localplay.game.controller.player = (function () {
                 this.game.canvas.addEventListener('touchcancel', this.boundtouchcancel, false);
                 this.game.canvas.addEventListener('touchend', this.boundtouchend, false);
                 */
+                /*
                 this.hammer = new Hammer( this.game.canvas.parentElement );
                 this.hammer.get('pan').set({ enable: false });
                 this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
-                /*
-                if (this.keys[37]) { // left
-                    this.impulse.x = -1;
-                }
-                if (this.keys[39]) { // right
-                    this.impulse.x = 1;
-                }
-                if (this.keys[32]) { // space
-                    this.impulse.y = -1;
-                }
-                */
-                
                 var _self = this;
                 this.hammer.on('press pressup', function(e) {
                     //alert( 'press : ' + JSON.stringify(e) );
@@ -389,6 +378,82 @@ localplay.game.controller.player = (function () {
                         _self.game.level.keys[32] = false;
                     }, 500);
                 });
+                */
+                
+                var control = document.createElement("div");
+                control.style.position = "absolute";
+                control.style.top = "0px";
+                control.style.left = "0px";
+                control.style.bottom = "0px";
+                control.style.right = "0px";
+                var upControl = document.createElement("div");
+                upControl.style.position = "absolute";
+                upControl.style.top = "0px";
+                upControl.style.left = "0px";
+                upControl.style.bottom = "50%";
+                upControl.style.right = "0px";
+                //upControl.style.backgroundColor = "blue";
+                //upControl.style.opacity = .5;
+                control.appendChild(upControl);
+                var leftControl = document.createElement("div");
+                leftControl.style.position = "absolute";
+                leftControl.style.top = "50%";
+                leftControl.style.left = "0px";
+                leftControl.style.bottom = "0px";
+                leftControl.style.right = "50%";
+                //leftControl.style.backgroundColor = "green";
+                //leftControl.style.opacity = .5;
+                leftControl.style.textAlign = "left";
+                control.appendChild(leftControl);
+                var rightControl = document.createElement("div");
+                rightControl.style.position = "absolute";
+                rightControl.style.top = "50%";
+                rightControl.style.left = "50%";
+                rightControl.style.bottom = "0px";
+                rightControl.style.right = "0px";
+                //rightControl.style.backgroundColor = "red";
+                //rightControl.style.opacity = .5;
+                rightControl.style.textAlign = "right";
+                control.appendChild(rightControl);
+                
+                this.game.canvas.parentElement.appendChild(control);
+                
+                var _self = this;
+
+                upControl.ontouchstart = function(e) {
+                    e.preventDefault();
+                    if ( _self.swipeTimer ) clearTimeout(_self.swipeTimer);
+                    _self.game.level.keys[32] = true;
+                    _self.swipeTimer = setTimeout( function() {
+                        _self.swipeTimer = undefined;
+                        _self.game.level.keys[32] = false;
+                    }, 500);
+                };
+                
+                leftControl.ontouchstart = function(e) {
+                    _self.game.level.keys[37] = true;
+                    leftControl.innerHTML = '<';
+                    e.preventDefault();
+                };
+                
+                leftControl.ontouchend = function(e) {
+                    _self.game.level.keys[37] = false;
+                    leftControl.innerHTML = '|';
+                    e.preventDefault();
+                };
+                
+                rightControl.ontouchstart = function(e) {
+                    _self.game.level.keys[39] = true;
+                    rightControl.innerHTML = '>';
+                    e.preventDefault();
+                };
+                
+                rightControl.ontouchend = function(e) {
+                    _self.game.level.keys[39] = false;
+                    rightControl.innerHTML = '|';
+                    e.preventDefault();
+                };
+                
                 if (window.DeviceOrientationEvent) {
                     //window.addEventListener('deviceorientation', deviceOrientationHandler, false);
                     
@@ -499,7 +564,8 @@ localplay.game.controller.player = (function () {
                     // time
                     //
                     if (this.timelimit > 0) {
-                        var time = "TIME:" + this.game.level.timer.formattime(this.timelimit - this.game.level.timer.elapsed()) + ( this.swipeTimer ? " : jump" : "" );//this.game.level.timer.elapsedstring();
+                        var direction = ( this.game.level.keys[37] ? " : left" : "" ) + ( this.swipeTimer ? " : jump :" : "" ) + ( this.game.level.keys[39] ? " : right" : "" );
+                        var time = "TIME:" + this.game.level.timer.formattime(this.timelimit - this.game.level.timer.elapsed()) + direction;//this.game.level.timer.elapsedstring();
                         context.font = '24px CabinSketch';
                         context.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
                         context.fillText(time, 8, 64);

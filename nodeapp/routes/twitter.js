@@ -43,7 +43,7 @@ module.exports = function( passport, config, db ) {
     //
     console.log( 'setting twitter routes' );
     router.get('/login', passport.authenticate('twitter', {scope:['include_email=true']}) );
-    router.get('/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }));
+    router.get('/callback', passport.authenticate('twitter', { successRedirect: '/homepage.html', failureRedirect: '/login' }));
     //
     //
     //

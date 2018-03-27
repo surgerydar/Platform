@@ -1150,6 +1150,9 @@ div.editoverlay {
     user-select: none;
 }
 
+@media all and (min-height : 768px) {
+}
+
 div.editselection {
     position: absolute;
     border: 2px dashed rgb( 247, 144, 41 );
@@ -1303,10 +1306,19 @@ div.fullscreen {
     position: absolute;
     top: 0px;
     left: 0px;
-    bottom: 0px;
     right: 0px;
+    height: 900px;
 }
 
+@media all and (min-height : 768px) {
+    div.fullscreen {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+    }
+}
 div.container {
     position: absolute;
     width: 1024px;
@@ -1454,6 +1466,7 @@ div.listview {
     right: 0px;
     top: 0px;
     bottom: 0px;
+    overflow-y: auto;
 }
 
 div.listviewheader {

@@ -1,10 +1,13 @@
 var express = require('express')
-var router = express.Router()
+var router  = express.Router()
+var fs      = require('fs');
+var sharp   = require('sharp');
 
 module.exports = function( authentication, db ) {
     //
     //
     //
+    console.log( 'setting media routes')
     router.get( '/', function (req, res) {
         var listview    = req.query.listview || false;
         var filter      = req.query.filter;
@@ -26,18 +29,29 @@ module.exports = function( authentication, db ) {
             projection = { path: 1 };
         }
         db.find( 'media', query, projection, {created: -1}, offset, limit ).then( function(media) {
+            var rows = [];
+            media.forEach( function(entry) {
+                rows.push({
+                    _id: entry._id,
+                    name: entry.name,
+                    creator: entry.creator,
+                    tags: entry.tags,
+                    url: 'media/' + entry._id,
+                    thumbnail: 'media/' + entry._id + '?thumbnail=true'
+                })
+            });
             if ( listview ) {
                 db.count( 'media', query ).then(function(count) {
                     res.json({ status: 'OK', data: {
                         pagecount: limit ? Math.ceil( count / limit ) : 1,
                         pagenumber: limit ? Math.floor( offset / limit ) : 1,
-                        rows: media
+                        rows: rows
                     }});
                 }).catch( function( error ) {
                     res.json({ status: 'ERROR', error: error});
                 });
             } else {
-                res.json({ status: 'OK', data: media});
+                res.json({ status: 'OK', data: rows});
             }
         }).catch( function( error ) {
             res.json({ status: 'ERROR', error: error});
@@ -49,9 +63,15 @@ module.exports = function( authentication, db ) {
     router.get( '/:id', function (req, res) {
         let _id = db.ObjectId(req.params.id)
         db.findOne( 'media', { _id: _id } ).then( function(media) {
-            res.redirect(media.path);
+            let path = './static/media/' + media.path;
+            if ( req.query.thumbnail ) {
+				let transform = sharp().resize(256, 256).max();
+				fs.createReadStream(path).pipe(transform).pipe(res);
+            } else {
+				fs.createReadStream(path).pipe(res);
+            }
         }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
+            res.status(404).send('Not Found');
         });
     }); 
     

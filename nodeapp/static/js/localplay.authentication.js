@@ -252,10 +252,13 @@ localplay.authentication = (function () {
     }
 
     authentication.login = function (callback) {
+        window.location = '/login';
+        /*
         var loginWindow = window.open('/login', '_blank', 'menubar=no,scrollbars=no,width=640,height=480,modal=yes');
         loginWindow.onclose = function( evt ) {
             getauthentication(callback)
         };
+        */
         /*
         var login = document.createElement("form");
         login.innerHTML = this.logintemplate;
