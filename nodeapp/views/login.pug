@@ -8,15 +8,11 @@ html
         img( src='images/facebook.png' class='imagebutton' data-href='/facebook/login' )
         img( src='images/twitter.png' class='imagebutton' data-href='/twitter/login' )
         script.
-            //if(("standalone" in window.navigator) && window.navigator.standalone){
-                var links = document.querySelectorAll('.imagebutton');
-                for ( var i = 0; i < links.length; i++ ) {
-                    ( function( link ) {
-                        link.onclick = function() {
-                            alert( 'going to : ' + link.getAttribute("data-href") );
-                            window.location = link.getAttribute("data-href");
-                            e.preventDefault();  
-                        };
-                    })( links[ i ] );
-                }
-            //}
+            var links = document.querySelectorAll('.imagebutton');
+            for ( var i = 0; i < links.length; i++ ) {
+                ( function( link ) {
+                    link.onclick = function() {
+                        window.location = link.getAttribute("data-href");
+                    };
+                })( links[ i ] );
+            }

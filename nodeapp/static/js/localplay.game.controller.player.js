@@ -341,7 +341,7 @@ localplay.game.controller.player = (function () {
             //
             //
             //
-            if ( ('ontouchstart' in document.documentElement) ) {
+            if ( localplay.touchsupport() ) {
                 /*
                 this.boundtouchstart    = this.ontouchstart.bind(this);
                 this.boundtouchmove     = this.ontouchmove.bind(this);
@@ -815,7 +815,7 @@ localplay.game.controller.player = (function () {
             if (selector.length >= 2) {
                 switch (selector[1]) {
                     case "home":
-                        window.location = "index.html";
+                        window.location = "homepage.html";
                         break;
                     case "me":
                         localplay.creator.showmyprofile();
@@ -951,7 +951,7 @@ localplay.game.controller.player = (function () {
                         break;
                     case "loadoriginal":
                         {
-                            window.location.href = "playnew.html?id=" + _this.game.metadata.attribution.originalid;
+                            window.location.href = "play.html?id=" + _this.game.metadata.attribution.originalid;
                         }
                         break;
                     case "showcredits":

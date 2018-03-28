@@ -228,7 +228,7 @@ localplay.game.controller.preview = (function () {
             //
             // 
             //
-            window.location = "playnew.html?id=" + this.game.levelid;
+            window.location = "play.html?id=" + this.game.levelid;
         }
         */
         return false;

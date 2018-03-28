@@ -255,22 +255,111 @@ localplay.game.thingeditor = (function () {
         this.mousetrackingduplicate = null;
         this.keys = [];
         //
+        // hook events
+        //
+        if ( localplay.touchsupport() ) {
+            var _self = this;
+            var mc = new Hammer.Manager(this.canvas);
+            _self.editActionCount = 0;
+            //
+            // pan for move
+            //
+            mc.add( new Hammer.Pan() );
+            mc.on( 'panstart panmove panend pancancel', function(e) {
+                //var p = new Point( e.center.x - _self.canvasoffset.x, e.center.y - _self.canvasoffset.y );
+                var p = new Point( e.center.x, e.center.y ); // TODO: allow for scroll etc
+                console.log( e.type + ' : at : ' + JSON.stringify(p));
+                var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
+                switch( e.type ) {
+                    case 'panstart' :
+                        var sprite = _self.level.game.spriteatpoint(p);
+                        _self.selectedsprite = sprite; 
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.beginedit();
+                        }
+                        break;
+                    case 'panmove' : 
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.editPosition.x = p.x * scale;
+                            _self.selectedsprite.editPosition.y = p.y * scale;
+                        }
+                        break;
+                    case 'panend' :
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.commitedit();
+                            _self.selectedsprite = null;                                
+                        }
+                        break;
+                    case 'pancancel' :
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.canceledit();
+                            _self.selectedsprite = null;
+                        }
+                        break;
+                }
+            });
+            //
+            // pinch and rotate selected item
+            //
+            var pinch = new Hammer.Pinch();
+            var rotate = new Hammer.Rotate();
+            pinch.recognizeWith(rotate);
+            mc.add([pinch, rotate]);
+            mc.on("pinchstart pinchmove pinchend pinchcancel rotatestart rotatemove rotateend rotatecancel", function(e) {
+                var p = new Point( e.center.x, e.center.y ); // TODO: allow for scroll etc
+                console.log( e.type + ' : at : ' + JSON.stringify(p));
+                var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
+                switch( e.type ) {
+                    case 'pinchstart' :
+                    case 'rotatestart' :
+                        var sprite = _self.level.game.spriteatpoint(p);
+                        _self.selectedsprite = sprite; 
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.beginedit();
+                        }
+                        break;
+                    case 'pinchmove' :
+                    case 'rotatemove' :
+                        if ( _self.selectedsprite ) {
+                            _self.selectedsprite.editPosition.x = p.x * scale;
+                            _self.selectedsprite.editPosition.y = p.y * scale;
+                            _self.selectedsprite.editRotation = e.rotation * Math.PI/180.;
+                            _self.selectedsprite.editScale = e.scale;
+                        }
+                        break;
+                    case 'pinchend' :
+                    case 'rotateend' :
+                       if ( _self.selectedsprite ) {
+                            _self.selectedsprite.commitedit();
+                            _self.selectedsprite = null;                                
+                        }
+                        break;
+                    case 'pinchcancel' :
+                    case 'rotatecancel' :
+                       if ( _self.selectedsprite ) {
+                            _self.selectedsprite.canceledit();
+                            _self.selectedsprite = null;                                
+                        }
+                        break;
+                }
+            });  
+            
+        } else {
+            this.boundmousedown = this.onmousedown.bind(this);
+            this.boundmouseup = this.onmouseup.bind(this);
+            this.boundmousemove = this.onmousemove.bind(this);
+            this.boundkeydown = this.onkeydown.bind(this);
+            this.boundkeyup = this.onkeyup.bind(this);
+            this.container.addEventListener("mousedown", this.boundmousedown);
+            this.container.addEventListener("mouseup", this.boundmouseup);
+            this.container.addEventListener("mousemove", this.boundmousemove);
+            window.addEventListener("keydown", this.boundkeydown);
+            window.addEventListener("keyup", this.boundkeyup);
+        }
         //
         //
-        this.boundmousedown = this.onmousedown.bind(this);
-        this.boundmouseup = this.onmouseup.bind(this);
-        this.boundmousemove = this.onmousemove.bind(this);
+        //
         this.boundresize = this.onresize.bind(this);
-        this.boundkeydown = this.onkeydown.bind(this);
-        this.boundkeyup = this.onkeyup.bind(this);
-        //
-        //
-        //
-        this.container.addEventListener("mousedown", this.boundmousedown);
-        this.container.addEventListener("mouseup", this.boundmouseup);
-        this.container.addEventListener("mousemove", this.boundmousemove);
-        window.addEventListener("keydown", this.boundkeydown);
-        window.addEventListener("keyup", this.boundkeyup);
         window.addEventListener("resize", this.boundresize);
         //
         //

@@ -129,7 +129,7 @@ localplay.game.arcade = (function () {
                     sessionStorage.removeItem("localplay.arcade");
                     sessionStorage.removeItem("localplay.arcade.level");
                 }
-                window.location = "playnew.html?id=" + item.data.id;
+                window.location = "play.html?id=" + item.data.id;
             }, 12, "", null, "", null, arcademenu);
         listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;Latest';
     }

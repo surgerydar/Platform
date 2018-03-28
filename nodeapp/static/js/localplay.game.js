@@ -139,43 +139,43 @@ localplay.game = (function () {
                             //
                             // parse response
                             //
-                            var data = JSON.parse(datasource.response);
-                            if (data&&data.level) {
-                                //
-                                // store the current level metadata at this level
-                                //
-                                _this.metadata = {
-                                    name: data.level.name,
-                                    place: data.level.place,
-                                    change: data.level.change,
-                                    published: data.level.published == "1",
-                                    creatorid: data.level.creatorid,
-                                    creator: data.level.creator,
-                                    tags: data.level.tags,
-                                    thumbnail: data.level.thumbnail,
-                                    attribution: data.level.attribution
-                                };
-                                //
-                                // initialise level
-                                //
-                                _this.levelid = level;
-                                _this.level.setup(data.level.json);
-                                //
-                                //
-                                //
-                                _this.play();
-                            } else {
-                                if (data.status&&data.message) {
-                                    localplay.dialogbox.alert("Playsouthend", data.message);
+                            var response = JSON.parse(datasource.response);
+                            if( response ) {
+                                if (response.status==='OK'&&response.data) {
+                                    //
+                                    // store the current level metadata at this level
+                                    //
+                                    _this.metadata = {
+                                        name: response.data.name,
+                                        place: response.data.place,
+                                        change: response.data.change,
+                                        published: response.data.published == "1",
+                                        creatorid: response.data.creatorid,
+                                        creator: response.data.creator,
+                                        tags: response.data.tags,
+                                        thumbnail: response.data.thumbnail,
+                                        attribution: response.data.attribution
+                                    };
+                                    //
+                                    // initialise level
+                                    //
+                                    _this.levelid = level;
+                                    _this.level.setup(response.data.data);
+                                    //
+                                    //
+                                    //
+                                    _this.play();
                                 } else {
-                                    throw "Invalid format";
+                                    localplay.dialogbox.alert("Platform", response.error);
                                 }
+                            } else {
+                                localplay.dialogbox.alert("Platform", "Unable to load level : Invalid format");
                             }
                         //} catch (error) {
                         //    localplay.dialogbox.alert("Local Play", "Unable to process level, error : '" + error + "' !");
                         //}
                     } else {
-                        localplay.dialogbox.alert("Playsouthend", "Unable to download level, error : '" + datasource.statustext + "' !");
+                        localplay.dialogbox.alert("Platform", "Unable to download level, error : '" + datasource.statustext + "' !");
                     }
                 }
             });
@@ -210,20 +210,18 @@ localplay.game = (function () {
             //
             // upload
             //
-            var param = {};
-            //param.id = copy ? 0 : _this.levelid; // TODO: **platform** remove id from data to rest 
-            param.name = _this.metadata.name;
-            param.published = _this.metadata.published ? 1 : 0;
-            param.place = _this.metadata.place;
-            param.change = _this.metadata.change;
-            param.tags = _this.metadata.tags ? _this.metadata.tags : "";
-            //param.thumbnail = thumbnail;
+            var newLevel = ( copy || parseInt(_this.levelid) <=0 );
             var data = {
+                _id: newLevel ? undefined : _this.levelid,
+                name: _this.metadata.name,
+                published: _this.metadata.published ? 1 : 0,
+                place: _this.metadata.place,
+                change: _this.metadata.change,
+                tags: _this.metadata.tags ? _this.metadata.tags : "",
                 data: json,
                 thumbnail: thumbnail.toDataURL("image/png")
             };
-            var newLevel = ( copy || _this.levelid <=0 );
-            localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), data, param,
+            localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), data, {},
                 localplay.datasource.createprogressdialog("Saving level...", function( e ) {
                     var xhr = e.target;
                     try {
@@ -233,7 +231,7 @@ localplay.game = (function () {
                                 _this.levelid = response._id;
                                 _this.metadata.name = response.name;
                                 _this.level.resetdirty();
-                                history.replaceState( null, "Localplay : " + param.name, "play.html?id=" + response._id);
+                                history.replaceState( null, "Platform : " + param.name, "play.html?id=" + response._id);
                             }
                         }
                         if ( callback ) callback(response.status === "OK");

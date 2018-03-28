@@ -336,7 +336,7 @@ localplay.game.controller.editor = (function () {
                                                 break;
                                             case "home":
                                                 _this.safeclose(function () {
-                                                    window.location = "index.html";
+                                                    window.location = "homepage.html";
                                                 });
                                                 break;
                                         }

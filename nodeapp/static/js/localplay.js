@@ -142,6 +142,12 @@ var localplay = (function () {
     //
     //
     //
+    localplay.touchsupport = function() {
+        return ('ontouchstart' in document.documentElement);
+    }
+    //
+    //
+    //
     var flagdialog = '\
         <div style="width: 300px; height: 256px;"> \
             <div class="menubar">\

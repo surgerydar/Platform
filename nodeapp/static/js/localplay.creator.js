@@ -330,11 +330,11 @@ localplay.creator = (function () {
                                             sessionStorage.removeItem("localplay.arcade");
                                             sessionStorage.removeItem("localplay.arcade.level");
                                         }
-                                        window.location = "playnew.html?id=" + item.data.id;
+                                        window.location = "play.html?id=" + item.data.id;
                                         //
                                         // TODO: build arcade from creators levels
                                         //
-                                        window.location = "playnew.html?id=" + levelid;
+                                        window.location = "play.html?id=" + levelid;
                                     };
                                 }
                             }
