@@ -26,13 +26,12 @@ module.exports = function( authentication, db ) {
             res.json({ status: 'ERROR', error: error});
         });
     });    
-    router.put('/', authentication, function (req, res) { // update level
+    router.put('/:id', authentication, function (req, res) { // update level
+        var _id         = db.ObjectId(req.params.id);
         var level       = req.body;
         level.creatorid = req.user._id;
         level.creator   = req.user.username;
         level.modified  = Date.now();
-        var _id         = db.ObjectId(level._id);
-        level._id       = undefined;
         db.updateOne( 'levels',  { _id:_id }, { $set : level } ).then( function( response ) {
             res.json({ status: 'OK', data: { _id:_id, name: level.name } });
         }).catch( function( error ) {

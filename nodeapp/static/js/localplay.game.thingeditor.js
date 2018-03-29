@@ -259,6 +259,10 @@ localplay.game.thingeditor = (function () {
         //
         if ( localplay.touchsupport() ) {
             var _self = this;
+            function touchPosition( p ) {
+                var offset = localplay.domutils.elementPosition( _self.canvas );
+                return new Point( (p.x - offset.x) + window.scrollX, (p.y - offset.y) + window.scrollY ); 
+            }
             var mc = new Hammer.Manager(this.canvas);
             _self.editActionCount = 0;
             //
@@ -266,8 +270,7 @@ localplay.game.thingeditor = (function () {
             //
             mc.add( new Hammer.Pan() );
             mc.on( 'panstart panmove panend pancancel', function(e) {
-                //var p = new Point( e.center.x - _self.canvasoffset.x, e.center.y - _self.canvasoffset.y );
-                var p = new Point( e.center.x, e.center.y ); // TODO: allow for scroll etc
+                var p = touchPosition( e.center ); 
                 console.log( e.type + ' : at : ' + JSON.stringify(p));
                 var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
                 switch( e.type ) {
@@ -306,8 +309,7 @@ localplay.game.thingeditor = (function () {
             pinch.recognizeWith(rotate);
             mc.add([pinch, rotate]);
             mc.on("pinchstart pinchmove pinchend pinchcancel rotatestart rotatemove rotateend rotatecancel", function(e) {
-                var p = new Point( e.center.x, e.center.y ); // TODO: allow for scroll etc
-                console.log( e.type + ' : at : ' + JSON.stringify(p));
+                var p = touchPosition( e.center ); 
                 var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
                 switch( e.type ) {
                     case 'pinchstart' :

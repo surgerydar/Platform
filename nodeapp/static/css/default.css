@@ -782,7 +782,7 @@ div.thingview {
 }
 
 canvas.thingview {
-    margin: auto;
+    margin: 0px auto auto auto;
     position: absolute;
     top: 0px;
     bottom: 0px;

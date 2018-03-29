@@ -361,7 +361,7 @@ localplay.game.item = (function () {
                 var newtitle = type.substring(0, 1).toUpperCase() + type.substring(1);
                 if (localplay.game.item.isitemtype(type) && type !== _this.type) {
                     var instances = _this.level.getInstancesOfMediaForObjectOfType(_this.type, _this.image);
-                    localplay.dialogbox.confirm("Playsouthend", "This will change all things using this image to " + newtitle + "<br/>Are you sure you want to continue?",
+                    localplay.dialogbox.confirm("Platform", "This will change all things using this image to " + newtitle + "<br/>Are you sure you want to continue?",
                     function (confirm) {
                         if (confirm) {
                             //

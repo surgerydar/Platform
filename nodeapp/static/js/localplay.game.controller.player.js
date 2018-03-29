@@ -700,7 +700,7 @@ localplay.game.controller.player = (function () {
                     var response = JSON.parse(datasource.response);                    
                     if (response.status && response.status === "FAILED") {
                         var message = response.message;
-                        localplay.dialogbox.alert("Playsouthend", message);
+                        localplay.dialogbox.alert("Platform", message);
                     } else {
                         localplay.dialogbox.dialogboxwithtemplate(credits, response, function (e) {
                             var selector = localplay.domutils.getButtonSelector(e);

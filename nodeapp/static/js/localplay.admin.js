@@ -427,7 +427,7 @@ localplay.admin = (function () {
                     email.data = data;
                     email.onclick = function (e) {
                         var emaildata = {
-                            name: "Your Playsouthend account",
+                            name: "Your Platform account",
                             creatorname: email.data.name,
                             creatoremail: email.data.email
                         };
@@ -532,11 +532,11 @@ localplay.admin = (function () {
                     try {
                         var response = JSON.parse(xhr.datasource.response);
                         if (response.status !== "OK") {
-                            localplay.dialogbox.alert("Playsouthend", response.message);
+                            localplay.dialogbox.alert("Platform", response.message);
                         }
                         list.controller.refresh();
                     } catch (error) {
-                        localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                        localplay.dialogbox.alert("Platform", "Unknown error!");
                     }
                 }
             });
@@ -577,9 +577,9 @@ localplay.admin = (function () {
                                         var xhr = e.target;
                                         try {
                                             var response = JSON.parse(xhr.datasource.response);
-                                            localplay.dialogbox.alert("Playsouthend", response.message);
+                                            localplay.dialogbox.alert("Platform", response.message);
                                         } catch (error) {
-                                            localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                                            localplay.dialogbox.alert("Platform", "Unknown error!");
                                         }
                                     }
                                 });
@@ -614,7 +614,7 @@ localplay.admin = (function () {
                             return true;
                         });
                     } catch (error) {
-                        localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                        localplay.dialogbox.alert("Platform", "Unknown error!");
                     }
                 }
             });
@@ -633,11 +633,11 @@ localplay.admin = (function () {
                     try {
                         var response = JSON.parse(xhr.datasource.response);
                         if (response.status !== "OK") {
-                            localplay.dialogbox.alert("Playsouthend", response.message);
+                            localplay.dialogbox.alert("Platform", response.message);
                         }
                         list.controller.refresh();
                     } catch (error) {
-                        localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                        localplay.dialogbox.alert("Platform", "Unknown error!");
                     }
                     list.controller.refresh();
                 }
@@ -657,11 +657,11 @@ localplay.admin = (function () {
                     try {
                         var response = JSON.parse(xhr.datasource.response);
                         if (response.status !== "OK") {
-                            localplay.dialogbox.alert("Playsouthend", response.message);
+                            localplay.dialogbox.alert("Platform", response.message);
                         }
                         list.controller.refresh();
                     } catch (error) {
-                        localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                        localplay.dialogbox.alert("Platform", "Unknown error!");
                     }
                     list.controller.refresh();
                 }
@@ -686,17 +686,17 @@ localplay.admin = (function () {
                                            var command = selector[2];
                                            switch (command) {
                                                case "webstats":
-                                                   window.open("https://playsouthend.co.uk/plesk-stat/webstat", "_blank", "width=800, height=600, toolbar=no, menubar=no, scrollbars=no, location=no, directories=no, status=no");
+                                                   window.open("https://Platform.co.uk/plesk-stat/webstat", "_blank", "width=800, height=600, toolbar=no, menubar=no, scrollbars=no, location=no, directories=no, status=no");
                                                    break;
                                            }
                                        }
                                        return true;
                                    });
                                } else {
-                                   localplay.dialogbox.alert("Playsouthend", response.message);
+                                   localplay.dialogbox.alert("Platform", response.message);
                                }
                            } catch (error) {
-                               localplay.dialogbox.alert("Playsouthend", "Unknown error!");
+                               localplay.dialogbox.alert("Platform", "Unknown error!");
                            }
                        }
                    }); 

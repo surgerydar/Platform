@@ -200,47 +200,44 @@ localplay.game = (function () {
         // create thumbnail
         //
         var _this = this;
-        //localplay.imageprocessor.resizeCanvasToFit(this.canvas, 256, 256, false, function (thumbnail) {
-            var thumbnail = this.createthumbnail();
-            //
-            // serialise game
-            //
-            _this.level.reserialise();
-            var json = _this.level.json;
-            //
-            // upload
-            //
-            var newLevel = ( copy || parseInt(_this.levelid) <=0 );
-            var data = {
-                _id: newLevel ? undefined : _this.levelid,
-                name: _this.metadata.name,
-                published: _this.metadata.published ? 1 : 0,
-                place: _this.metadata.place,
-                change: _this.metadata.change,
-                tags: _this.metadata.tags ? _this.metadata.tags : "",
-                data: json,
-                thumbnail: thumbnail.toDataURL("image/png")
-            };
-            localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), data, {},
-                localplay.datasource.createprogressdialog("Saving level...", function( e ) {
-                    var xhr = e.target;
-                    try {
-                        var response = JSON.parse(xhr.datasource.response);
-                        if (response.status === "OK") {
-                            if (response._id !== undefined) {
-                                _this.levelid = response._id;
-                                _this.metadata.name = response.name;
-                                _this.level.resetdirty();
-                                history.replaceState( null, "Platform : " + param.name, "play.html?id=" + response._id);
-                            }
+        var thumbnail = this.createthumbnail();
+        //
+        // serialise game
+        //
+        _this.level.reserialise();
+        var json = _this.level.json;
+        //
+        // upload
+        //
+        var newLevel = ( copy || parseInt(_this.levelid) <=0 );
+        var data = {
+            name: _this.metadata.name,
+            published: _this.metadata.published ? 1 : 0,
+            place: _this.metadata.place,
+            change: _this.metadata.change,
+            tags: _this.metadata.tags ? _this.metadata.tags : "",
+            data: json,
+            thumbnail: thumbnail.toDataURL("image/png")
+        };
+        localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), data, {},
+            localplay.datasource.createprogressdialog("Saving level...", function( e ) {
+                var xhr = e.target;
+                try {
+                    var response = JSON.parse(xhr.datasource.response);
+                    if (response.status === "OK") {
+                        if (response._id !== undefined) {
+                            _this.levelid = response._id;
+                            _this.metadata.name = response.name;
+                            _this.level.resetdirty();
+                            history.replaceState( null, "Platform : " + param.name, "play.html?id=" + response._id);
                         }
-                        if ( callback ) callback(response.status === "OK");
-                    } catch (error) {
-                        if (callback) callback(false);
                     }
-                    
-                }));
-        //});
+                    if ( callback ) callback(response.status === "OK");
+                } catch (error) {
+                    if (callback) callback(false);
+                }
+
+            }));
     }
     //
     // set current arcade

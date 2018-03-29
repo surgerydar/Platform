@@ -28,14 +28,15 @@ function makeCommandHeader( selector, guid, size ) {
 //
 //
 //
-function upload( file ) {
+function upload( entry ) {
     //
     //
     //
+    var file = entry.file;
     var guid = pad(Date.now(),16,'0');
-    var filename = file.name;
+    var filename = file.name || entry.name;
     var filesize = file.size;
-    var ws = new WebSocket('ws://aftertrauma.uk:4000');
+    var ws = new WebSocket('wss://platformgame.net');
     ws.binaryType = 'arraybuffer';
     ws.pendingCommands = [];
     //
@@ -52,7 +53,6 @@ function upload( file ) {
                 if ( ws.pendingCommands.length > 0 ) {
                     ws.send(ws.pendingCommands.shift());
                 } else {
-                    console.log( 'upload worker : ran out of blocks before upload end' );
                     self.postMessage({ command: "uploaderror", guid: guid, error: "ran out of blocks before upload end" });
                 }
             }
@@ -138,7 +138,7 @@ function process() {
 }
 
 self.onmessage = function(evt) {
-    switch ( evt.data.command) {
+    switch ( evt.data.command ) {
         case "upload" : {
             //
             // store files

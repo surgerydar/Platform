@@ -374,7 +374,7 @@ localplay.game.backgroundeditor = (function () {
                     <canvas id="backgrounduploader.canvas" class="backgrounduploader" width="1023" height="723">Your browser doesn&apos;t support HTML5 canvas</canvas> \
                 </div> \
             </div> \
-            <input id="backgrounduploader.file" accept=";capture=camera" type="file" style="position: absolute; left: -400px; visibility: collapse;" /> \
+            <input id="backgrounduploader.file" accept="image/*;capture=camera" type="file" style="position: absolute; left: -400px; visibility: collapse;" /> \
     ';
     function BackgroundUploader(callback) {
         //
@@ -467,40 +467,48 @@ localplay.game.backgroundeditor = (function () {
     //
     BackgroundUploader.prototype.save = function (e) {
         var _this = this;
-        localplay.imageprocessor.resizeCanvasToFit(this.canvas, 256, 256, false,
-            function (c) {
-                var data = new Object();
-                /*
-                data.data = _this.canvas.toDataURL("image/png");
-                data.thumbnail = c.toDataURL("image/png");
-                */
-                data.data = _this.canvas.toDataURL("image/jpg",0.5);
-                data.thumbnail = c.toDataURL("image/jpg",0.5);
-                if (data) {
-                    //
-                    // upload image and thumbnail
-                    //
-                    var param = {};
-                    param.type = 'background';
-                    param.filename = 'background.jpg';
-                    param.name = _this.name.value;
-                    param.tags = _this.tags.value;
-                    localplay.datasource.put('upload.php', data, param, localplay.datasource.createprogressdialog("Saving Background...", 
-                        function (e) {
-                            var xhr = e.target;
-                            try {
-                                var response = JSON.parse(xhr.datasource.response);
-                                if (response.status === "OK") {
-                                    _this.canvas.getContext('2d').clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-                                    _this.enableEditControls(false);
-                                }
-                            } catch (error) {
-
-                            }
-
-                        }));
+        _this.canvas.toBlob( function(imageBlob) { // convert canvas to blob
+            //
+            // upload
+            //
+            var baseFilename = Date.now() + '-';
+            var data = [
+                {
+                    name: baseFilename + 'background.png',
+                    file: imageBlob
                 }
-            });
+            ];
+            localplay.upload.upload(data, function(status) {
+                if ( status === 'OK' ) {
+                    //
+                    // create new media entry
+                    //
+                    var media = {
+                        name: _this.name.value,
+                        tags: _this.tags.value,
+                        type: 'background',
+                        path: 'uploads/' + baseFilename + 'background.png'
+                    };
+                    localplay.datasource.post( '/media', media, {},
+                    localplay.datasource.createprogressdialog("Updating database...", 
+                            function (e) {
+                                var xhr = e.target;
+                                try {
+                                    var response = JSON.parse(xhr.datasource.response);
+                                    if (response.status === "OK") {
+                                        _this.canvas.getContext('2d').clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+                                        _this.enableEditControls(false);
+                                    }
+                                } catch (error) {
+
+                                }
+
+                            }));
+                } else {
+                    //????
+                }
+            } );
+        } );
     }
 
 

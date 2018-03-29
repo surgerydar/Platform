@@ -382,7 +382,7 @@ localplay.game.layouteditor = (function () {
             // 
             //
             var _this = this;
-            localplay.dialogbox.confirm("Playsouthend", "Are you sure you want to remove this thing from the game?",
+            localplay.dialogbox.confirm("Platform", "Are you sure you want to remove this thing from the game?",
                 function (confirm) {
                     if (confirm) {
                         _this.level.removeitem(_this.selectedsprite,true);

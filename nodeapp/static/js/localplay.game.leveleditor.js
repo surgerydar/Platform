@@ -35,16 +35,16 @@ localplay.game.leveleditor = (function () {
     //
     var createlevelsplash0 = '\
         <div class="splashcontainer"> \
-            <div class="splashtext" style="height: 400px;">Make the game of<br/>your future town for<br />the health and<br />prosperity of all…</div> \
-            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 50%;" src="images/icons/arrow-next-01.png" /> \
+            <div class="splashtext" style="height: 400px;">Intro one</div> \
+            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="images/icons/arrow-next-01.png" /> \
         </div> \
     ';
 
     var createlevelsplash1 = '\
         <div class="splashcontainer"> \
-            <div class="splashtext" style="height: 100px;">… or for total disaster!</div> \
-            <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 50%;" src="images/icons/arrow-previous-01.png" /> \
-            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 50%;" src="images/icons/arrow-next-01.png" /> \
+            <div class="splashtext" style="height: 100px;">Intro two</div> \
+            <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 5%;" src="images/icons/arrow-previous-01.png" /> \
+            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="images/icons/arrow-next-01.png" /> \
         </div> \
     ';
 
@@ -157,7 +157,7 @@ localplay.game.leveleditor = (function () {
     //
     var backgroundeditor = {
         breadcrumb: "Add background",
-        prompt: "MAKE A NEW GAME LEVEL - START BY CREATING YOUR PLACE IN YOUR TOWN",
+        prompt: "MAKE A NEW GAME - START BY CREATING YOUR BACKGROUND",
         init: function () {
             var editor = localplay.game.backgroundeditor.createbackgroundeditor(level);
             createleveleditorcontainer.appendChild(editor.container);
@@ -173,7 +173,7 @@ localplay.game.leveleditor = (function () {
         },
         exitcondition: function() {
             if (level.background.countimages() == 0) {
-                localplay.dialogbox.alert("Playsouthend", "Your level needs a place!<br />Please add at least one background image.");
+                localplay.dialogbox.alert("Platform", "Your level needs a place!<br />Please add at least one background image.");
                 return false;
             }
             return true;
@@ -221,7 +221,7 @@ localplay.game.leveleditor = (function () {
         },
         exitcondition: function () {
             if (level.countitems() <= 0) {
-                localplay.dialogbox.alert("Playsouthend", "Your level needs some things!<br />Please add some platforms, obstacles, pickups or goals.");
+                localplay.dialogbox.alert("Platform", "Your level needs some things!<br />Please add some platforms, obstacles, pickups or goals.");
                 return false;
             }
             return true;
@@ -639,7 +639,7 @@ localplay.game.leveleditor = (function () {
             // TODO: where do we go from here? should go back but where is that
             //
             if (gohome) {
-                location.href = "index.html"
+                location.href = "homepage.html"
             } else {
                 if (location.search.indexOf("id=-1") > 0) {
                     history.back();
@@ -652,7 +652,7 @@ localplay.game.leveleditor = (function () {
         // confirm cancel
         //
         if (level.isdirty()) {
-            localplay.dialogbox.confirm("Playsouthend", "Do you really want to close without saving?", function (confirm) {
+            localplay.dialogbox.confirm("Platform", "Do you really want to close without saving?", function (confirm) {
                 if (confirm) {
                     cancel();
                 }

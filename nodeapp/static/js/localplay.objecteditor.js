@@ -90,7 +90,7 @@ localplay.objecteditor = (function () {
                     </div> \
                 </div> \
             </div> \
-            <input id="objecteditor.file" type="file" accept=";capture=camera" style="position: absolute; left: -400px; visibility: collapse;" /> \
+            <input id="objecteditor.file" type="file" accept="image/*;capture=camera" style="position: absolute; left: -400px; visibility: collapse;" /> \
     ';
 
     function ObjectEditor(title,callback) {
@@ -484,6 +484,52 @@ localplay.objecteditor = (function () {
 
 
     ObjectEditor.prototype.saveSelection = function () {
+        var _this = this;
+        this.cropcanvas.toBlob( function(imageBlob) { // convert canvas to blob
+            //
+            // upload
+            //
+            var baseFilename = Date.now() + '-';
+            var data = [
+                {
+                    name: baseFilename + 'object.png',
+                    file: imageBlob
+                }
+            ];
+            localplay.upload.upload(data, function(status) {
+                if ( status === 'OK' ) {
+                    //
+                    // create new media entry
+                    //
+                    var media = {
+                        name: _this.name.value,
+                        tags: _this.tags.value,
+                        type: 'object',
+                        path: 'uploads/' + baseFilename + 'object.png'
+                    };
+                    localplay.datasource.post( '/media', media, {},
+                    localplay.datasource.createprogressdialog("Updating database...", 
+                            function (e) {
+                                _this.showSavePanel(false);
+                                /*
+                                var xhr = e.target;
+                                try {
+                                    var response = JSON.parse(xhr.datasource.response);
+                                    if (response.status === "OK") {
+                                        _this.canvas.getContext('2d').clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+                                        _this.enableEditControls(false);
+                                    }
+                                } catch (error) {
+
+                                }
+                                */
+                            }));
+                } else {
+                    //????
+                }
+            } );
+        } );
+        /*
         //
         // convert canvas to image for upload
         //
@@ -513,6 +559,7 @@ localplay.objecteditor = (function () {
         localplay.datasource.put('upload.php', data, param, localplay.datasource.createprogressdialog(param.name.length > 0 ? "Saving '" + param.name + "'..." : "Saving object...", function () {
             _this.showSavePanel(false);
         }));
+        */
     }
 
     var patternoffsets = [

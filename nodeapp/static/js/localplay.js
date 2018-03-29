@@ -245,6 +245,7 @@ var localplay = (function () {
     var tipbox = null;
     var tipstack = [];
     localplay.showtip = function (tip,target) {
+        return;
         if (tip && tip.length > 0) {
             if (!tipbox) {
                 tipbox = document.createElement("div");
@@ -269,6 +270,7 @@ var localplay = (function () {
         }
     }
     localplay.savetip = function () {
+        return;
         if (localplay.hastip()) {
             var tipboxstate = {
                 position : new Point( tipbox.offsetLeft + tipbox.offsetWidth, tipbox.offsetTop ),
@@ -278,6 +280,7 @@ var localplay = (function () {
         }
     }
     localplay.restoretip = function () {
+        return;
         if (tipstack.length > 0) {
             var tipboxstate = tipstack.pop();
             tipbox.innerHTML = tipboxstate.content;

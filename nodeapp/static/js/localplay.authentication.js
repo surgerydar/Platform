@@ -131,7 +131,7 @@ localplay.authentication = (function () {
                         if (status === "OK") {
                             dialog.close();
                             if (callback) callback();
-                            localplay.dialogbox.alert("Playsouthend - Join", message);
+                            localplay.dialogbox.alert("Platform - Join", message);
                         } else {
                             //
                             // display error

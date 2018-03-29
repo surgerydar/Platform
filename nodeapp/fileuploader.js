@@ -29,7 +29,7 @@ FileWriter.prototype.writeChunk = function( ws, data ) {
         this.file.end();
         
         let source = './upload/' + this.filename;
-        let destination = './static/media/' + this.filename;
+        let destination = './static/media/uploads/' + this.filename;
         this.file.once('close', function() {
             if ( !fs.copyFile ) {
                 function copyFile( source, destination ) {
@@ -49,7 +49,7 @@ FileWriter.prototype.writeChunk = function( ws, data ) {
                 }
                 copyFile( source, destination ).then( function() {
                     console.log(source + ' was copied to ' + destination);
-                    ws.send( JSON.stringify({status:"DONE", guid: self.guid, destination:'/media/' + self.filename}) );
+                    ws.send( JSON.stringify({status:"DONE", guid: self.guid, destination:'/media/uploads/' + self.filename}) );
                 }).catch( function( error ) {
                     console.log('error copying ' + source + ' to ' + destination + ' : ' + error );
                 });
@@ -59,6 +59,7 @@ FileWriter.prototype.writeChunk = function( ws, data ) {
                         console.log('error copying ' + source + ' to ' + destination + ' : ' + error );
                     } else {
                         console.log(source + ' was copied to ' + destination);
+                        ws.send( JSON.stringify({status:"DONE", guid: self.guid, destination:'/media/uploads/' + self.filename}) );
                     }
                 });
             }

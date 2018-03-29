@@ -436,7 +436,7 @@ localplay.listview = (function () {
             image.deletecommand = data.deletecommand;
             image.source = this.parent.source;
             image.onclick = function (e) {
-                DialogBox.confirm("Playsouthend", "Are you sure you want to delete '" + data.name + "' ?", function (confirm) {
+                DialogBox.confirm("Platform", "Are you sure you want to delete '" + data.name + "' ?", function (confirm) {
                     if (confirm) {
                         localplay.datasource.get( e.target.deletecommand, {}, {}, {
                             datasourceonloadend : function(e) {
