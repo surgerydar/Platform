@@ -64,11 +64,15 @@ module.exports = function( authentication, db ) {
         let _id = db.ObjectId(req.params.id)
         db.findOne( 'media', { _id: _id } ).then( function(media) {
             let path = './static/media/' + media.path;
-            if ( req.query.thumbnail ) {
-				let transform = sharp().resize(256, 256).max();
-				fs.createReadStream(path).pipe(transform).pipe(res);
+            if ( fs.existsSync(path) ) {
+                if ( req.query.thumbnail ) {
+                    let transform = sharp().resize(256, 256).max();
+                    fs.createReadStream(path).pipe(transform).pipe(res);
+                } else {
+                    fs.createReadStream(path).pipe(res);
+                }
             } else {
-				fs.createReadStream(path).pipe(res);
+                res.status(404).send('Not Found');
             }
         }).catch( function( error ) {
             res.status(404).send('Not Found');

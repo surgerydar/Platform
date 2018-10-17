@@ -477,7 +477,9 @@ localplay.game.controller.player = (function () {
             this.game.canvas.offsetParent.appendChild(this.banner);
             this.onstatechange();
             this.banner.addEventListener("mousemove", this.boundmousemove);
-
+            //
+            //
+            //
             this.playbar = document.createElement("div");
             this.playbar.className = "playbar";
             this.playbar.innerHTML = playbar;
@@ -498,7 +500,7 @@ localplay.game.controller.player = (function () {
                 if (localplay.authentication.isauthenticated()) {
                     succeedaction();
                 } else {
-                    localplay.dialogbox.alert("Localplay", failprompt, function () {
+                    localplay.dialogbox.alert("Platform", failprompt, function () {
                         _this.resumegame();
                     });
                 }

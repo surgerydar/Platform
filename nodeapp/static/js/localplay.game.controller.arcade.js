@@ -139,7 +139,6 @@ localplay.game.controller.arcade = (function () {
                 }
                 break;
             case localplay.game.level.states.ready:
-
                 break;
             case localplay.game.level.states.playing:
                 //

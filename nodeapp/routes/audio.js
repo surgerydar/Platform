@@ -1,5 +1,6 @@
 var express = require('express')
-var router = express.Router()
+var router  = express.Router()
+var fs      = require('fs');
 
 module.exports = function( authentication, db ) {
     //
@@ -47,12 +48,21 @@ module.exports = function( authentication, db ) {
     //
     //
     router.get( '/:id', function (req, res) {
-        let _id = db.ObjectId(req.params.id)
-        db.findOne( 'audio', { _id: _id } ).then( function(audio) {
-            res.json({ status: 'OK', data: audio});
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
+        try {
+            let _id = db.ObjectId(req.params.id)
+            db.findOne( 'audio', { _id: _id } ).then( function(audio) {
+                res.json({ status: 'OK', data: audio});
+            }).catch( function( error ) {
+                res.json({ status: 'ERROR', error: error});
+            });
+        } catch( error ) {
+            let path = './static/audio/' + req.params.id;
+            if ( fs.existsSync(path) ) {
+                fs.createReadStream(path).pipe(res);
+            } else {
+                res.status(404).send('Not Found');
+            }
+        }
     }); 
     
     return router;

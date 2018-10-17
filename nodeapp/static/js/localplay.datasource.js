@@ -391,9 +391,9 @@ localplay.datasource = (function () {
 
         try {
             var response = JSON.parse(xhr.datasource.response);
-            localplay.dialogbox.alert("Localplay", response.message);
+            localplay.dialogbox.alert("Platform", response.message);
         } catch (error) {
-            localplay.dialogbox.alert("Localplay - server error", xhr.datasource.response);
+            localplay.dialogbox.alert("Platform - server error", xhr.datasource.response);
         }
         if (this.callback) {
             this.callback(e);
@@ -409,7 +409,7 @@ localplay.datasource = (function () {
         var xhr = e.target;
 
         this.dialog.close();
-        var dialog = localplay.dialogbox.alert("Localplay", xhr.datasource.response);
+        var dialog = localplay.dialogbox.alert("Platform", xhr.datasource.response);
         dialog.show();
 
         if (this.callback) {
