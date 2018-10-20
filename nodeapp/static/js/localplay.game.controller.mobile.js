@@ -50,18 +50,8 @@ localplay.game.controller.mobile = (function () {
                 <img id="mobileplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
                 <img id="mobileplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
                 <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
-    /*
-    var outro = '<h3>{{outcome}}</h3> \
-                {{{score}}}<p/> \
-                <img id="mobileplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="mobileplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="mobileplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/replay.png" /> \
-                <img id="mobileplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
-    */
-    var outro = '<h3>{{outcome}}</h3> \
-                {{{score}}}<p/> \
-                <img id="mobileplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/replay.png" /> \
-                <img id="mobileplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
+     var outro = '<h3>{{outcome}}</h3> \
+                {{{score}}}<p/>';
     var info = '<h3>{{name}}</h3> \
                 <img src="{{thumbnail}}" /><p/> \
                 place - {{place}}<p/> \
@@ -76,6 +66,7 @@ localplay.game.controller.mobile = (function () {
     //
     //
     function MobileController(game) {
+        var _this = this;
         //
         //
         //
@@ -86,6 +77,194 @@ localplay.game.controller.mobile = (function () {
         this.game = game;
         this.timelimit = -1;
         this.loadingprogress = -1;
+        //
+        // controls
+        //
+        this.progressindicatorcontainer = document.querySelector('#title-progress-container');
+        this.progressindicator          = document.querySelector('#title-progress');
+        this.playbar                    = document.querySelector('#play-bar');
+        this.upbutton                   = document.querySelector('#play-bar-button-up');
+        this.leftbutton                 = document.querySelector('#play-bar-button-left');
+        this.rightbutton                = document.querySelector('#play-bar-button-right');
+        this.playbutton                 = document.querySelector('#play-button');
+        this.menubutton                 = document.querySelector('#title-menu');
+        this.menu                       = document.querySelector('#main-menu');
+        this.backdrop                   = document.querySelector('#menu-backdrop');
+        //
+        //
+        //
+        /*
+                if (this.keys[37]) { // left
+                    this.impulse.x = -1;
+                }
+                if (this.keys[39]) { // right
+                    this.impulse.x = 1;
+                }
+                if (this.keys[32]) { // space
+                    this.impulse.y = -1;
+                }
+        */
+        if ( this.playbutton ) {
+            this.playbutton.addEventListener('click', function(e) {
+                e.preventDefault();
+                //_this.game.level.reset();
+                _this.game.level.play();
+                /*
+                if ( _this.game.level.state === localplay.game.level.states.ready ) {
+                    _this.game.level.play();
+                } else {
+                    _this.game.level.reset();
+                    _this.game.level.play();
+                }
+                */
+            });
+        }
+        if ( this.menubutton ) {
+            this.menubutton.addEventListener('click', function(e) {
+                e.preventDefault();
+                _this.showmenu(true);
+            });
+        }
+        if ( this.backdrop ) {
+            this.backdrop.addEventListener('click', function(e) {
+                if ( _this.backdrop.style.opacity > .0 ) {
+                    e.preventDefault();
+                    _this.showmenu(false);
+                }
+            });
+        }
+        //
+        //
+        //
+        if ( this.menu ) {
+            this.menu.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log( 'menu item : ' + e.target.id );
+                var selector = e.target.id.split('.');
+                if ( selector.length === 2 ) {
+                    _this.showmenu(false);
+                    switch( selector[1] ) {
+                        case 'close':
+                            if ( _this.game.level.paused ) {
+                                _this.game.level.pause(false);
+                            }
+                            break;
+                        case 'play':
+                            //_this.game.level.reset();
+                            _this.game.level.play();
+                            break;
+                    }
+                }
+            });
+        }
+        //
+        // game controls
+        //
+        if ( localplay.touchsupport() ) {
+            if ( this.upbutton ) {
+                this.upbutton.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[32] = true;
+                }, true );
+                this.upbutton.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[32] = false;
+                }, false );
+            }
+            this.directionbuttons = document.querySelector('#play-bar-direction-buttons');
+            if ( this.directionbuttons ) {
+                var touchtodirection = function(e) {
+                    if ( e.touches.length > 0 ) {
+                        console.log( 'directionbuttons : touch : ' + e.touches[0].clientX + ',' + e.touches[0].clientY );
+                        var x = e.touches[0].clientX;
+                        var cx = _this.directionbuttons.offsetLeft + _this.directionbuttons.offsetWidth / 2;
+                        _this.game.level.multiplier = Math.abs( x - cx ) / ( _this.directionbuttons.offsetWidth / 2 );
+                        if ( x < cx ) {
+                            _this.game.level.keys[37] = true;
+                            _this.game.level.keys[39] = false;
+                        } else if ( x > cx ) {
+                            _this.game.level.keys[37] = false;
+                            _this.game.level.keys[39] = true;
+                        } else {
+                            _this.game.level.keys[37] = false;
+                            _this.game.level.keys[39] = false;
+                        }
+                    }
+                };
+                this.directionbuttons.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    touchtodirection(e);
+                },true); 
+                this.directionbuttons.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[37] = _this.game.level.keys[39] = false;
+                },false); 
+                this.directionbuttons.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    touchtodirection(e);
+                },true); 
+            } else {
+                if ( this.leftbutton ) {
+                    this.leftbutton.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[37] = true;
+                    }, true );
+                    this.leftbutton.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[37] = false;
+                    }, false );
+                    this.leftbutton.addEventListener('touchcancel', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[37] = false;
+                    }, false );
+                }
+                if ( this.rightbutton ) {
+                    this.rightbutton.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[39] = true;
+                    }, true );
+                    this.rightbutton.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[39] = false;
+                    }, false );
+                    this.rightbutton.addEventListener('touchcancel', function(e) {
+                        e.preventDefault();
+                        _this.game.level.keys[39] = false;
+                    }, false );
+                }
+            }
+        } else {
+            if ( this.upbutton ) {
+                this.upbutton.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[32] = true;
+                }, true );
+                this.upbutton.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[32] = false;
+                }, false );
+            }
+            if ( this.leftbutton ) {
+                this.leftbutton.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[37] = true;
+                }, true );
+                this.leftbutton.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[37] = false;
+                }, false );
+            }
+            if ( this.rightbutton ) {
+                this.rightbutton.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[39] = true;
+                }, true );
+                this.rightbutton.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    _this.game.level.keys[39] = false;
+                }, false );
+            }
+        }
         //
         // hook events
         //
@@ -113,12 +292,9 @@ localplay.game.controller.mobile = (function () {
         //
         this.game.level.reset();
     }
-
-
     //
     // required controller methods
     //
-
     MobileController.prototype.draw = function () {
         //
         //
@@ -166,11 +342,14 @@ localplay.game.controller.mobile = (function () {
                 //
                 // time
                 //
-                if (this.timelimit > 0) {
+                if (this.timelimit > 0 && this.progressindicator) {
+                    /*
                     var time = "TIME:" + this.game.level.timer.formattime(this.timelimit - this.game.level.timer.elapsed());//this.game.level.timer.elapsedstring();
                     context.font = '24px CabinSketch';
                     context.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
                     context.fillText(time, 8, 64);
+                    */
+                    this.progressindicator.value = this.game.level.timer.elapsed() / this.timelimit;
                 }
                 context.restore();
 
@@ -220,28 +399,54 @@ localplay.game.controller.mobile = (function () {
     }
 
     MobileController.prototype.onstatechange = function (e) {
-        switch (this.game.level.state) {
-            case localplay.game.level.states.clear:
-                this.showbanner();
-                break;
-            case localplay.game.level.states.loading:
-                this.showbanner(loading);
-                break;
-            case localplay.game.level.states.ready:
-                this.timelimit = this.game.level.gamestate.getTimelimit();
-                this.showbanner();
-                this.game.level.play();
-                break;
-            case localplay.game.level.states.playing:
-                this.showbanner();
-                break;
-            case localplay.game.level.states.done:
-                this.showbanner(outro, this.game.level.gamestate.getDescription());
-                break;
+        try {
+            switch (this.game.level.state) {
+                case localplay.game.level.states.clear:
+                    this.showbanner();
+                    break;
+                case localplay.game.level.states.loading:
+                    this.showbanner(loading);
+                    break;
+                case localplay.game.level.states.ready:
+                    this.timelimit = this.game.level.gamestate.getTimelimit();
+                    this.showbanner();
+                    this.showcontrols(false);
+                    break;
+                case localplay.game.level.states.playing:
+                    this.showbanner();
+                    this.showcontrols(true);
+                    break;
+                case localplay.game.level.states.done:
+                    this.showcontrols(false);
+                    this.showbanner(outro, this.game.level.gamestate.getDescription(this.game.level));
+                    break;
+            }
+        } catch( error ) {
+            console.log( 'MobileController.onstatechange : error : ' + error );
         }
 
     }
 
+    MobileController.prototype.showcontrols = function (playing) {
+        this.playbar.style.visibility                       = playing ? 'visible' : 'hidden';
+        this.progressindicatorcontainer.style.visibility    = playing ? 'visible' : 'hidden';
+        if ( this.playbutton ) {
+            this.playbutton.style.visibility = playing ? 'hidden' : 'visible';
+        }
+    }
+    
+    MobileController.prototype.showmenu = function (show) {
+        //console.log( 'MobileController.showmenu(' + show + ')');
+        if( show ) {
+            this.game.level.pause(true);
+            this.backdrop.style.opacity = 1.;
+            this.menu.classList.add('open');
+        } else {
+            this.backdrop.style.opacity = 0.;
+            this.menu.classList.remove('open');
+        }
+    }
+    
     MobileController.prototype.hookbuttons = function (container, callback) {
 
         for (var i = 0; i < container.childNodes.length; i++) {
@@ -312,11 +517,30 @@ localplay.game.controller.mobile = (function () {
     }
 
     MobileController.prototype.onresize = function (e) {
-        this.game.fittocontainer();
+        //this.game.fittocontainer();
+        console.log( 'MobileController.prototype.onresize : before : canvas.width=' + this.game.canvas.width + ' canvas.height=' + this.game.canvas.height );
+        var aspect = this.game.canvas.offsetWidth / this.game.canvas.offsetHeight;
+        this.game.canvas.width = Math.round(this.game.canvas.height * aspect);
+        console.log( 'MobileController.prototype.onresize : after : canvas.width=' + this.game.canvas.width + ' canvas.height=' + this.game.canvas.height );
+        //
+        //
+        //
+        var scale = this.game.canvas.height / localplay.defaultsize.height;
+        if (this.game.level.background) {
+            this.game.level.background.setscale(scale);
+            this.game.level.adjustviewport();
+        }
+        //
+        //
+        //
+        if ( this.game.paused ) {
+            this.game.level.draw();
+            this.draw();
+        }
         return false;
     }
 
-    mobileplayer.attachtogame = function (game) {
+    mobileplayer.attachtogame = function(game) {
         //
         // TODO: detatch controller, probably need registry of who is attached to whom in localplay.gamecontroller
         //

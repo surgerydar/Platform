@@ -83,7 +83,7 @@ localplay.game = (function () {
         //
         // resize canvas to fit container
         //
-        this.fittocontainer();
+        //this.fittocontainer();
     }
     //
     //

@@ -114,7 +114,7 @@ localplay.game.arcade = (function () {
                 var arcade = listcontainer.controller.source.getRows();
                 var currentlevel = -1;
                 for ( var i = 0; i < arcade.length; i++ ) {
-                    if (arcade[i].id === item.data.id) {
+                    if (arcade[i]._id === item.data._id) {
                         currentlevel = i;
                         break;
                     }
@@ -129,7 +129,7 @@ localplay.game.arcade = (function () {
                     sessionStorage.removeItem("localplay.arcade");
                     sessionStorage.removeItem("localplay.arcade.level");
                 }
-                window.location = "play.html?id=" + item.data.id;
+                window.location = "play.html?id=" + item.data._id;
             }, 12, "", null, "", null, arcademenu);
         listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;Latest';
     }

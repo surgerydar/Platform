@@ -97,6 +97,7 @@ localplay.game.level = (function () {
         this.impulse = new Point();
         this.autogenerate = true;
         this.jsonin = "";
+        this.multiplier = 1.;
         //
         // 
         //
@@ -263,6 +264,7 @@ localplay.game.level = (function () {
         this.trackavatar = true;
         this.gamestarted = false;
         this.gameover = false;
+        this.multiplier = 1.;
         //
         // deserialise
         //
@@ -857,13 +859,13 @@ localplay.game.level = (function () {
             if (this.gamestarted) {
                 this.impulse.set(0, 0);
                 if (this.keys[37]) { // left
-                    this.impulse.x = -1;
+                    this.impulse.x = -1 * this.multiplier;
                 }
                 if (this.keys[39]) { // right
-                    this.impulse.x = 1;
+                    this.impulse.x = 1 * this.multiplier;
                 }
                 if (this.keys[32]) { // space
-                    this.impulse.y = -1;
+                    this.impulse.y = -1 * this.multiplier;
                 }
                 this.avatar.applyimpulse(this.impulse);
             }

@@ -4,11 +4,93 @@
     src: url('../fonts/CabinSketch-Regular.otf');
 }
 
+@font-face{
+font-family:"BritishCouncilSansW08-It";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-It.svg#215d2b79-dfaf-4343-a49b-0f8a068fe35b") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-LtIt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-LtIt.svg#6dee14e8-94b8-4954-8f20-35388376cf1b") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-Black";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Black.svg#ddf238a0-15ee-4fff-8477-ae938a195e86") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-BdIt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-BdIt.svg#d37e733e-fd32-4c2e-878a-b54c7df7b128") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-Bd";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Bd.svg#6d767568-c816-4bc0-a910-79f29ae0f8f5") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-XLt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-XLt.svg#04f4a2af-a9f6-4820-a24b-21b832275666") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-Rg";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Rg.svg#d40bd713-759d-489d-b33e-fe369328171f") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-BdIt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-BdIt.svg#83358657-59b6-4ce9-b5f4-29c47ba6d53a") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-It";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-It.svg#4a430444-2c1b-4606-843a-2e666a9bf11d") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-LtIt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-LtIt.svg#4ea5a6ba-cc0c-4739-acc7-cb5a32a50da1") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-Lt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Lt.svg#9b45e9d4-2b54-4fe0-b9ef-dc85fc294a1f") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-Black";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Black.svg#89cc7a42-dc14-40c0-9602-ffe354266cdd") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-Bd";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Bd.svg#1dda0519-3a88-4da7-9f07-b572270fbb65") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-Rg";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-Rg.svg#e9c554ec-81bc-4439-85f5-1995e1fa66fb") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW08-Lt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW08-Lt.svg#e349f558-57c9-4a23-9cd0-63bf629d986c") format("svg");
+}
+@font-face{
+font-family:"BritishCouncilSansW29-XLt";
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.eot?#iefix");
+src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.eot?#iefix") format("eot"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.woff2") format("woff2"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.woff") format("woff"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.ttf") format("truetype"),url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.svg#b46c40a8-ae8a-4e83-b300-b8875901bf29") format("svg");
+}
+
 /* global styling */
 body {
     background: white;/*rgb(200, 200, 200);*/
     color: white;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: BritishCouncilSansW29-Lt, sans-serif;
+    margin: 0px;
 }
 a {
     color: white;
@@ -195,12 +277,18 @@ div.tipbox {
 
 /* canvas */
 canvas {
-    margin: auto;
+    /* margin: auto; */
     position: absolute;
+    /*
     top: 0px;
     bottom: 0px;
     left: 0px;
     right: 0px;
+    */
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -263,7 +351,7 @@ div.dialog {
     padding-bottom: 48px;
     min-width: 256px;
     min-height: 128px;
-    background-color: rgb( 255, 143, 33 );
+    background-color: #0F467B;
     color: white;
     overflow: hidden;
     /*
@@ -291,7 +379,7 @@ div.gamebanner {
     right: 0px;
     bottom: 0px;
     padding: 8px;
-    background-color: rgb(247, 144, 41);
+    background-color: #0F467B;
     color: white;
     opacity: 0.75;
     font-family: Arial, Helvetica, sans-serif;
@@ -382,7 +470,7 @@ div.toolbar {
     top: auto;
     padding: 2px;
     text-align: right;
-    background-color: rgb( 255, 143, 33 );
+    background-color: #0F467B;
     color: white;
     border: none;
     transition: all 0.25s ease-in;
@@ -417,7 +505,7 @@ div.toolbarbutton {
     display: inline-block;
     text-align: center;
     cursor: pointer;
-    background-color: rgb( 255, 143, 33 );
+    background-color: #0F467B;
     color: white;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -818,7 +906,7 @@ div.objecteditortoolbar {
     bottom: 0px; 
     width: 272px; 
     padding: 16px; 
-    background-color: rgb(255,143,33); 
+    background-color: #0F467B; 
     overflow-x: hidden; 
     overflow-y: auto;
 }
@@ -1381,7 +1469,7 @@ div.sidebar {
     right: 0px;
     width: 240px;
     height: 768px;
-    background-color: rgb(255,143,33);
+    background-color: #0F467B;
 }
 
 div.createlevelcontainer {
@@ -1415,7 +1503,7 @@ div.prompttext {
     font-size: 24px;
     text-transform: uppercase;
     color: white;
-    background-color: rgb(255,143,33);
+    background-color: #0F467B;
 }
 
 div.editormenubar {
@@ -1445,7 +1533,7 @@ div.splashcontainer {
     left: 0px;
     bottom: 0px;
     right: 0px;
-    background-color: rgb(255,143,33);
+    background-color: #0F467B;
 }
 
 div.splashtext {
@@ -1739,4 +1827,199 @@ img.credits {
 }
 
 @media screen and (-ms-view-state: fullscreen-portrait) {
+}
+
+/* new design */
+
+#title-bar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    height: 10vh;
+    
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+#title-logo {
+    height: 100%;
+    align-self: flex-start;
+}
+
+
+#title-progress-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+    align-self: flex-start;
+    
+    width: 33%;
+    height: 50%; 
+    
+    padding: 0 8px;
+        
+    background-color: rgba(255,255,255,.75);
+    color: #5D5958;
+    
+    visibility: hidden;
+}
+
+#title-progress {
+    flex-grow: 2;
+    height: 33%;
+}
+
+#play-bar {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    right: 8px;
+    height: 20vh;
+    
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+        
+    visibility: hidden;
+}
+
+.play-bar-button-group {
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+}
+
+.play-bar-button {
+    display: inline-block;
+    height: 100%;
+    align-self: center;
+}
+
+#play-button {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+}
+
+progress[value] {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+progress[value]::-webkit-progress-bar {
+    background-color: #86C462;
+    height: 100%;
+    border-radius: calc(height/2);
+}
+
+progress[value]::-webkit-progress-value {
+    background-color: #F05137;
+    height: 100%;
+    border-radius: calc(height/2);
+}
+
+#title-menu {
+    height: 100%;
+    align-self: flex-start;
+}
+
+#menu-backdrop {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    opacity: 0.0;
+    transition: opacity 500ms;
+    background-image: linear-gradient(to left, rgba(65,174,228,1.0) , rgba(65,174,228,0.5));
+}
+
+#main-menu {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    right: 8px;
+    width: 0px;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: stretch;
+    
+    transition: width 500ms;
+}
+
+#main-menu.open {
+    visibility: visible;
+    width: 33vw;
+    
+    transition: width 500ms;
+}
+
+.main-menu-item {
+    height: 10vh;
+    flex-grow: 1;
+    color: white;
+    background-color: #12467B;
+    text-align: center;
+    line-height: 9vh;
+    font-size: 8vh;
+    /*padding: 8px;*/
+    
+    margin-bottom: 2px;
+}
+
+/*
+.gamecontainer { 
+    display: block;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+*/
+
+@media only screen and (orientation:portrait){
+
+    #title-bar {
+        height: 20vh;
+        flex-wrap: wrap;
+    }
+    #title-logo {
+        height: auto;
+        width: 45vw;
+        align-self: flex-start;
+    }
+    #title-menu {
+        height: auto;
+        width: 45vw;
+        align-self: flex-start;
+    }
+    #title-progress-container {
+        order: 2;
+        width: 100vw;
+        align-self:center;
+    }
+    #main-menu.open {
+        width: 75vw;
+    }
+    .main-menu-item {
+        font-size: 4vh;
+    }
+    #play-bar {
+        height: 20vw;
+    }
 }

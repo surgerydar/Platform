@@ -54,7 +54,6 @@ localplay.game.background = (function () {
     Background.prototype.setscale = function (scale) {
         this.scale = scale;
         this.recalculatesize();
-
     }
 
     Background.prototype.onloaded = function () {
