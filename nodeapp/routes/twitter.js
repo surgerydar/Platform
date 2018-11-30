@@ -43,7 +43,18 @@ module.exports = function( passport, config, db ) {
     //
     console.log( 'setting twitter routes' );
     router.get('/login', passport.authenticate('twitter', {scope:['include_email=true']}) );
-    router.get('/callback', passport.authenticate('twitter', { successRedirect: '/homepage.html', failureRedirect: '/login' }));
+    //router.get('/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }));
+    router.get('/callback', passport.authenticate('twitter', { failureRedirect: '/login' }),
+               function (req, res) {
+                    var redirectTo = '/'; // Set default redirect value
+                    if (req.session.reqUrl) {
+                        redirectTo = req.session.reqUrl; // If our redirect value exists in the session, use that.
+                        delete req.session.reqUrl; // Once we've used it, dump the value to null before the redirect.
+                    }
+                    console.log( 'twitter callback : redirecting to : ' + redirectTo );
+                    res.redirect(redirectTo);
+                }
+              );
     //
     //
     //

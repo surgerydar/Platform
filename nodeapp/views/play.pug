@@ -1,0 +1,51 @@
+include includes/head.pug
+
+#canvascontainer( style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: white;" )
+    canvas( id="game.canvas" class="slider" width="1024" height="723" ) Your browser doesn't support HTML5 canvas
+#menu-backdrop
+#title-bar
+    img#title-logo( src="/images/bc-logo.png" )
+    #title-progress-container
+        span( style="vertical-align: middle;" ) TIME&nbsp;
+        progress#title-progress( value="0" )
+    img#title-menu( src="/images/logo-menu.png" )
+#play-bar
+    .play-bar-button-group
+        img.play-bar-button#play-bar-button-up( src="/images/arrow-up.png" )
+    .play-bar-button-group#play-bar-direction-buttons
+        img.play-bar-button#play-bar-button-left( src="/images/arrow-left.png" )
+        img.play-bar-button#play-bar-button-right( src="/images/arrow-right.png" )
+.main-menu#main-menu
+    .main-menu-item( id="menu.play" ) PLAY
+    if authorised
+        .main-menu-item( id="menu.edit" ) EDIT THIS GAME
+    .main-menu-item( id="menu.create" ) MAKE A GAME
+    .main-menu-item( id="menu.gallery" ) GALLERY
+    .main-menu-item( id="menu.people" ) PEOPLE
+    .main-menu-item( id="menu.help" ) HELP
+    .main-menu-item( id="menu.about" ) ABOUT
+    if authorised
+        .main-menu-item( id="menu.logout" ) LOGOUT
+    else
+        .main-menu-item( id="menu.login" ) LOGIN/SIGN UP
+script. 
+    (function(_id){
+        var canvas = document.getElementById("game.canvas");
+        if (canvas) {
+            //
+            //
+            //
+            var aspect = canvas.offsetWidth / canvas.offsetHeight;
+            canvas.width = Math.round(canvas.height * aspect);
+            //
+            //
+            //
+            if (_id === "create" || _id === undefined) {
+                var game = localplay.game.creategame(canvas);
+                localplay.game.leveleditor.createlevel(game);
+            } else {
+                var game = localplay.game.creategamewithlevel(canvas, _id);
+                localplay.game.controller.mobile.attachtogame(game);
+            }
+        }
+    })('#{levelid}');

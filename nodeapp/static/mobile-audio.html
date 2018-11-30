@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1" />
+        
+        <!-- apple standalone config -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <link rel="apple-touch-icon" href="appicons/icon32x32.png">
+        <link rel="apple-touch-icon" sizes="57x57" href="appicons/icon57x57.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="appicons/icon76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="appicons/icon120x120.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="appicons/icon152x152.png">
+        <link rel="apple-touch-icon" sizes="167x167" href="appicons/icon167x167.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="appicons/icon180x180.png">
+
+        <!-- android webapp config TODO: manifest -->
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <title>Platform</title>
+
+        <!-- styles -->
+        <link href="css/default.css" rel="stylesheet" />
+
+        <!-- supporting libraries -->
+        <script src="lib/mustache.js"></script>
+        <script src="lib/Box2dWeb-2.1.a.3.js"></script>
+        <script src="lib/swfobject.js"></script>
+        <script src="lib/MD5.js"></script>
+        <script src="lib/hammer.js"></script>
+
+        <!-- legacy objects -->
+        <script src="js/graphicsprimitives.js"></script>
+
+        <!-- app scripts -->
+        <script src="js/localplay.js"></script>
+        <script src="js/localplay.timer.js"></script>
+        <script src="js/localplay.domutils.js"></script>
+        <script src="js/localplay.log.js"></script>
+        <script src="js/localplay.datasource.js"></script>
+        <script src="js/localplay.imageprocessor.js"></script>
+        <script src="js/localplay.dialogbox.js"></script>
+        <script src="js/localplay.listview.js"></script>
+        <script src="js/localplay.menu.js"></script>
+        <script src="js/localplay.authentication.js"></script>
+        <script src="js/localplay.ratingpanel.js"></script>
+        <script src="js/localplay.objecteditor.js"></script>
+        <script src="js/localplay.world.js"></script>
+        <script src="js/localplay.sprite.js"></script>
+        <script src="js/localplay.game.js"></script>
+        <script src="js/localplay.game.gameplay.js"></script>
+        <script src="js/localplay.game.gamestate.js"></script>
+        <script src="js/localplay.game.background.js"></script>
+        <script src="js/localplay.game.behaviour.js"></script>
+        <script src="js/localplay.game.avatar.js"></script>
+        <script src="js/localplay.game.item.js"></script>
+        <script src="js/localplay.game.level.js"></script>
+        <script src="js/localplay.game.storyeditor.js"></script>
+        <script src="js/localplay.game.backgroundeditor.js"></script>
+        <script src="js/localplay.game.itemeditor.js"></script>
+        <script src="js/localplay.game.soundeditor.js"></script>
+        <script src="js/localplay.game.controller.js"></script>
+        <script src="js/localplay.game.controller.mobile.js"></script>
+        <script src="js/localplay.game.controller.preview.js"></script>
+        <script src="js/localplay.game.controller.player.js"></script>
+        <script src="js/localplay.game.controller.editor.js"></script>
+        <script src="js/localplay.game.controller.embedded.js"></script>
+        <script src="js/localplay.game.arcade.js"></script>
+        <script src="js/localplay.game.arcade.js"></script>
+        <script src="js/localplay.creator.js"></script>
+        <script src="js/localplay.game.avatareditor.js"></script>
+        <script src="js/localplay.game.layouteditor.js"></script>
+        <script src="js/localplay.game.thingeditor.js"></script>
+        <script src="js/localplay.game.leveleditor.js"></script>
+        <script src="js/localplay.upload.js"></script>
+
+        <script>
+            //
+            //
+            //
+            //var game = null;
+            function init() {
+                var searchTerm = document.querySelector('#search-term');
+                var searchResults = document.querySelector('#search-results');
+                if ( searchTerm ) {
+                    searchTerm.onkeydown = function(e) {
+                        var code = (e.keyCode ? e.keyCode : e.which);
+                        if (code == 13) { //Enter keycode                        
+                            e.preventDefault();
+                            var url = 'audio/search/' + escape(searchTerm.value);
+                            localplay.datasource.get(url,{},{
+                                datasourceonloadend: function(e) {
+                                    var xhr = e.target;
+                                    searchResults.innerHTML = '';
+                                    var results = '';
+                                    try {
+                                        
+                                        var response = JSON.parse(xhr.datasource.response);
+                                        for ( var i = 0; i < response.results.length; i++ ) {
+                                            //results += '<div style="color: black;">' + JSON.stringify(response.results[i]); + '</div>';
+                                            /*
+                                            results += 
+                                            '<div style="color: black;"> \
+                                                <h3>{audioname}</h3> \
+                                                <audio controls> \
+                                                    <source src="{audiosource}" type="/audio/{audiotype}"/> \
+                                                </audio> \
+                                            </div>'.replace('{audioname}', response.results[i].name ).replace('{audiosource}', response.results[i].download ).replace('{audiotype}', response.results[i].type );
+                                            */
+                                            results += 
+                                            '<div style="color: black;"> \
+                                                <h3>{audioname}</h3> \
+                                                <audio controls> \
+                                                    <source src="{audiosource}" type="/audio/{audiotype}"/> \
+                                                </audio> \
+                                            </div>'.replace('{audioname}', response.results[i].name ).replace('{audiosource}', response.results[i].previews['preview-hq-mp3'] ).replace('{audiotype}', 'mp3' );
+                                        }
+                                        /*
+                                        for ( var i = 0; i < response.length; i++ ) {
+                                            results += '<div style="color: black;">' + JSON.stringify(response[i]); + '</div>';
+                                        }
+                                        */
+                                    } catch (error) {
+                                    }
+                                    searchResults.innerHTML = results;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        </script>
+    </head>
+    <!-- <body class="gamecontainer" onload="init();"> -->
+    <body onload="init();">
+        <div id='search-results' class='listview' style='top: 48px;'></div>
+        <input id='search-term' type='text' />
+    </body>
+</html>

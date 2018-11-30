@@ -76,9 +76,9 @@ function NewBackgroundEditor() {
         <h3 style="display: inline-block; margin: 8px;">Background Images</h3>&nbsp;<form class="listviewsearch" > \
         <input type="search" class="listviewsearch" placeholder="name or tags"/> \
         <input type="submit" class="listviewsearch" value="Search" /></form> \
-        <img id="prevthis.medialibrarypage" class="listviewpagination" src="images/prev.png" /> \
+        <img id="prevthis.medialibrarypage" class="listviewpagination" src="/images/prev.png" /> \
         <div id="pagenumbersthis.medialibrary" class="listviewpagination"></div> \
-        <img id="nextthis.medialibrarypage" class="listviewpagination" src="images/next.png" /> \
+        <img id="nextthis.medialibrarypage" class="listviewpagination" src="/images/next.png" /> \
         </div> \
         <div class="listviewcontent"></div>';
     //

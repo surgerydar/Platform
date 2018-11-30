@@ -36,41 +36,41 @@ localplay.game.leveleditor = (function () {
     var createlevelsplash0 = '\
         <div class="splashcontainer"> \
             <div class="splashtext" style="height: 400px;">Intro one</div> \
-            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="images/icons/arrow-next-01.png" /> \
+            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="/images/icons/arrow-next-01.png" /> \
         </div> \
     ';
 
     var createlevelsplash1 = '\
         <div class="splashcontainer"> \
             <div class="splashtext" style="height: 100px;">Intro two</div> \
-            <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 5%;" src="images/icons/arrow-previous-01.png" /> \
-            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="images/icons/arrow-next-01.png" /> \
+            <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 5%;" src="/images/icons/arrow-previous-01.png" /> \
+            <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 5%;" src="/images/icons/arrow-next-01.png" /> \
         </div> \
     ';
 
     var createlevel = '\
     <div id="leveleditor.createlevel" class="fullscreen">\
         <div id="leveleditor.createlevel.menubar" class="menubar"> \
-           <div id="leveleditor.button.home" class="menubaritem"><img class="menubaritem" src="images/icons/home.png" /></div> \
-           <div id="leveleditor.createlevel.mainmenu" class="menubaritem"><img class="menubaritem" src="images/icons/menu-01.png" />&nbsp;Make new game level</div> <div id="leveleditor.createlevel.breadcrumb" class="menubaritem disabled"></div> \
+           <div id="leveleditor.button.home" class="menubaritem"><img class="menubaritem" src="/images/icons/home.png" /></div> \
+           <div id="leveleditor.createlevel.mainmenu" class="menubaritem"><img class="menubaritem" src="/images/icons/menu-01.png" />&nbsp;Make new game level</div> <div id="leveleditor.createlevel.breadcrumb" class="menubaritem disabled"></div> \
         </div> \
         <div class="createlevelcontainer"> \
             <div class="promptcontainer"> \
                 <div  id="leveleditor.createlevel.prompt" class="prompttext"></div> \
-                <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 25%;" src="images/icons/arrow-previous-01.png" /> \
-                <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 25%;" src="images/icons/arrow-next-01.png" /> \
+                <img id="leveleditor.button.prev" class="imagebutton" style="position: absolute; left: 16px; top: 25%;" src="/images/icons/arrow-previous-01.png" /> \
+                <img id="leveleditor.button.next" class="imagebutton" style="position: absolute; right: 16px; top: 25%;" src="/images/icons/arrow-next-01.png" /> \
             </div> \
             <div id="leveleditor.editormenu" class="editormenubar"> \
                 <div id="leveleditor.button.cancel" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Close \
                 </div> \
                 <div id="leveleditor.button.save" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/save.png" /> \
+                    <img class="menubaritem" src="/images/icons/save.png" /> \
                     &nbsp;Save \
                 </div> \
                 <div id="leveleditor.button.preview" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;Preview  \
                 </div> \
             </div> \
@@ -84,21 +84,21 @@ localplay.game.leveleditor = (function () {
         <div class="fullscreen" style="background-color: white;" > \
             <div id="leveleditor.editormenu" style="top: 0px;" class="editormenubar"> \
                <div id="leveleditor.button.home" class="menubaritem"> \
-                    <img class="menubaritem" src="images/icons/home.png" /> \
+                    <img class="menubaritem" src="/images/icons/home.png" /> \
                </div> \
                <div id="leveleditor.createlevel.mainmenu" class="menubaritem"> \
-                    <img class="menubaritem" src="images/icons/menu-01.png" />&nbsp;Edit game level\
+                    <img class="menubaritem" src="/images/icons/menu-01.png" />&nbsp;Edit game level\
                </div> <div id="leveleditor.createlevel.breadcrumb" class="menubaritem disabled"></div> \
                 <div id="leveleditor.button.cancel" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Close \
                 </div> \
                 <div id="leveleditor.button.save" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/save.png" /> \
+                    <img class="menubaritem" src="/images/icons/save.png" /> \
                     &nbsp;Save  \
                 </div> \
                 <div id="leveleditor.button.preview" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;Preview  \
                 </div> \
             </div> \
@@ -124,11 +124,11 @@ localplay.game.leveleditor = (function () {
             </p> \
             <div style="height: 42px; width: 380px">\
                 <div id="button.savelevel.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Cancel \
                 </div> \
                 <div id="button.savelevel.save" class="menubaritem" style="float: right; margin-right: 0px;" > \
-                    <img class="menubaritem" src="images/icons/save-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/save-01.png" /> \
                     &nbsp;Save \
                 </div> \
             </div> \
@@ -417,15 +417,12 @@ localplay.game.leveleditor = (function () {
             createlevelphase = i;
         }
         rendercreatelevelphase();
-        //
-        // 
-        //
     }
 
     function setbreadcrumb(text) {
         var breadcrumb = document.getElementById("leveleditor.createlevel.breadcrumb");
         if (breadcrumb) {
-            breadcrumb.innerHTML = text ? '<img class="menubaritem" src="images/icons/breadcrumb.png" />&nbsp;' + text : "";
+            breadcrumb.innerHTML = text ? '<img class="menubaritem" src="/images/icons/breadcrumb.png" />&nbsp;' + text : "";
         }
 
     }
@@ -731,7 +728,7 @@ localplay.game.leveleditor = (function () {
         //
         // TODO: sensible default
         //
-        var json = '{"background" : { "images" : [] } , "avatar" : { "image" : "images/drcrab.png", "position" : "150,650" } }';
+        var json = '{"background" : { "images" : [] } , "avatar" : { "image" : "/images/drcrab.png", "position" : "150,650" } }';
         game.newlevel(metadata, json);
         level = game.level;
         canvas = game.canvas;

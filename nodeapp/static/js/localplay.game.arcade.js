@@ -94,7 +94,7 @@ localplay.game.arcade = (function () {
                     //
                     // set breadcrumb
                     //
-                    listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;' + name;
+                    listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="/images/icons/breadcrumb.png">&nbsp;' + name;
                     //
                     // load arcade
                     //
@@ -129,9 +129,9 @@ localplay.game.arcade = (function () {
                     sessionStorage.removeItem("localplay.arcade");
                     sessionStorage.removeItem("localplay.arcade.level");
                 }
-                window.location = "play.html?id=" + item.data._id;
+                window.location = "/play/" + item.data._id;
             }, 12, "", null, "", null, arcademenu);
-        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;Latest';
+        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="/images/icons/breadcrumb.png">&nbsp;Latest';
     }
 
     return arcade;

@@ -40,11 +40,19 @@ localplay.game.storyeditor = (function () {
         var _this = this;
         this.level = level;
         //
+        //
+        //
+        var titleBar = document.querySelector('#title-bar');
+        var vOffset = 0;
+        if ( titleBar ) {
+            vOffset = titleBar.offsetTop + titleBar.offsetHeight;
+        }
+        //
         // container
         //
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = "0px";
+        this.container.style.top = vOffset + 'px';//"0px";
         this.container.style.left = "8px";
         this.container.style.bottom = "0px";
         this.container.style.right = "8px";
@@ -836,10 +844,10 @@ localplay.game.storyeditor = (function () {
         container.appendChild(StoryEditor.createTextSpan("&nbsp;on&nbsp;"));
         container.appendChild(StoryEditor.createVariableImage(0,
             [
-                "images/pickup1.png",
-                "images/pickup2.png",
-                "images/pickup3.png",
-                "images/pickup4.png"
+                "/images/pickup1.png",
+                "/images/pickup2.png",
+                "/images/pickup3.png",
+                "/images/pickup4.png"
             ]));
         //
         //

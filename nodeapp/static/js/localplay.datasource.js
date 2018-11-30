@@ -186,6 +186,7 @@ localplay.datasource = (function () {
         //
         // open request
         //
+        console.log('datasource.createrequest : ' + url + query);
         xhr.open(method, url + query, true);
         //
         //
@@ -249,7 +250,8 @@ localplay.datasource = (function () {
         var xhr = e.target;
         xhr.datasource.status = xhr.status;
         xhr.datasource.statustext = xhr.statusText;
-        xhr.datasource.response = responsetojson( xhr.response === undefined ? xhr.responseText : xhr.response );
+        xhr.datasource.responseText = xhr.response === undefined ? xhr.responseText : xhr.response;
+        xhr.datasource.response = responsetojson( xhr.datasource.responseText );
         //
         // inform delegate
         //

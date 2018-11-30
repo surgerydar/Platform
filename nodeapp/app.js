@@ -76,6 +76,22 @@ db.connect(
         app.use( '/audio', audio );
         let arcades = require('./routes/arcades')( passport.isAuthenticated, db );
         app.use( '/arcades', arcades );
+        let rating = require('./routes/rating')( passport.isAuthenticated, db );
+        app.use( '/rating', rating );
+        //
+        // ui
+        //
+        app.get('/play/:levelid', function (req, res) {
+			res.render('play',{authorised: req.user && req.isAuthenticated(), levelid:req.params.levelid });
+        });
+        app.get('/edit/:levelid', passport.isAuthenticated, function (req, res) { // TODO: include authentication
+			res.render('edit',{authorised: req.user && req.isAuthenticated(), levelid:req.params.levelid });
+        });
+        //
+        // ui templates
+        //
+        let templates = require('./routes/template')();
+        app.use( '/template', templates );
         //
         // admin
         //
@@ -100,6 +116,7 @@ db.connect(
         //
         console.log('configuring websocket router');
         let wsr = require('./websocketrouter');
+        /*
         //
         // connect authentication
         //
@@ -118,6 +135,7 @@ db.connect(
         console.log('chat');
         let chat = require('./chat');
         chat.setup(wsr,db);
+        */
         //
         // connect fileuploader
         //

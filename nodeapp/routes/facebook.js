@@ -44,16 +44,18 @@ module.exports = function( passport, config, db ) {
     //
     console.log( 'setting facebook routes' );
     router.get('/login', passport.authenticate('facebook', {scope:"email"}) );
-    router.get('/callback', passport.authenticate('facebook', { successRedirect: '/homepage.html', failureRedirect: '/login' }));
-    /* TODO: configurable redirect
-    router.get('/callback', passport.authenticate('facebook'), (req, res) => { 
-        if ( req.user && req.isAuthenticated() ) {
-            res.redirect( req.query.redirect || '/' );
-        } else {
-            res.redirect( '/login' );
-        }
-    });
-    */
+    //router.get('/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
+    router.get('/callback', passport.authenticate('facebook', { failureRedirect: '/login'  } ),
+               function (req, res) {
+                    var redirectTo = '/'; // Set default redirect value
+                    if (req.session.reqUrl) {
+                        redirectTo = req.session.reqUrl; // If our redirect value exists in the session, use that.
+                        delete req.session.reqUrl; // Once we've used it, dump the value to null before the redirect.
+                    }
+                    console.log( 'facebook callback : redirecting to : ' + redirectTo );
+                    res.redirect(redirectTo);
+                }
+              );
     //
     //
     //

@@ -181,7 +181,7 @@ select {
     -webkit-border-radius: 4px 0px 0px 4px;
     border-radius: 4px 0px 0px 4px;
 }
-
+/*
 input[type=range] {
     -webkit-appearance: none;
     height: 32px;
@@ -193,6 +193,7 @@ input[type=range] {
         -webkit-appearance: none;
         height: 32px;
         width: 32px;
+        border: none;
         background: url(../images/sliderthumb.png);
     }
 
@@ -209,7 +210,7 @@ input[type=range] {
         background: url(../images/sliderthumb.png);
         border: none;
     }
-
+*/
 input[type="checkbox"] {
     display:none;
 }
@@ -748,8 +749,27 @@ div.backgroundview {
        */
     }
 
+div.flexbackgroundview {
+    position: relative;
+    flex-shrink: 1;
+    align-self: stretch;
+    height: 40vh;
+    max-height: 40vh;
+    overflow-x: auto;
+    background-color: rgb(200, 200, 200);
+    white-space: nowrap;
+}
+
+    div.flexbackgroundview.over {
+        border: 4px dashed lightgrey;
+        /*
+       background-color: rgb(224, 224, 224);
+       */
+    }
+
 img.backgroundview {
-    height: 200px;
+    //height: 200px;
+    height: 100%;
     width: auto;
     transition: all 0.25s ease-in;
     -webkit-transition: all 0.25s ease-in;
@@ -775,7 +795,8 @@ img.backgroundview {
 div.backgroundviewitem {
     position: relative;
     display: inline-block;
-    margin-top: 16px;
+    height: 80%;
+    margin-top: 1%;
     cursor: pointer;
 }
 
@@ -851,6 +872,33 @@ canvas.layoutview {
     top: 0px;
     left: 0px;
     height: 240px;
+    margin: 0px;
+}
+
+div.flexlayoutview {
+    position: relative;
+    flex-shrink: 1;
+    align-self: stretch;
+    height: 40vh;
+    max-height: 40vh;
+    background-color: rgb(200, 200, 200);
+    border: none;
+    overflow-x: scroll;
+    overflow-y:hidden;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+    div.flexlayoutview.over {
+        border: 4px dashed lightgrey;
+    }
+
+canvas.flexlayoutview {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 80%;
     margin: 0px;
 }
 
@@ -1395,7 +1443,9 @@ div.fullscreen {
     top: 0px;
     left: 0px;
     right: 0px;
-    height: 900px;
+    /*height: 900px;
+    */
+    bottom: 0px;
 }
 
 @media all and (min-height : 768px) {
@@ -1520,7 +1570,7 @@ div.editormenubar {
 
 div.editorcontainer {
    position: absolute;
-   top: 152px;
+   top: 0px;
    left: 0px;
    bottom: 0px;
    right: 0px;
@@ -1557,6 +1607,13 @@ div.listview {
     overflow-y: auto;
 }
 
+div.flexlistview {
+    position: relative;
+    flex-grow: 1;
+    align-self: stretch;
+    overflow-y: auto;
+}
+
 div.listviewheader {
     position: absolute;
     top: 0px;
@@ -1584,10 +1641,11 @@ div.listviewcontent {
 div.listitem {
     position: relative;
     display: inline-block;
-    width: 285px;
-    height: 285px;
+    width: calc( 25vw - 1.1vw );
+    height: calc( 25vw - 1.1vw );
     background: rgba(0,0,0,0.6);
-    margin: 4px;
+    margin: 0.125vw;
+    overflow: hidden;
     color: white;
     font-size: 10px;
     font-weight: normal;
@@ -1637,35 +1695,23 @@ span.listitemheader {
 
 div.listitemfooter {
     position: absolute;
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-    height: 28px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    /*height: 28px;*/
+    padding: 4px;
+    background: rgba(0,0,0,0.6);
 }
 
 img.listitemimage {
     position: absolute;
-    top: 72px;
+    top: 0px;
     left: 0px;
-    bottom: 32px;
+    bottom: 0px;
     right: 0px;
     margin: auto;
     cursor: pointer;
-    max-height: 180px;
-    max-width: 240px;
     background-image: url( ../images/icons/transparency.png );
-}
-
-img.listitemimage {
-    position: absolute;
-    top: 72px;
-    left: 0px;
-    bottom: 32px;
-    right: 0px;
-    margin: auto;
-    cursor: pointer;
-    max-height: 180px;
-    max-width: 240px;
 }
 img.creatorlistitemimage {
     position: absolute;
@@ -1705,7 +1751,7 @@ a.listviewpagination {
 	height: 0;
 	border-left: 15px solid transparent;
 	border-right: 15px solid transparent;
-	border-bottom: 15px solid rgb( 255, 143, 33 );
+	border-bottom: 15px solid #0F467B;
 }
 
     .triangle-up.left {
@@ -1722,7 +1768,7 @@ a.listviewpagination {
 	height: 0;
 	border-left: 15px solid transparent;
 	border-right: 15px solid transparent;
-	border-top: 15px solid rgb( 255, 143, 33 );
+	border-top: 15px solid #0F467B;
 }
     .triangle-down.left {
         left: 0px;
@@ -1938,39 +1984,44 @@ progress[value]::-webkit-progress-value {
 #menu-backdrop {
     position: absolute;
     top: 0px;
-    left: 0px;
+    width: 0px;
     bottom: 0px;
     right: 0px;
     opacity: 0.0;
-    transition: opacity 500ms;
+    transition: all 500ms;
     background-image: linear-gradient(to left, rgba(65,174,228,1.0) , rgba(65,174,228,0.5));
 }
+#menu-backdrop.open {
+    width: 100%;
+    opacity: 1.0;
+}
 
-#main-menu {
+.main-menu {
     position: absolute;
-    top: 8px;
+    /*top: 8px;*/
+    top: calc( 10vh + 8px );
     bottom: 8px;
     right: 8px;
     width: 0px;
-    visibility: hidden;
+    opacity: 0.0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
     align-items: stretch;
-    
-    transition: width 500ms;
+    font-family: BritishCouncilSansW29-Rg;   
+    overflow-y: auto;
+    transition: all 500ms;
 }
 
-#main-menu.open {
-    visibility: visible;
-    width: 33vw;
-    
-    transition: width 500ms;
+.main-menu.open {
+    width: 50vw;
+    opacity: 1.0;
+    transition: all 500ms;
 }
 
 .main-menu-item {
     height: 10vh;
-    flex-grow: 1;
+    flex-grow: 0;
     color: white;
     background-color: #12467B;
     text-align: center;
@@ -1995,25 +2046,28 @@ progress[value]::-webkit-progress-value {
 @media only screen and (orientation:portrait){
 
     #title-bar {
-        height: 20vh;
+        height: 10vh;
         flex-wrap: wrap;
     }
     #title-logo {
         height: auto;
         width: 45vw;
-        align-self: flex-start;
+        align-self: center;
     }
     #title-menu {
         height: auto;
         width: 45vw;
-        align-self: flex-start;
+        align-self: center;
     }
     #title-progress-container {
         order: 2;
         width: 100vw;
         align-self:center;
     }
-    #main-menu.open {
+    .main-menu {
+        top: calc( 20vh + 8px );
+    }
+    .main-menu.open {
         width: 75vw;
     }
     .main-menu-item {
@@ -2022,4 +2076,325 @@ progress[value]::-webkit-progress-value {
     #play-bar {
         height: 20vw;
     }
+}
+/*
+
+    new home page
+
+*/
+#homepage-content {
+    position: absolute;
+    top: 20vh;
+    left: 10vw;
+    bottom: 0px;
+    right: 10vw;
+    overflow: auto;
+    color: white;
+    background-color: #41AEE4;
+}
+
+#homepage-header {
+    font-weight: 900;
+    font-size: 48px;
+    white-space: nowrap;
+}
+
+#homepage-body {
+    font-size: 32px;
+}
+
+#homepage-body > a {
+    color: white;
+    background-color: transparent;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+/*
+
+    new editor ui
+
+*/
+#editor-container {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+#editor-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 2 2 0;
+    overflow: hidden;
+    background-color: white;
+}
+
+#editor-image {
+    --brightness: 0.5;
+    --contrast: 0.5;
+    --saturation: 0.5;
+    --rotation: 1.0;
+    --scale: 0.25;
+
+    display: block;
+    filter: brightness(var(--brightness)) contrast(var(--contrast)) saturate(var(--saturation));
+    transform: rotate(calc(1deg * ( -180.0 + (360.0 * var(--rotation))))) scale(calc(( 0.5 + ( 1.5 * var(--scale)))));
+}
+
+#editor-toolbox {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#editor-tools {
+    padding: 1vw;
+    flex: 1 1 0;    
+    background-color: dimgray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+#editor-tools-titlebar {
+    height: 64;
+    flex: none;
+}
+
+#editor-tools-grid {
+    flex: 1 1 0;  
+    
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    align-content: flex-end;
+}
+
+.editor-tool {
+    width: 5vw;
+    height: 5vw;
+    margin: 1vw;
+    border: 1px solid white;
+    background-size: cover;
+}
+
+.editor-tool.selected {
+    border-color: red;
+}
+
+#editor-tool-options {
+    display: flex;
+    flex-direction: column;
+    padding: 1vw;
+    flex: 1 1 0; 
+    min-height: 50%;
+    background-color: lightgray;
+}
+
+.horizontal-option-container {
+    height: 5vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.vertical-option-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1 1 0;
+    align-self: stretch;
+}
+
+.pen {
+    margin: 1vw;
+    background-color: white;
+}
+
+.editor-button {
+    width: 5vw;
+    height: 5vw;
+    margin: 1vw;
+    color: white;
+    background-color: dimgray;
+    border-radius: 2.5vw;
+    text-align: center;
+    line-height: 5vw;
+}
+
+
+input.editor[type=range] {
+    -webkit-appearance: none;
+    height: 5vw;
+    
+    border-radius: 2.5vw;
+    background-color: white;
+    
+    flex: none;
+    align-self: stretch;
+    
+    --adjustment: 0.5;
+}
+
+
+    input.editor[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 5vw;
+        width: 5vw;
+        border: none;
+        background-repeat: no-repeat;
+        background-position: center; 
+        background-size: 5vw 5vw;
+        background-image: url(../images/sliderthumb.png);
+        -webkit-user-select: all;  /* Chrome 49+ */
+        -moz-user-select: all;     /* Firefox 43+ */
+        -ms-user-select: all;      /* No support yet */
+        user-select: all;          /* Likely future */      
+    }
+
+    input.editor.brightness[type=range]::-webkit-slider-thumb {
+        filter: brightness(var(--adjustment));
+        background-image: url(../images/tools/BrightnessIcon.svg);
+    }
+
+    input.editor.contrast[type=range]::-webkit-slider-thumb {
+        filter: contrast(var(--adjustment));
+        background-image: url(../images/tools/ContrastIcon.svg);
+    }
+
+    input.editor.saturation[type=range]::-webkit-slider-thumb {
+        filter: saturate(var(--adjustment));
+        background-image: url(../images/tools/SaturationIcon.svg);
+    }
+
+    input.editor.rotation[type=range]::-webkit-slider-thumb {
+        transform: rotate(calc((-180.0 + (360.0 * var(--adjustment))) * 1deg));
+        background-image: url(../images/tools/RotateIcon.svg);
+    }
+
+    input.editor.scale[type=range]::-webkit-slider-thumb {
+        transform: scale(calc((0.5 + (0.5 * var(--adjustment)))));
+        background-image: url(../images/tools/ScaleIcon.svg);
+    }
+
+    input.editor[type=range]::-moz-range-track {
+        height: 32px;
+        background-image: url(../images/slidertrack.svg);
+        border: none;
+    }
+
+    input.editor[type=range]::-moz-range-thumb {
+        -webkit-appearance: none;
+        height: 5vw;
+        width: 5vw;
+        background-repeat: no-repeat;
+        background-position: center; 
+        background-size: 5vw 5vw;
+        background-image: url(../images/sliderthumb.png);
+        border: none;
+    }
+
+    input.editor.brightness[type=range]::-moz-range-thumb {
+        filter: brightness(var(--adjustment));
+        background-image: url(../images/tools/BrightnessIcon.svg);
+    }
+
+    input.editor.contrast[type=range]::-moz-range-thumb {
+        filter: contrast(var(--adjustment));
+        background-image: url(../images/tools/ContrastIcon.svg);
+    }
+
+    input.editor.saturation[type=range]::-moz-range-thumb {
+        filter: saturate(var(--adjustment));
+        background-image: url(../images/tools/ContrastIcon.svg);
+    }
+
+    input.editor.rotation[type=range]::-moz-range-thumb {
+        transform: rotate(calc(var(--adjustment) * 1deg));
+        background-image: url(../images/tools/RotateIcon.svg);
+    }
+
+    input.editor.scale[type=range]::-moz-range-thumb {
+        transform: scale(calc(var(--adjustment) / 100.0));
+        background-image: url(../images/tools/ScaleIcon.svg);
+    }
+
+
+@media only screen and (orientation:portrait) {
+    #editor-container {
+        flex-direction: column;
+    }
+    #editor-toolbox {
+        flex-direction: row;
+    }
+    .editor-tool {
+        width: 9vw;
+        height: 9vw;
+        margin: 1vw;
+    }
+    .editor-button {
+        width: 9vw;
+        height: 9vw;
+        margin: 1vw;
+    }
+}
+
+/*
+    new tools
+*/
+#tool-slider {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    height: 64px;
+    overflow: hidden;
+    background-color: rgba( 0, 0, 0, .5 );
+}
+
+#tool-slider-left {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 64px;
+    overflow: hidden;
+    
+    background-image: url(../images/arrow-left.png );
+    background-size: contain;
+    background-repeat: no-repeat;  
+}
+
+#tool-slider-right {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 64px;
+    overflow: hidden;
+    
+    background-image: url(../images/arrow-right.png );
+    background-size: contain;
+    background-repeat: no-repeat;  
+}
+
+.tool-slider-page {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
 }

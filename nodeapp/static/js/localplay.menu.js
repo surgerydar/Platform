@@ -54,28 +54,31 @@ localplay.menu = (function () {
         */
     var template =
         '{{#items}} \
-            <div class="menuitem" id="menuitem.{{id}}">{{name}}</div> \
+            <div class="main-menu-item" id="menuitem.{{id}}">{{name}}</div> \
         {{/items}}';
     //
     //
     //
     menu.attachmenu = function (button,items,callback,appendlogin,sticky) {
         var menu = document.createElement( "div" );
-        menu.classList.add("menucontainer");
-        menu.style.position = "absolute";
+        //menu.classList.add("menucontainer");
+        menu.classList.add("main-menu");
+        //menu.style.position = "absolute";
         var p = localplay.domutils.elementPosition(button);
-        menu.style.top = (p.y + button.offsetHeight + 8) + "px";
-        menu.style.left = p.x + "px";
-        menu.style.visibility = sticky ? "visible" : "hidden";
+        //menu.style.top = (p.y + button.offsetHeight + 8) + "px";
+        //menu.style.left = p.x + "px";
+        //menu.style.visibility = sticky ? "visible" : "hidden";
         menu.innerHTML = Mustache.render(template, { items: items });
         document.body.appendChild(menu);
         //
         // hook events
         //
-        for (var i = 0; i < menu.childNodes.length; i++) {
-            menu.childNodes[ i ].onclick = function (e) {
+        for (var i = 0; i < menu.children.length; i++) {
+            menu.children[ i ].onclick = function (e) {
                 callback(this.id);
-                if ( !sticky ) menu.style.visibility = "hidden";
+                //if ( !sticky ) menu.style.visibility = "hidden";
+                if ( !sticky ) menu.classList.remove('open');
+                
             }
         }
         //
@@ -84,8 +87,9 @@ localplay.menu = (function () {
         if (appendlogin) {
             var login = document.createElement("div");
             login.id = "button.login";
-            login.classList.add("menuitem");
-            //login.innerHTML = '<img class="menuitem" src="images/blank.png" />' + (localplay.authentication.isauthenticated() ? "LOGOUT" : "LOGIN");
+            //login.classList.add("menuitem");
+            login.classList.add("main-menu-item");
+            //login.innerHTML = '<img class="menuitem" src="/images/blank.png" />' + (localplay.authentication.isauthenticated() ? "LOGOUT" : "LOGIN");
             login.innerHTML = (localplay.authentication.isauthenticated() ? "LOGOUT" : "LOGIN");
             login.onclick = function (e) {
                 if (localplay.authentication.isauthenticated()) {
@@ -104,7 +108,8 @@ localplay.menu = (function () {
             //
             var admin = document.createElement("div");
             admin.id = "button.admin";
-            admin.classList.add("menuitem");
+            //admin.classList.add("menuitem");
+            admin.classList.add("main-menu-item");
             //admin.style.visibitity = "hidden";
             admin.style.display = "none";
             admin.innerHTML = "ADMIN";
@@ -118,8 +123,9 @@ localplay.menu = (function () {
         //
         var thecloser = function (e) {
             if (e.target != button && !localplay.domutils.isChild(menu, e.target)) {
-                if (menu.style.visibility == "visible") {
-                    menu.style.visibility = "hidden";
+                if (menu.classList.contains('open')) {
+                    //backdrop.classList.remove("open");
+                    menu.classList.remove('open');
                     callback("menu.close");
                 }
             }
@@ -129,6 +135,7 @@ localplay.menu = (function () {
         //
         //
         button.onclick = function(e) {
+            /*
             if (menu.style.visibility == "visible") {
                 menu.style.visibility = "hidden";
                 callback("menu.close");
@@ -139,6 +146,16 @@ localplay.menu = (function () {
                 menu.style.visibility = "visible";
                 callback("menu.open");
                 window.addEventListener("mousedown", thecloser, true);
+            }
+            */
+            if ( menu.classList.contains('open') ) {
+                //backdrop.classList.remove("open");
+                menu.classList.remove('open');
+                callback("menu.close");
+            } else {
+                //backdrop.classList.add("open");
+                menu.classList.add('open');
+                callback("menu.open");
             }
         }
         return menu;

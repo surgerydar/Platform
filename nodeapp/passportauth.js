@@ -44,7 +44,7 @@ module.exports = function( app, db ) {
         if ( req.user && req.isAuthenticated() ) {
             res.json( { status: 'OK', user: req.user });
         } else {
-            res.json( { status: 'ERROR', message: 'insufficient privalages' });
+            res.json( { status: 'ERROR', error: 'you have to be logged in' });
         }
         
     });
@@ -60,10 +60,12 @@ module.exports = function( app, db ) {
                 if( req.xhr ) {
                     // ajax requests get a brief response
                     console.log( 'rejecting xhr request' );
-                    res.status(401).json({ status : 'ERROR', message : 'no longer logged in' });
+                    //res.status(401).json({ status : 'ERROR', message : 'you have to be logged in' });
+                    res.json({ status : 'ERROR', error : 'you have to be logged in' });
                 } else {
                     // all others are redirected to login
                     console.log( 'redirecting to login' );
+                    req.session.reqUrl = req.originalUrl;
                     res.redirect('/login');
                 }
             }

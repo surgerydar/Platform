@@ -1,0 +1,5 @@
+p PENCIL
+p Select pencil size and draw to make it opaque
+.horizontal-option-container
+    each dim in [ 4, 8, 16, 32, 64 ]
+        .pen( style= 'width:' + dim + 'px; height:' + dim + 'px; border-radius:' + ( dim / 2 ) + 'px;' )

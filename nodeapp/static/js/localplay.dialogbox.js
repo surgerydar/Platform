@@ -85,7 +85,7 @@ localplay.dialogbox = (function () {
             this.prompt = document.createElement("div");
             this.prompt.classList.add("menubaritem");
             this.prompt.classList.add("disabled");
-            //this.prompt.innerHTML = '<img class="menubaritem" src="images/icons/breadcrumb.png" />&nbsp;' + properties.prompt;
+            //this.prompt.innerHTML = '<img class="menubaritem" src="/images/icons/breadcrumb.png" />&nbsp;' + properties.prompt;
             this.prompt.innerHTML = properties.prompt;
             this.menubar.appendChild(this.prompt);
 
@@ -101,7 +101,7 @@ localplay.dialogbox = (function () {
             close.classList.add("menubaritem");
             close.classList.add("right");
             close.innerHTML = '\
-                <img class="menubaritem" src="images/icons/close-cancel-01.png" />&nbsp;Close \
+                <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close \
             ';
             /*
             var close = new Image();
@@ -111,7 +111,7 @@ localplay.dialogbox = (function () {
             close.style.right = "8px";
             close.style.width = "32px";
             close.style.height = "32px";
-            close.src = "images/icons/close-cancel-01.png";
+            close.src = "/images/icons/close-cancel-01.png";
             */
             close.onclick = function (e) {
                 closebuttonaction(_this);
@@ -167,7 +167,7 @@ localplay.dialogbox = (function () {
                     button.className = "menubaritem";
                     //button.innerHTML = properties.buttons[i].content;
                     button.innerHTML = '\
-                        <img class="menubaritem" src="images/icons/add-01.png" />&nbsp; \
+                        <img class="menubaritem" src="/images/icons/add-01.png" />&nbsp; \
                     ' + properties.buttons[i].content;
                     button.onclick = properties.buttons[i].action;
                     this.toolbar.appendChild(button);
@@ -208,10 +208,10 @@ localplay.dialogbox = (function () {
         if (!this.prompt) return;
         this.prompt.classList.remove("disabled");
         if (this.prompt.firstChild.tagName === "IMG") {
-            this.prompt.firstChild.src = "images/icons/menu-01.png";
+            this.prompt.firstChild.src = "/images/icons/menu-01.png";
         } else {
             var title = this.prompt.innerHTML;
-            this.prompt.innerHTML = '<img class="menubaritem" src="images/icons/menu-01.png" />&nbsp;' + title;
+            this.prompt.innerHTML = '<img class="menubaritem" src="/images/icons/menu-01.png" />&nbsp;' + title;
         }
         //
         // create breadcrumb

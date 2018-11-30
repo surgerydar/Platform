@@ -38,9 +38,9 @@ localplay.game.controller.embedded = (function () {
     //
     /*
     var pause = new Image();
-    pause.src = "images/pause.png";
+    pause.src = "/images/pause.png";
     var play = new Image();
-    play.src = "images/run.png";
+    play.src = "/images/run.png";
     */
     //
     // TODO: export these to templates
@@ -59,10 +59,10 @@ localplay.game.controller.embedded = (function () {
     /*
     var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/> \
-                <img id="embedded.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="embedded.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="embedded.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/rerun.png" /> \
-                <img id="embedded.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/run.png" />';
+                <img id="embedded.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
+                <img id="embedded.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
+                <img id="embedded.replay" title="play again" class="imagebutton" style="margin: 4px;" src="/images/rerun.png" /> \
+                <img id="embedded.next" title="next level" class="imagebutton" style="margin: 4px;" src="/images/run.png" />';
     */
     var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/> \
@@ -86,9 +86,9 @@ localplay.game.controller.embedded = (function () {
 
     var playbar = '\
         <div class="playbargroup">\
-            <img id="embedded.pause" class="imagebutton playbaritem" src="images/icons/pause-game-01.png" /><br />\
-            <img id="embedded.play" class="imagebutton playbaritem" src="images/icons/play-01.png" /><br />\
-            <img id="embedded.replay" class="imagebutton playbaritem" src="images/icons/reload-game-01.png" />\
+            <img id="embedded.pause" class="imagebutton playbaritem" src="/images/icons/pause-game-01.png" /><br />\
+            <img id="embedded.play" class="imagebutton playbaritem" src="/images/icons/play-01.png" /><br />\
+            <img id="embedded.replay" class="imagebutton playbaritem" src="/images/icons/reload-game-01.png" />\
         </div>\
     ';
 

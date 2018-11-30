@@ -5,6 +5,7 @@ module.exports = function( authentication, db ) {
     //
     //
     //
+    console.log( 'setting arcade routes' );
     router.get( '/:name', function (req, res) {
         var name    = req.params.name;
         var filter  = req.query.filter;

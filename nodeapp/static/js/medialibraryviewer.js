@@ -45,11 +45,11 @@ MediaLibraryViewer.prototype.setup = function (bounds, library) {
     //
     var _this = this;
     this.view.bounds = bounds;
-    this.leftbutton = new Button('{ "images" : [ "images/medialibraryleftbutton-up.png", "images/medialibraryleftbutton-down.png", "images/medialibraryleftbutton-over.png" ] }');
+    this.leftbutton = new Button('{ "images" : [ "/images/medialibraryleftbutton-up.png", "/images/medialibraryleftbutton-down.png", "/images/medialibraryleftbutton-over.png" ] }');
     this.leftbutton.view.bounds.height = 128;
     this.leftbutton.view.bounds.width = 48;
     this.leftbutton.action[Button.state.down] = function () { _this.startscrolling('left'); };
-    this.rightbutton = new Button('{ "images" : [ "images/medialibraryrightbutton-up.png", "images/medialibraryrightbutton-down.png", "images/medialibraryrightbutton-over.png" ] }');
+    this.rightbutton = new Button('{ "images" : [ "/images/medialibraryrightbutton-up.png", "/images/medialibraryrightbutton-down.png", "/images/medialibraryrightbutton-over.png" ] }');
     this.rightbutton.view.bounds.height = 128;
     this.rightbutton.view.bounds.width = 48;
     this.rightbutton.view.bounds.x = bounds.width - 48;

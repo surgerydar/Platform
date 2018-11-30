@@ -64,7 +64,7 @@ localplay.game.item = (function () {
         this.type = type;
         this.homeposition = properties.position;
         this.currentposition = new Point(this.homeposition.x,this.homeposition.y);
-        this.image = properties.image;
+        this.image = localplay.mediaurl( localplay.normaliseurl(properties.image) );
         this.scale = properties.scale ? parseFloat(properties.scale) : 1.0;
         this.rotation = properties.rotation ? parseFloat(properties.rotation) : 0.0;
         this.zindex = properties.zindex ? parseInt(properties.zindex) : 0;
@@ -94,7 +94,7 @@ localplay.game.item = (function () {
             // default audio for pickup, obstacle and goal
             //
             if (this.type === "pickup" || this.type === "obstacle" || this.type === "goal") {
-                properties.audio = { id: 0, name: this.type, type: "effect", mp3: "audio/" + this.type + ".mp3", ogg: "audio/" + this.type + ".ogg" };
+                properties.audio = { id: 0, name: this.type, type: "effect", mp3: "/audio/" + this.type + ".mp3", ogg: "/audio/" + this.type + ".ogg" };
             }
         }
         if (properties.audio) {
@@ -274,12 +274,12 @@ localplay.game.item = (function () {
             <p /> \
             <img  id="item.property.image" class"imagebutton backgroundgrid" style="height: auto; max-width: 200px; padding: 4px;" src="{{image}}" /> \
             <div id="item.property.changeimage" class="menubaritem" style="margin-left: 0px;"> \
-                <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change image \
+                <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change image \
             </div> \
             <p /> \
             <audio id="item.property.audio" controls="true" style="width: 200px;" /><br /> \
             <div id="item.property.changeaudio" class="menubaritem" style="margin-left: 0px;"> \
-                <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change collision sound \
+                <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change collision sound \
             </div> \
         </div> \
         <div id="itemeditor.right" style="display: inline-block; vertical-align: top; min-width: 512px; min-height: 400px; padding: 8px; white-space: nowrap;"> \
@@ -336,7 +336,7 @@ localplay.game.item = (function () {
     }
 
     GameItem.prototype.initialiseeditor = function () {
-    var _this = this;
+        var _this = this;
         //
         // setup item type
         //
@@ -418,6 +418,7 @@ localplay.game.item = (function () {
                     //
                     // TODO: if there are no other instances of the item's original media then remove all rules associated with media, should be accompanied by confirmation dialog
                     //
+                    console.log( 'localplay.game.item.changeimage : url : ' + item.data.url );
                     image.src = item.data.url;
 
                 }, 20, "",

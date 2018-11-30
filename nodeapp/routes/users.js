@@ -3,7 +3,7 @@ var router = express.Router()
 
 module.exports = function( authentication, db ) {
     //
-    // levels routes
+    // users routes
     //
     console.log( 'setting users routes' );
     router.get( '/', function (req, res) {

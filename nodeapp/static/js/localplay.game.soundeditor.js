@@ -68,11 +68,11 @@ localplay.game.soundeditor = (function () {
                     </div>\
                     <div style="height: 42px; width: 100%;">\
                         <div id="button.audiodialog.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                            <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                            <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                             &nbsp;Cancel \
                         </div> \
                         <div id="button.audiodialog.save" class="menubaritem" style="float: right;" > \
-                            <img class="menubaritem" src="images/icons/save-01.png" /> \
+                            <img class="menubaritem" src="/images/icons/save-01.png" /> \
                             &nbsp;Save \
                         </div> \
                     </div> \
@@ -293,15 +293,15 @@ localplay.game.soundeditor = (function () {
     var soundeditortemplate = '\
             <p><audio controls id="soundeditor.music.player" src="{{music}}"></audio> \
             <div id="button.soundeditor.music" class="menubaritem"> \
-                <img id="" class="menubaritem" src="images/icons/add-01.png" />&nbsp;Background music \
+                <img id="" class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Background music \
             </div></p>\
             <p><audio controls id="soundeditor.winsound.player" src="{{winsound}}"></audio> \
             <div id="button.soundeditor.winsound" class="menubaritem"> \
-                <img id="" class="menubaritem" src="images/icons/add-01.png" />&nbsp;Sound for winners \
+                <img id="" class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Sound for winners \
             </div></p>\
             <p><audio controls id="soundeditor.losesound.player" src="{{loosesound}}"></audio> \
             <div id="button.soundeditor.losesound" class="menubaritem"> \
-                <img id="" class="menubaritem" src="images/icons/add-01.png" />&nbsp;Sound for losers \
+                <img id="" class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Sound for losers \
             </div></p>\
     ';
     //

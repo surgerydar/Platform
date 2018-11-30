@@ -390,9 +390,9 @@ localplay.domutils = (function () {
     domutils.getTypeForAudio = function () {
         var audio = new Audio();
 
-        if (audio.canPlayType("audio/mpeg")) {
+        if (audio.canPlayType("/audio/mpeg")) {
             return "mp3";
-        } else if (audio.canPlayType("audio/ogg")) {
+        } else if (audio.canPlayType("/audio/ogg")) {
             return "ogg";
         }
 

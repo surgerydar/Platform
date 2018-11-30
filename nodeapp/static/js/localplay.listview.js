@@ -36,12 +36,12 @@ localplay.listview = (function () {
     //
     listview.editablecontainer = '\
         <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="images/icons/arrow-previous-02.png" /> \
+            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
             <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="images/icons/arrow-next-02.png" /> \
+            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
             <input type="search" class="listviewsearch" placeholder="creator, name or tags"/> \
             <div id="{{prefix}}.localplay.addlistitem" class="menubaritem" style="float: right;"> \
-                <img class="menubaritem" id="localplay.addlistitem" src="images/icons/add-01.png" />\
+                <img class="menubaritem" id="localplay.addlistitem" src="/images/icons/add-01.png" />\
                 {{{addlabel}}} \
             </div> \
         </div> \
@@ -50,9 +50,9 @@ localplay.listview = (function () {
 
     listview.container = '\
          <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="images/icons/arrow-previous-02.png" /> \
+            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
             <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="images/icons/arrow-next-02.png" /> \
+            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
             <input type="search" class="listviewsearch" placeholder="creator, name or tags" value="{{filter}}"/> \
         </div> \
         <div class="listviewcontent"></div>\
@@ -63,7 +63,7 @@ localplay.listview = (function () {
         <img class="listitemthumbnail" src="{{thumbnail}}" /> \
         <div class="listitemcreator">by <b>{{creator}}</b></div> \
         <div class="listitemtags">{{tags}}</div>';
-
+    /*
     listview.contenttemplate =
         '{{#rows}} \
         <div id="item.{{_id}}" class="listitem"> \
@@ -73,6 +73,20 @@ localplay.listview = (function () {
             </div> \
             <img id="item.image.{{_id}}" class="listitemimage" src="{{thumbnail}}" /> \
             <div class="listitemfooter">{{tags}}</div> \
+        </div> \
+        {{/rows}} \
+        {{^rows}} \
+            <h1>No Entries</h1> \
+        {{/rows}}';
+    */
+    listview.contenttemplate =
+        '{{#rows}} \
+        <div id="item.{{_id}}" class="listitem"> \
+            <img id="item.image.{{_id}}" class="listitemimage" src="{{thumbnail}}" /> \
+            <div class="listitemfooter"> \
+                <span class="listitemheader">{{name}}</span>\
+                <br />by&nbsp;{{creator}} \
+            </div> \
         </div> \
         {{/rows}} \
         {{^rows}} \
@@ -204,9 +218,20 @@ localplay.listview = (function () {
             //
             this.updatePagination();
             //
-            // render list
+            // preprocess rows
             //
             var rows = this.source.getRows();
+            for (var i = 0; i < rows.length; i++) {
+                if ( rows[ i ].thumbnail ) {
+                    rows[ i ].thumbnail = localplay.normaliseurl(rows[ i ].thumbnail);
+                }
+                if ( rows[ i ].url ) {
+                    rows[ i ].url = localplay.normaliseurl(rows[ i ].url);
+                }
+            }
+            //
+            // render list
+            //
             this.content.innerHTML = Mustache.render(this.template, { rows: rows });
             //
             // process items
@@ -306,7 +331,7 @@ localplay.listview = (function () {
             button.style.position = "absolute";
             button.style.top = "8px";
             button.style.right = "8px";
-            button.src = "images/icons/delete-05.png";
+            button.src = "/images/icons/delete-05.png";
             button.onclick = function (e) {
                 _this.ondelete(item);
             }
@@ -321,7 +346,7 @@ localplay.listview = (function () {
             button.style.position = "absolute";
             button.style.top = "8px";
             button.style.right = ( offset + 8 ) + "px";
-            button.src = "images/icons/flag-01.png";
+            button.src = "/images/icons/flag-01.png";
             button.onclick = function (e) {
                 _this.onflag(item);
             }
@@ -333,12 +358,13 @@ localplay.listview = (function () {
         //
         var image = document.getElementById("item.image." + data._id);
         if (image) {
+            image.setAttribute("draggable", "true");
             image.onclick = function (e) {
                 _this.onselect(item);
             }
             image.ondragstart = function (e) {
                 e.dataTransfer.effectAllowed = 'copyLink';
-                e.dataTransfer.setData('Text', data.url);
+                e.dataTransfer.setData('Text', localplay.normaliseurl(data.url));
             }
         }
 
@@ -431,7 +457,7 @@ localplay.listview = (function () {
         //
         if (data.deletecommand !== undefined) {
             var image = new Image();
-            image.src = "images/delete.png";
+            image.src = "/images/delete.png";
             image.className = "listitemdelete";
             image.deletecommand = data.deletecommand;
             image.source = this.parent.source;
@@ -453,7 +479,7 @@ localplay.listview = (function () {
         //
         if (data.thumbnail !== undefined) {
             var image = new Image();
-            image.src = data.thumbnail;
+            image.src = localplay.normaliseurl(data.thumbnail);
             image.className = "listitemthumbnail";
             image.showcommand = data.showcommand;
             image.style.visibility = "hidden";
@@ -470,16 +496,17 @@ localplay.listview = (function () {
             };
             image.ondragstart = function (e) {
                 e.dataTransfer.effectAllowed = 'copyLink';
-                e.dataTransfer.setData('Text', _this.data.url !== undefined ? _this.data.url : _this.data.thumbnail);
+                e.dataTransfer.setData('Text', localplay.normaliseurl(_this.data.url !== undefined ? _this.data.url : _this.data.thumbnail ));
                 ListViewItem.dragStart.set(e.offsetX, e.offsetY);
                 localplay.log("startx=" + ListViewItem.dragStart.x + " starty=" + ListViewItem.dragStart.y);
             };
             this.view.appendChild(image);
         } else if (data.url !== undefined) {
             var image = new Image();
-            image.src = data.url;
+            image.src = localplay.normaliseurl(data.url);
             image.className = "listitemthumbnail";
             image.style.visibility = "hidden";
+            image.setAttribute("draggable", "true");
             image.onload = function (e) {
                 localplay.domutils.fitImage(e.target, 32.0, 8.0, 240.0, 200.0);
                 e.target.style.visibility = _this.parent.content.style.visibility;
@@ -496,7 +523,7 @@ localplay.listview = (function () {
             image.ondragstart = function (e) {
                 localplay.domutils.fixEvent(e);
                 e.dataTransfer.effectAllowed = 'copyLink';
-                e.dataTransfer.setData('Text', _this.data.url);
+                e.dataTransfer.setData('Text', localplay.normaliseurl(_this.data.url));
                 ListViewItem.dragStart.set(e.offsetX, e.offsetY);
                 localplay.log("startx=" + ListViewItem.dragStart.x + " starty=" + ListViewItem.dragStart.y);
             };
@@ -706,7 +733,6 @@ localplay.listview = (function () {
         if (menu) {
             container.breadcrumb = dialog.attachmenu(menu.items, menu.callback);
         }
-
         container.controller = new ListView(container.id, contents, limit, filter, itemtemplate, postprocessor);
         container.prefix = prefix;
         container.controller.onselect = function (item) {
@@ -731,7 +757,7 @@ localplay.listview = (function () {
                 addcontainer.id = prefix + ".localplay.addlistitem";
                 addcontainer.classList.add("menubaritem");
                 addcontainer.classList.add("right");
-                addcontainer.innerHTML = '<img class="menubaritem" src="images/icons/add-01.png" />&nbsp;' + addlabel;
+                addcontainer.innerHTML = '<img class="menubaritem" src="/images/icons/add-01.png" />&nbsp;' + addlabel;
                 addcontainer.onclick = function () {
                     onadd(container.controller);
                 };

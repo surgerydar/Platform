@@ -42,7 +42,8 @@ localplay.game.level = (function () {
         loading: "loading",
         ready: "ready",
         playing: "playing",
-        done: "done"
+        done: "done",
+        error: "error"
     };
     //
     //
@@ -341,7 +342,7 @@ localplay.game.level = (function () {
         // default audio
         //
         if (this.music == null) {
-            this.music = { id: 0, type: "music", name: "music", mp3: "audio/music.mp3", ogg: "audio/music.ogg" };
+            this.music = { id: 0, type: "music", name: "music", mp3: "/audio/music.mp3", ogg: "/audio/music.ogg" };
         }
         try {
             this.musicplayer = new Audio();
@@ -356,7 +357,7 @@ localplay.game.level = (function () {
             //localplay.log("GameItem : unable to load audio '" + this.musicplayer.src + "'");
         }
         if (this.winsound == null) {
-            this.winsound = { id: 0, type: "effect", name: "effect", mp3: "audio/cheer.mp3", ogg: "audio/cheer.ogg" };
+            this.winsound = { id: 0, type: "effect", name: "effect", mp3: "/audio/cheer.mp3", ogg: "/audio/cheer.ogg" };
         }
         try {
             this.winsoundplayer = new Audio();
@@ -370,7 +371,7 @@ localplay.game.level = (function () {
             //localplay.log("GameItem : unable to load audio '" + this.winsound[localplay.domutils.getTypeForAudio()] + "'");
         }
         if (this.loosesound == null) {
-            this.loosesound = { id: 0, type: "effect", name: "effect", mp3: "audio/boo.mp3", ogg: "audio/boo.ogg" };
+            this.loosesound = { id: 0, type: "effect", name: "effect", mp3: "/audio/boo.mp3", ogg: "/audio/boo.ogg" };
         }
         try {
             this.loosesoundplayer = new Audio();
@@ -396,7 +397,9 @@ localplay.game.level = (function () {
         //
         json += '"background" : { "images" : [';
         for (var i = 0; i < this.background.images.length; i++) {
-            json += '"' + this.background.images[i].src + '"';
+            var backgroundUrl = this.background.images[i].src;
+            var backgroundMedia = backgroundUrl.substring(backgroundUrl.lastIndexOf('/media'));
+            json += '"' + backgroundMedia + '"';
             if (i < this.background.images.length - 1) {
                 json += ',';
             }
@@ -961,7 +964,8 @@ localplay.game.level = (function () {
             var offset = Math.max(0, Math.min(this.bounds.width - this.world.viewport.width, this.world.viewport.x + dx));
             var dbounds = this.bounds.width - this.world.viewport.width;
             this.world.viewport.x = offset;
-            ////localplay.log("viewport : " + this.world.viewport.tostring());
+            this.game.dirty = true;
+            //console.log("viewport : " + this.world.viewport.tostring());
         }
     }
     Level.prototype.getnextlevel = function () {

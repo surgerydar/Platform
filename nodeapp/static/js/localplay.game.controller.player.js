@@ -37,7 +37,7 @@ localplay.game.controller.player = (function () {
     // resources
     // TODO: preload icons? perhaps
     var logo = new Image();
-    logo.src = "images/ingamelogo.png";
+    logo.src = "/images/ingamelogo.png";
     //
     // TODO: export these to templates
     //
@@ -60,19 +60,19 @@ localplay.game.controller.player = (function () {
     /*
     var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/> \
-                <img id="player.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="player.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="player.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/rerun.png" /> \
-                <img id="player.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/run.png" />';
+                <img id="player.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
+                <img id="player.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
+                <img id="player.replay" title="play again" class="imagebutton" style="margin: 4px;" src="/images/rerun.png" /> \
+                <img id="player.next" title="next level" class="imagebutton" style="margin: 4px;" src="/images/run.png" />';
     */
     var nextleveltemplate = '\
         <div style="position: absolute; top: 0px; right: 0px; bottom: 0px; width: 64px;"> \
-            <img id="player.nextlevel" src="images/icons/arrow-next-01.png" class="imagebutton" style="position: absolute; top: 40%; left: 16px;" title="Play next level" /> \
+            <img id="player.nextlevel" src="/images/icons/arrow-next-01.png" class="imagebutton" style="position: absolute; top: 40%; left: 16px;" title="Play next level" /> \
         </div> \
     ';
     var prevleveltemplate = '\
         <div style="position: absolute; top: 0px; left: 0px; bottom: 0px; width: 64px;"> \
-            <img id="player.previouslevel" src="images/icons/arrow-previous-01.png" class="imagebutton" style="position: absolute; top: 40%; right: 16px;" title="Play previous level" /> \
+            <img id="player.previouslevel" src="/images/icons/arrow-previous-01.png" class="imagebutton" style="position: absolute; top: 40%; right: 16px;" title="Play previous level" /> \
         </div> \
     ';
 
@@ -93,11 +93,11 @@ localplay.game.controller.player = (function () {
                     </div> \
                     <div style="display: inline-block; margin-left: 16px; vertical-align: top;"> \
                         <h3>Share this level</h3>\
-                        <img id="player.twitter" src="images/twitter.png" class="imagebutton" title="Share on Twitter" /> \
-                        <img id="player.facebook" src="images/facebook.png" class="imagebutton" title="Share on Facebook" /> \
-                        <img id="player.googleplus" src="images/googleplus.png" class="imagebutton" title="Share via Google +" /> \
-                        <img id="player.sharethis" src="images/sharethis.png" class="imagebutton" title="Share via Sharethis" /> \
-                        <img id="player.email" src="images/email.png" class="imagebutton" title="Share by Email" /> \
+                        <img id="player.twitter" src="/images/twitter.png" class="imagebutton" title="Share on Twitter" /> \
+                        <img id="player.facebook" src="/images/facebook.png" class="imagebutton" title="Share on Facebook" /> \
+                        <img id="player.googleplus" src="/images/googleplus.png" class="imagebutton" title="Share via Google +" /> \
+                        <img id="player.sharethis" src="/images/sharethis.png" class="imagebutton" title="Share via Sharethis" /> \
+                        <img id="player.email" src="/images/email.png" class="imagebutton" title="Share by Email" /> \
                     </div> \
                 </div> \
                 ';
@@ -109,7 +109,7 @@ localplay.game.controller.player = (function () {
                             Credits \
                         </div> \
                         <div id="button.levelcredits.close" class="menubaritem" style="float: right;" > \
-                            <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                            <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                             &nbsp;Close \
                         </div> \
                     </div> \
@@ -213,46 +213,46 @@ localplay.game.controller.player = (function () {
         var playbar = '\
         <div class="playbargroup" style="margin-top: 0px;">\
             <div class="playbaritem" data-tip="Home" > \
-                <img id="player.home" class="imagebutton playbaritem" src="images/icons/home.png" /><br />\
+                <img id="player.home" class="imagebutton playbaritem" src="/images/icons/home.png" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Me" > \
-                <img id="player.me" class="imagebutton playbaritem" src="images/icons/me-01.png" data-tip="Me" /><br />\
+                <img id="player.me" class="imagebutton playbaritem" src="/images/icons/me-01.png" data-tip="Me" /><br />\
             </div>\
             <div class="playbaritem" data-tip="People" > \
-                <img id="player.people" class="imagebutton playbaritem" src="images/icons/people-01.png" data-tip="People"  /><br />\
+                <img id="player.people" class="imagebutton playbaritem" src="/images/icons/people-01.png" data-tip="People"  /><br />\
             </div> \
             <div class="playbaritem" data-tip="Arcades" > \
-                <img id="player.arcade" class="imagebutton playbaritem" src="images/icons/arcade.png"  data-tip="Arcades" /><br />\
+                <img id="player.arcade" class="imagebutton playbaritem" src="/images/icons/arcade.png"  data-tip="Arcades" /><br />\
             </div>\
         </div>\
         <div class="playbargroup">\
             <div class="playbaritem" data-tip="About this level" > \
-                <img id="player.info" class="playbaritem" src="images/icons/info.png" /><br />\
+                <img id="player.info" class="playbaritem" src="/images/icons/info.png" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Flag this level" > \
-                <img id="player.flag" class="playbaritem" src="images/icons/flag-02.png" data-tip="Flag level" /><br />\
+                <img id="player.flag" class="playbaritem" src="/images/icons/flag-02.png" data-tip="Flag level" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Rate this level" > \
-                <img id="player.rate" class="playbaritem" src="images/icons/rate.png" data-tip="Rate level" ><br />\
+                <img id="player.rate" class="playbaritem" src="/images/icons/rate.png" data-tip="Rate level" ><br />\
             </div> \
             <div class="playbaritem" data-tip="Edit this level" > \
-                <img id="player.edit" class="playbaritem" src="images/icons/edit-01.png" data-tip="Edit level" />\
+                <img id="player.edit" class="playbaritem" src="/images/icons/edit-01.png" data-tip="Edit level" />\
             </div> \
         </div>\
         <div class="playbargroup">\
             <div class="playbaritem" data-tip="Pause" > \
-                <img id="player.pause" class="imagebutton playbaritem" src="images/icons/pause-game-01.png" /><br />\
+                <img id="player.pause" class="imagebutton playbaritem" src="/images/icons/pause-game-01.png" /><br />\
             </div>\
             <div class="playbaritem" data-tip="Play" > \
-                <img id="player.play" class="imagebutton playbaritem" src="images/icons/play-01.png" /><br />\
+                <img id="player.play" class="imagebutton playbaritem" src="/images/icons/play-01.png" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Replay" > \
-                <img id="player.replay" class="imagebutton playbaritem" src="images/icons/reload-game-01.png" />\
+                <img id="player.replay" class="imagebutton playbaritem" src="/images/icons/reload-game-01.png" />\
             </div>\
         </div>\
         <div class="playbargroup">\
             <div class="playbaritem" data-tip="Make new level" > \
-                <img id="player.new" class="imagebutton playbaritem" src="images/icons/make-new-level-01.png" /><br />\
+                <img id="player.new" class="imagebutton playbaritem" src="/images/icons/make-new-level-01.png" /><br />\
             </div> \
         </div>\
     ';
@@ -260,22 +260,22 @@ localplay.game.controller.player = (function () {
     var playbar = '\
         <div class="playbargroup" style="margin-top: 0px;">\
             <div class="playbaritem" data-tip="Home" > \
-                <img id="player.home" class="imagebutton playbaritem" src="images/icons/home.png" /><br />\
+                <img id="player.home" class="imagebutton playbaritem" src="/images/icons/home.png" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Pause" > \
-                <img id="player.pause" class="imagebutton playbaritem" src="images/icons/pause-game-01.png" /><br />\
+                <img id="player.pause" class="imagebutton playbaritem" src="/images/icons/pause-game-01.png" /><br />\
             </div>\
             <div class="playbaritem" data-tip="Play" > \
-                <img id="player.play" class="imagebutton playbaritem" src="images/icons/play-01.png" /><br />\
+                <img id="player.play" class="imagebutton playbaritem" src="/images/icons/play-01.png" /><br />\
             </div> \
             <div class="playbaritem" data-tip="Replay" > \
-                <img id="player.replay" class="imagebutton playbaritem" src="images/icons/reload-game-01.png" />\
+                <img id="player.replay" class="imagebutton playbaritem" src="/images/icons/reload-game-01.png" />\
             </div>\
              <div class="playbaritem" data-tip="Edit this level" > \
-                <img id="player.edit" class="playbaritem" src="images/icons/edit-01.png" data-tip="Edit level" />\
+                <img id="player.edit" class="playbaritem" src="/images/icons/edit-01.png" data-tip="Edit level" />\
             </div> \
             <div class="playbaritem" data-tip="Make new level" > \
-                <img id="player.new" class="imagebutton playbaritem" src="images/icons/make-new-level-01.png" /><br />\
+                <img id="player.new" class="imagebutton playbaritem" src="/images/icons/make-new-level-01.png" /><br />\
             </div> \
         </div>\
     ';
@@ -283,7 +283,7 @@ localplay.game.controller.player = (function () {
         <div style="width: 256px; height: 256px;"> \
             <div class="menubar"> \
                  <div id="button.ratelevel.cancel" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Close \
                 </div> \
            </div> \
@@ -299,10 +299,10 @@ localplay.game.controller.player = (function () {
         //
         var controltip = '\
         controls<p />\
-        <img src="images/icons/arrow-hint-left-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;move left<p />\
-        <img src="images/icons/arrow-hint-right-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;move right<p />\
-        <img src="images/icons/arrow-hint-space-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;jump<p />\
-        <img src="images/icons/arrow-hint-esc-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;pause\
+        <img src="/images/icons/arrow-hint-left-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;move left<p />\
+        <img src="/images/icons/arrow-hint-right-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;move right<p />\
+        <img src="/images/icons/arrow-hint-space-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;jump<p />\
+        <img src="/images/icons/arrow-hint-esc-01.png" style="vertical-align: middle; margin-right: 16px;"/>&nbsp;pause\
     ';
         //
         // TODO: reinstate creator link

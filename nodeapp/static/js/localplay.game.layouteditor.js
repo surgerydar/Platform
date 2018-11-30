@@ -44,11 +44,11 @@ localplay.game.layouteditor = (function () {
         <input type="radio" id="layout.prop"  value="prop" name="layout.type"><label for="layout.prop"></label>Prop<br/> \
         <div style="height: 42px; width: 200px">\
             <div id="button.layout.cancel" class="menubaritem" style="float: right;" > \
-                <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                 &nbsp;Cancel \
             </div> \
             <div id="button.layout.add" class="menubaritem" style="float: right;" > \
-                <img class="menubaritem" src="images/icons/add-01.png" /> \
+                <img class="menubaritem" src="/images/icons/add-01.png" /> \
                 &nbsp;Add \
             </div> \
         </div> \
@@ -58,9 +58,9 @@ localplay.game.layouteditor = (function () {
     // TODO: move this to central color / pattern registry
     //
     var rolloverimage = new Image();
-    rolloverimage.src = "images/icons/move-02.png";
+    rolloverimage.src = "/images/icons/move-02.png";
     var selectimage = new Image();
-    selectimage.src = "images/icons/move-03.png";
+    selectimage.src = "/images/icons/move-03.png";
     //
     //
     //
@@ -76,18 +76,30 @@ localplay.game.layouteditor = (function () {
         //
         //
         //
+        var titleBar = document.querySelector('#title-bar');
+        var vOffset = 0;
+        if ( titleBar ) {
+            vOffset = titleBar.offsetTop + titleBar.offsetHeight;
+        }
+        //
+        // container
+        //
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = "0px";
+        this.container.style.top = vOffset + 'px';
         this.container.style.left = "8px";
         this.container.style.bottom = "0px";
         this.container.style.right = "8px";
+        this.container.style.display = "flex";
+        this.container.style.flexDirection = "column";
+        this.container.style.justifyContent = "flex-start";
+        this.container.style.alignItems = "stretch";
         //
         //
         //
         this.layoutview = document.createElement("div");
         this.layoutview.id = "layoutview";
-        this.layoutview.className = "layoutview";
+        this.layoutview.className = "flexlayoutview";
         //
         //
         //
@@ -96,13 +108,24 @@ localplay.game.layouteditor = (function () {
         this.scale = 240.0 / level.background.height;
         this.inversescale = 1.0 / this.scale;
         this.canvas = document.createElement("canvas");
-        this.canvas.className = "layoutview";
+        this.canvas.className = "flexlayoutview";
         this.canvas.height = 240;//Math.round(this.level.background.height * this.inversescale);;
         this.canvas.width = Math.round(this.level.background.width * this.scale);
         this.canvas.style.width = this.canvas.width + "px";
         //this.canvas.style.height = this.canvas.height + "px";
         this.layoutview.appendChild(this.canvas);
         this.level.game.setcanvas(this.canvas);
+        //
+        //
+        //
+        function fitCanvas() {
+            console.log( 'layouteditor : resizing canvas' );
+            _this.scale = _this.layoutview.offsetHeight / _this.level.background.height;
+            _this.canvas.height = _this.layoutview.offsetHeight;
+            _this.canvas.width = Math.round(_this.level.background.width * _this.scale);
+            _this.canvas.style.width = _this.canvas.width + "px";
+        }
+        window.addEventListener("resize", fitCanvas );
         //
         //
         //
@@ -175,8 +198,8 @@ localplay.game.layouteditor = (function () {
         this.prefix = "layout.medialibrary." + d.getTime();
         this.medialibrary = document.createElement("div");
         this.medialibrary.id = this.prefix;
-        this.medialibrary.className = "listview";
-        this.medialibrary.style.top = "260px";
+        this.medialibrary.className = "flexlistview";
+        //this.medialibrary.style.top = "260px";
         this.medialibrary.innerHTML = Mustache.render(localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "Upload drawings of things" });
         //
         //

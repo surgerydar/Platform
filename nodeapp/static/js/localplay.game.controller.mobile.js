@@ -32,24 +32,24 @@
 // mobileplayer module
 //
 localplay.game.controller.mobile = (function () {
-    if (localplay.game.controller.mobileplayer) return localplay.game.controller.mobileplayer;
+    if (localplay.game.controller.mobile) return localplay.game.controller.mobile;
     //
     // resources
     //
     var pause = new Image();
-    pause.src = "images/pause.png";
+    pause.src = "/images/pause.png";
     var play = new Image();
-    play.src = "images/play.png";
+    play.src = "/images/play.png";
     //
     // TODO: export these to templates
     //
     var loading = 'Loading 0%';
     var intro = '<h3>{{name}}</h3> \
                 by&nbsp;<a href="creatorpage.php?id={{creatorid}}">{{creator}}</a><p/> \
-                <img id="mobileplayer.list" title="go to mobile" class="imagebutton" style="margin: 4px;" src="images/list.png" /> \
-                <img id="mobileplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="mobileplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
+                <img id="mobileplayer.list" title="go to mobile" class="imagebutton" style="margin: 4px;" src="/images/list.png" /> \
+                <img id="mobileplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
+                <img id="mobileplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
+                <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="/images/play.png" />';
      var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/>';
     var info = '<h3>{{name}}</h3> \
@@ -127,10 +127,8 @@ localplay.game.controller.mobile = (function () {
         }
         if ( this.backdrop ) {
             this.backdrop.addEventListener('click', function(e) {
-                if ( _this.backdrop.style.opacity > .0 ) {
-                    e.preventDefault();
-                    _this.showmenu(false);
-                }
+                e.preventDefault();
+                _this.showmenu(false);
             });
         }
         //
@@ -144,14 +142,28 @@ localplay.game.controller.mobile = (function () {
                 if ( selector.length === 2 ) {
                     _this.showmenu(false);
                     switch( selector[1] ) {
-                        case 'close':
-                            if ( _this.game.level.paused ) {
-                                _this.game.level.pause(false);
-                            }
-                            break;
                         case 'play':
                             //_this.game.level.reset();
-                            _this.game.level.play();
+                            if ( _this.game.level.isplaying() ) {
+                                _this.game.level.togglepause();
+                            } else {
+                                _this.game.level.play();
+                            }
+                            break;
+                        case "edit":
+                            window.location = '/edit/' + _this.game.levelid;
+                            break;
+                        case 'gallery':
+                            localplay.game.arcade.showarcadedialog();
+                            break;
+                        case 'people':
+                            localplay.creator.showpeopledialog();
+                            break;
+                        case 'login':
+                            window.location = '/login';
+                            break;
+                        case 'logout':
+                            window.location = '/logout';
                             break;
                     }
                 }
@@ -436,13 +448,15 @@ localplay.game.controller.mobile = (function () {
     }
     
     MobileController.prototype.showmenu = function (show) {
-        //console.log( 'MobileController.showmenu(' + show + ')');
         if( show ) {
-            this.game.level.pause(true);
-            this.backdrop.style.opacity = 1.;
+            var playmenuitem = document.getElementById('menu.play');
+            if ( playmenuitem ) {
+                playmenuitem.innerHTML = this.game.level.isplaying() ? this.game.level.paused ? "RESUME" : "PAUSE" : "PLAY";
+            }
+            this.backdrop.classList.add('open');
             this.menu.classList.add('open');
         } else {
-            this.backdrop.style.opacity = 0.;
+            this.backdrop.classList.remove('open');
             this.menu.classList.remove('open');
         }
     }

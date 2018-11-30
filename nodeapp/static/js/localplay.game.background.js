@@ -46,7 +46,8 @@ localplay.game.background = (function () {
         var _this = this;
         this.images = [];
         for (var i = 0; i < images.length; i++) {
-            this.addimage(images[i]);
+            var path = localplay.normaliseurl(images[i]);
+            this.addimage(path);
         }
     }
 

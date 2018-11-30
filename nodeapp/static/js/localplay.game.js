@@ -77,6 +77,10 @@ localplay.game = (function () {
         //
         this.controller = null;
         //
+        //
+        //
+        this.dirty = false;
+        //
         // setup animation callback
         //
         this.animationframe = -1;
@@ -130,7 +134,7 @@ localplay.game = (function () {
         //
         //
         var _this = this;
-        localplay.datasource.get("levels/" + level, {},
+        localplay.datasource.get("/levels/" + level, {},
             {
                 datasourceonloadend: function (e) {
                     var datasource = e.target.datasource;
@@ -166,7 +170,7 @@ localplay.game = (function () {
                                     //
                                     _this.play();
                                 } else {
-                                    localplay.dialogbox.alert("Platform", response.error);
+                                    localplay.dialogbox.alert("Platform", "Level: " + level + "<br/>" + response.error);
                                 }
                             } else {
                                 localplay.dialogbox.alert("Platform", "Unable to load level : Invalid format");
@@ -175,7 +179,7 @@ localplay.game = (function () {
                         //    localplay.dialogbox.alert("Local Play", "Unable to process level, error : '" + error + "' !");
                         //}
                     } else {
-                        localplay.dialogbox.alert("Platform", "Unable to download level, error : '" + datasource.statustext + "' !");
+                        localplay.dialogbox.alert("Platform", "Unable to download level " + level + ", error : '" + datasource.statustext + "' !");
                     }
                 }
             });
@@ -229,7 +233,7 @@ localplay.game = (function () {
                             _this.levelid = response._id;
                             _this.metadata.name = response.name;
                             _this.level.resetdirty();
-                            history.replaceState( null, "Platform : " + param.name, "play.html?id=" + response._id);
+                            history.replaceState( null, "Platform : " + param.name, "/play/" + response._id);
                         }
                     }
                     if ( callback ) callback(response.status === "OK");
@@ -312,11 +316,24 @@ localplay.game = (function () {
         //
         // do nothing if we are paused
         //
-        if (this.paused) return;
+        if ( this.paused ) return;
         //
         // update
         //
         this.level.update();
+        //
+        // draw
+        //
+        this.draw();
+        //
+        // queue up next frame
+        //
+        var _this = this;
+        this.animationframe = requestAnimFrame(function () {
+            _this.animate();
+        });
+    }
+    Game.prototype.draw = function () {
         //
         // draw 
         //
@@ -327,15 +344,8 @@ localplay.game = (function () {
         if (this.controller) {
             this.controller.draw();
         }
-        //
-        // queue up next frame
-        //
-        var _this = this;
-        this.animationframe = requestAnimFrame(function () {
-            _this.animate();
-        });
     }
-
+    
     Game.prototype.fittocontainer = function () {
         var containerheight = 0;
         var containerwidth = 0;
@@ -381,8 +391,10 @@ localplay.game = (function () {
         p.y -= this.canvas.offsetTop;
         p.scale(this.getinversescale());
     }
+    
     Game.prototype.spriteatpoint = function (p) {
         p.scale(this.getinversescale());
+        //console.log( 'Game.prototype.spriteatpoint : ' + p.tostring() );
         return this.level.world.spriteAtPoint(p);
  
     }

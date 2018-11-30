@@ -47,9 +47,9 @@ localplay.game.controller.preview = (function () {
     var mouseover = '\
                 <div style="width: 100%; text-align: center;" > \
                     <h3>{{name}}</h3> \
-                    <img id="preview.prev" title="previous level" class="imagebutton" style="position: absolute; top: 40%; left: 4px;" src="images/icons/arrow-previous-01.png" /> \
-                    <img id="preview.play" title="play level" class="imagebutton" src="images/icons/play-game-01.png" /></p> \
-                    <img id="preview.next" title="next level" class="imagebutton" style="position: absolute; top: 40%; right: 4px;" src="images/icons/arrow-next-01.png" /> \
+                    <img id="preview.prev" title="previous level" class="imagebutton" style="position: absolute; top: 40%; left: 4px;" src="/images/icons/arrow-previous-01.png" /> \
+                    <img id="preview.play" title="play level" class="imagebutton" src="/images/icons/play-game-01.png" /></p> \
+                    <img id="preview.next" title="next level" class="imagebutton" style="position: absolute; top: 40%; right: 4px;" src="/images/icons/arrow-next-01.png" /> \
                     by&nbsp;{{creator}} \
                 </div> \
                 ';

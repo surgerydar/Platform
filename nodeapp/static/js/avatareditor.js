@@ -31,7 +31,7 @@ function AvatarEditor(bounds,game) {
     var _this = this;
     this.game = game;
     this.view = new View(bounds, this);
-    var title = new Button('{ "images" : [ "images/avatareditor-button.png", "images/avatareditor-button.png", "images/avatareditor-button-over.png" ] }');
+    var title = new Button('{ "images" : [ "/images/avatareditor-button.png", "/images/avatareditor-button.png", "/images/avatareditor-button-over.png" ] }');
     title.view.bounds.x = 84;
     title.view.bounds.y = 0;
     title.view.bounds.width = 84;

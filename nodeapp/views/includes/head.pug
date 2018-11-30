@@ -1,0 +1,82 @@
+doctype html
+html
+    head
+        meta( name='viewport' content='user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1' )
+        
+        // apple standalone config
+        meta( name='apple-mobile-web-app-capable' content='yes' )
+        meta( name='apple-mobile-web-app-status-bar-style' content='black-translucent' )
+        link( rel='apple-touch-icon' href='/appicons/icon32x32.png' )
+        link( rel='apple-touch-icon' sizes='57x57' href='/appicons/icon57x57.png' )
+        link( rel='apple-touch-icon' sizes='76x76' href='/appicons/icon76x76.png' )
+        link( rel='apple-touch-icon' sizes='120x120' href='/appicons/icon120x120.png' )
+        link( rel='apple-touch-icon' sizes='152x152' href='/appicons/icon152x152.png' )
+        link( rel='apple-touch-icon' sizes='167x167' href='/appicons/icon167x167.png' )
+        link( rel='apple-touch-icon' sizes='180x180' href='/appicons/icon180x180.png' )
+
+        // android webapp config TODO: manifest
+        meta( name='mobile-web-app-capable' content='yes' )
+
+         
+        if title
+            title #{title}
+        else
+            title Platform
+
+        // styles
+        link( href='/css/default.css' rel='stylesheet' )
+
+        // supporting libraries
+        script( src='/lib/mustache.js' )
+        script( src='/lib/Box2dWeb-2.1.a.3.js' )
+        script( src='/lib/swfobject.js' )
+        script( src='/lib/MD5.js' )
+        script( src='/lib/hammer.js' )
+
+        // legacy objects 
+        script( src='/js/graphicsprimitives.js' )
+
+        // app scripts
+        script( src='/js/localplay.js' )
+        script( src='/js/localplay.timer.js' )
+        script( src='/js/localplay.domutils.js' )
+        script( src='/js/localplay.log.js' )
+        script( src='/js/localplay.datasource.js' )
+        script( src='/js/localplay.imageprocessor.js' )
+        script( src='/js/localplay.dialogbox.js' )
+        script( src='/js/localplay.listview.js' )
+        script( src='/js/localplay.menu.js' )
+        script( src='/js/localplay.authentication.js' )
+        script( src='/js/localplay.ratingpanel.js' )
+        script( src='/js/localplay.objecteditor.js' )
+        script( src='/js/localplay.world.js' )
+        script( src='/js/localplay.sprite.js' )
+        script( src='/js/localplay.game.js' )
+        script( src='/js/localplay.game.gameplay.js' )
+        script( src='/js/localplay.game.gamestate.js' )
+        script( src='/js/localplay.game.background.js' )
+        script( src='/js/localplay.game.behaviour.js' )
+        script( src='/js/localplay.game.avatar.js' )
+        script( src='/js/localplay.game.item.js' )
+        script( src='/js/localplay.game.level.js' )
+        script( src='/js/localplay.game.storyeditor.js' )
+        script( src='/js/localplay.game.backgroundeditor.js' )
+        script( src='/js/localplay.game.itemeditor.js' )
+        script( src='/js/localplay.game.soundeditor.js' )
+        script( src='/js/localplay.game.controller.js' )
+        script( src='/js/localplay.game.controller.mobile.js' )
+        script( src='/js/localplay.game.controller.mobileedit.js' )
+        script( src='/js/localplay.game.controller.preview.js' )
+        script( src='/js/localplay.game.controller.player.js' )
+        script( src='/js/localplay.game.controller.editor.js' )
+        script( src='/js/localplay.game.controller.embedded.js' )
+        script( src='/js/localplay.game.arcade.js' )
+        script( src='/js/localplay.creator.js' )
+        script( src='/js/localplay.game.avatareditor.js' )
+        script( src='/js/localplay.game.layouteditor.js' )
+        script( src='/js/localplay.game.thingeditor.js' )
+        script( src='/js/localplay.game.leveleditor.js' )
+        script( src='/js/localplay.game.mobileleveleditor.js' )
+        script( src='/js/localplay.upload.js' )
+        
+    body

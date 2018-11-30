@@ -38,17 +38,17 @@ localplay.game.controller.editor = (function () {
     //
     /*
     var info = new Image();
-    info.src = "images/info.png";
+    info.src = "/images/info.png";
     var del = new Image();
-    del.src = "images/delete.png";
+    del.src = "/images/delete.png";
     var rotate = new Image();
-    rotate.src = "images/rotate.png";
+    rotate.src = "/images/rotate.png";
     var scale = new Image();
-    scale.src = "images/resize.png";
+    scale.src = "/images/resize.png";
     var move = new Image();
-    move.src = "images/move.png";
+    move.src = "/images/move.png";
     var hscroll = new Image();
-    hscroll.src = "images/hscroll.png";
+    hscroll.src = "/images/hscroll.png";
     */
     //
     // templates
@@ -73,11 +73,11 @@ localplay.game.controller.editor = (function () {
             </div>';
 
     var selectioneditor =
-        '<img id="editor.item.properties" src="images/info.png" class="imagebutton" style="position: absolute; left: -8px; top: -8px; width: 16px; height: 16px;" /> \
-        <img id="editor.item.delete" src="images/delete.png" class="imagebutton" style="position: absolute; right: -8px; top: -8px; width: 16px; height: 16px;" /> \
-        <img id="editor.item.scale" src="images/resize.png" class="imagebutton" style="position: absolute; left: -8px; bottom: -8px; width: 16px; height: 16px;" /> \
-        <img id="editor.item.move" src="images/move.png" class="imagebutton" style="position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; width: 16px; height: 16px; margin: auto;" /> \
-        <img id="editor.item.rotate" src="images/rotate.png" class="imagebutton" style="position: absolute; right: -8px; bottom: -8px; width: 16px; height: 16px;" />';
+        '<img id="editor.item.properties" src="/images/info.png" class="imagebutton" style="position: absolute; left: -8px; top: -8px; width: 16px; height: 16px;" /> \
+        <img id="editor.item.delete" src="/images/delete.png" class="imagebutton" style="position: absolute; right: -8px; top: -8px; width: 16px; height: 16px;" /> \
+        <img id="editor.item.scale" src="/images/resize.png" class="imagebutton" style="position: absolute; left: -8px; bottom: -8px; width: 16px; height: 16px;" /> \
+        <img id="editor.item.move" src="/images/move.png" class="imagebutton" style="position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; width: 16px; height: 16px; margin: auto;" /> \
+        <img id="editor.item.rotate" src="/images/rotate.png" class="imagebutton" style="position: absolute; right: -8px; bottom: -8px; width: 16px; height: 16px;" />';
     var itemeditor =
         '<p>Item type<br /><select id="editor.item.type" value="{{type}}"> \
             {{#types}} \
@@ -158,7 +158,7 @@ localplay.game.controller.editor = (function () {
         //
         // hook events
         //
-        // TODO: support for game events ( load, start, stop ) also find a more generic way of doing the binding way 
+        // TODO: support for game events ( load, start, stop ) also find a more generic way of doing the binding
         //
         this.boundclick = this.onclick.bind(this);
         this.boundmousemove = this.onmousemove.bind(this);
@@ -236,47 +236,47 @@ localplay.game.controller.editor = (function () {
             _this.menupopup = localplay.menu.attachmenu(e.target,
                     [
                         {
-                            icon: "images/info.png",
+                            icon: "/images/info.png",
                             name: "INFO",
                             id: "info"
                         },
                         {
-                            icon: "images/blank.png",
+                            icon: "/images/blank.png",
                             name: "BACKGROUND",
                             id: "background"
                         },
                         {
-                            icon: "images/blank.png",
+                            icon: "/images/blank.png",
                             name: "THINGS",
                             id: "things"
                         },
                         {
-                            icon: "images/blank.png",
+                            icon: "/images/blank.png",
                             name: "GAMEPLAY",
                             id: "gameplay"
                         },
                         {
-                            icon: "images/blank.png",
+                            icon: "/images/blank.png",
                             name: "SOUND",
                             id: "sound"
                         },
                         {
-                            icon: "images/blank.png",
+                            icon: "/images/blank.png",
                             name: "SAVE",
                             id: "save"
                         },
                         {
-                            icon: "images/play.png",
+                            icon: "/images/play.png",
                             name: "PLAY",
                             id: "play"
                         },
                         {
-                            icon: "images/new.png",
+                            icon: "/images/new.png",
                             name: "MAKE NEW LEVEL",
                             id: "new"
                         },
                         {
-                            icon: "images/home.png",
+                            icon: "/images/home.png",
                             name: "HOME",
                             id: "home"
                         }
@@ -346,7 +346,7 @@ localplay.game.controller.editor = (function () {
                         },true,true);
 
         };
-        this.menu.src = "images/edit.png";
+        this.menu.src = "/images/edit.png";
         this.game.canvas.offsetParent.appendChild(this.menu);
     }
 
@@ -463,7 +463,6 @@ localplay.game.controller.editor = (function () {
     //
     // required controller methods
     //
-
     EditorController.prototype.draw = function () {
         //
         //
@@ -515,12 +514,11 @@ localplay.game.controller.editor = (function () {
                     context.arc(p1.x, p1.y, 8, 0.0, Math.PI * 2.0);
                     context.stroke();
                 }
-
-
             } else {
-                
-                context.drawImage(hscroll, p1.x - 16, p1.y - 16, 32, 32);
-
+                //
+                // draw hscroll indicator
+                //
+                //context.drawImage(hscroll, p1.x - 16, p1.y - 16, 32, 32);
             }
             context.restore();
         }
@@ -1092,7 +1090,9 @@ localplay.game.controller.editor = (function () {
                         //
                         // show rollover
                         //
-                        var aabb = sprite.getAABB();
+                        //var aabb = sprite.getAABB();
+                        var aabb = sprite.getAABB(true);
+                        console.log( 'rollover sprite : ' + sprite.imageUrl + ' : aabb : ' + aabb.tostring()  );
                         aabb.moveby(this.game.getviewportoffset());
                         aabb.scale(this.game.getscale());
                         aabb.moveby(this.canvasoffset);
@@ -1112,18 +1112,9 @@ localplay.game.controller.editor = (function () {
             }
 
         }
-        /*
-        //
-        //
-        //
-        var rolloversprite = this.game.spriteatpoint(e);
-        if (rolloversprite !== this.rolloversprite) {
-            this.rolloversprite = rolloversprite;
-
-        }
-        */
         return false;
     }
+    
     EditorController.prototype.onkeydown = function (e) {
         this.keys[e.keyCode] = true;
         if (this.keys[localplay.keycode.ESC]) {
@@ -1140,11 +1131,33 @@ localplay.game.controller.editor = (function () {
     }
 
     EditorController.prototype.onresize = function (e) {
+        /*
         this.game.fittocontainer();
         this.canvasoffset = new Point(this.game.canvas.offsetLeft, this.game.canvas.offsetTop);
         this.canvasbounds =
             new Rectangle(this.game.canvas.offsetLeft, this.game.canvas.offsetTop,
             this.game.canvas.offsetWidth, this.game.canvas.offsetHeight);
+        */
+        console.log( 'EditorController.prototype.onresize : before : canvas.width=' + this.game.canvas.width + ' canvas.height=' + this.game.canvas.height );
+        var aspect = this.game.canvas.offsetWidth / this.game.canvas.offsetHeight;
+        this.game.canvas.width = Math.round(this.game.canvas.height * aspect);
+        console.log( 'EditorController.prototype.onresize : after : canvas.width=' + this.game.canvas.width + ' canvas.height=' + this.game.canvas.height );
+        //
+        //
+        //
+        var scale = this.game.canvas.height / localplay.defaultsize.height;
+        if (this.game.level.background) {
+            this.game.level.background.setscale(scale);
+            this.game.level.adjustviewport();
+        }
+        //
+        //
+        //
+        if ( this.game.paused ) {
+            this.game.level.draw();
+            this.draw();
+        }
+
         if (this.selection.style.visibility !== "hidden") {
             this.showselectionui(true);
         }

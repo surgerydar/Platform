@@ -39,7 +39,7 @@ localplay.game.avatar = (function () {
     function Avatar(level, properties) {
         this.level = level;
         this.homeposition = properties.position;
-        this.image = properties.image;
+        this.image = properties.image.startsWith('/') ? properties.image : '/' + properties.image;
         this.scale = properties.scale ? parseFloat(properties.scale) : 1.0;
         this.rotation = properties.rotation ? parseFloat(properties.rotation) : 0.0;
         this.gravityscale = properties.gravityscale && !isNaN(properties.gravityscale) ? parseFloat(properties.gravityscale) : 1.0;
@@ -351,7 +351,7 @@ localplay.game.avatar = (function () {
         var prompt = document.createElement("div");
         prompt.className = "menubaritem";
         prompt.innerHTML = '\
-                <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change image \
+                <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change image \
             ';
         prompt.onclick = change;
         container.appendChild(prompt);
@@ -382,7 +382,7 @@ localplay.game.avatar = (function () {
         var reset = document.createElement("div");
         reset.className = "menubaritem";
         reset.innerHTML = '\
-                <img class="menubaritem" src="images/icons/add-01.png" />&nbsp;Reset weight \
+                <img class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Reset weight \
             ';
         reset.onclick = function (e) {
             _this.gravityscale = 1.0;

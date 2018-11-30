@@ -145,6 +145,102 @@ var localplay = (function () {
     localplay.touchsupport = function() {
         return ('ontouchstart' in document.documentElement);
     }
+    /*
+    function TouchHandler( target ) {
+        this.target = target;
+        if ( localplay.touchsupport() ) {
+            var ongoingTouches = [];
+            function copyTouch(touch) {
+                return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
+            }
+            function ongoingTouchIndexById(idToFind) {
+              for (var i = 0; i < ongoingTouches.length; i++) {
+                var id = ongoingTouches[i].identifier;
+
+                if (id == idToFind) {
+                  return i;
+                }
+              }
+              return -1;    // not found
+            }
+            //
+            //
+            //
+            target.addEventListener("touchstart", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    ongoingTouches.push(copyTouch(touches[i]));
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                _this.pointerdown(p);
+            });
+            this.container.addEventListener("touchmove", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
+                    }
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                _this.pointermove(p);
+            });
+            this.container.addEventListener("touchend", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                            _this.pointerup(p);
+                        }
+                        ongoingTouches.splice(idx, 1);  
+                    }
+                }
+            });
+            this.container.addEventListener("touchend", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY -  _this.canvasoffset.y );
+                            _this.pointerup(p);
+                        }
+                        ongoingTouches.splice(idx, 1);  
+                    }
+                }
+            });
+         } else {
+            this.boundmousedown = this.onmousedown.bind(this);
+            this.boundmouseup = this.onmouseup.bind(this);
+            this.boundmousemove = this.onmousemove.bind(this);
+            this.boundkeydown = this.onkeydown.bind(this);
+            this.boundkeyup = this.onkeyup.bind(this);
+            this.container.addEventListener("mousedown", this.boundmousedown);
+            this.container.addEventListener("mouseup", this.boundmouseup);
+            this.container.addEventListener("mousemove", this.boundmousemove);
+            window.addEventListener("keydown", this.boundkeydown);
+            window.addEventListener("keyup", this.boundkeyup);
+        }
+    }
+    */
+    //
+    //
+    //
+    localplay.normaliseurl = function( url ) {
+        if ( url.startsWith('/') || url.startsWith('data:') || url.startsWith('http:') || url.startsWith('https:') ) {
+            return url;
+        }
+        return '/' + url;
+    }
+    localplay.mediaurl = function( url ) {
+        return url.substring( url.lastIndexOf('/media') );
+    }
     //
     //
     //
@@ -155,7 +251,7 @@ var localplay = (function () {
                     Flag {{name}}</h3> \
                 </div> \
                  <div id="button.cancel" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Cancel \
                 </div> \
            </div> \
@@ -164,7 +260,7 @@ var localplay = (function () {
             </div> \
             <div style="position: absolute; left: 0px; bottom: 0px; right: 0px; height: 42px;">\
                 <div id="button.flag" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/flag-02.png" /> \
+                    <img class="menubaritem" src="/images/icons/flag-02.png" /> \
                     &nbsp;Flag \
                 </div> \
             </div> \
@@ -260,7 +356,7 @@ var localplay = (function () {
                 p = localplay.domutils.elementPosition(target);
                 p.x += target.offsetWidth;
             }
-            tipbox.innerHTML =  tip + '<img class="imagebutton" src="images/icons/close-cancel-02.png" style="position: absolute; top: 2px; right: 2px;" /><br />';
+            tipbox.innerHTML =  tip + '<img class="imagebutton" src="/images/icons/close-cancel-02.png" style="position: absolute; top: 2px; right: 2px;" /><br />';
             tipbox.style.right = ( 24 + ( document.body.offsetWidth - p.x )) + "px";
             tipbox.style.top = ( p.y + 8 ) + "px";
             tipbox.classList.remove("hidden");

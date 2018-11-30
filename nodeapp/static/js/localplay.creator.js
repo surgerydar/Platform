@@ -62,15 +62,15 @@ localplay.creator = (function () {
                 <img id="creator.button.thumbnail.{{_id}}" class="profileimage imagebutton" src="{{thumbnail}}" /> \
                 <div class="profiledetails"> \
                     <div id="creator.button.setthumbnail.{{_id}}" class="menubaritem" style="margin-left: 0px;"> \
-                        <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change picture \
+                        <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change picture \
                     </div> \
                     <p>name<br/><br/> \
                     <input id="creator.{{_id}}.name" type="text" value="{{username}}" style="width: 240px;"/></p>\
                     <div id="creator.button.update.{{_id}}" class="menubaritem" style="margin-left: 0px;"> \
-                        <img class="menubaritem" src="images/icons/save-01.png" />&nbsp;Update profile \
+                        <img class="menubaritem" src="/images/icons/save-01.png" />&nbsp;Update profile \
                     </div> \
                     <div id="creator.button.changepassword.{{_id}}" class="menubaritem" style="margin-left: 0px; margin-top: 32px;"> \
-                        <img class="menubaritem" src="images/icons/edit-01.png" />&nbsp;Change password \
+                        <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change password \
                     </div> \
                 </div> \
             </div> \
@@ -110,11 +110,11 @@ localplay.creator = (function () {
             <input id="creator.{{_id}}.confirmpassword" type="password" value="" placeholder="confirm new password" style="width: 240px;" required/><br/>\
            <div style="height: 42px; width: 285px">\
                 <div id="button.creator.password.cancel" class="menubaritem" style="float: left;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Cancel \
                 </div> <p>\
                 <div id="button.creator.password.save" class="menubaritem" style="float: right;" > \
-                    <img class="menubaritem" src="images/icons/save-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/save-01.png" /> \
                     &nbsp;Save \
                 </div> \
             </div> \
@@ -404,7 +404,7 @@ localplay.creator = (function () {
                         //
                         // set breadcrumb
                         //
-                        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;' + name;
+                        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="/images/icons/breadcrumb.png">&nbsp;' + name;
                         //
                         // load people
                         //
@@ -442,7 +442,7 @@ localplay.creator = (function () {
                     }
                 });                
             });
-        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="images/icons/breadcrumb.png">&nbsp;All';
+        listcontainer.breadcrumb.innerHTML = '<img class="menubaritem disabled" src="/images/icons/breadcrumb.png">&nbsp;All';
     }
 
     creator.showmyprofile = function(callback) {

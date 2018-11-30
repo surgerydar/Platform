@@ -143,7 +143,7 @@ localplay.game.controller = (function () {
         var background = new Image();
         background.style.height = "auto";
         background.style.width = "512px";
-        background.src = "images/background-placeholder.png";
+        background.src = "/images/background-placeholder.png";
         background.url = null;
         background.onclick = function (e) {
  
@@ -180,7 +180,7 @@ localplay.game.controller = (function () {
                             place: place.value,
                             change: change.value
                         }
-                        var json = '{"background" : { "images" : ["' + background.url + '"] } , "avatar" : { "image" : "images/drcrab.png", "position" : "115,89" } }';
+                        var json = '{"background" : { "images" : ["' + background.url + '"] } , "avatar" : { "image" : "/images/drcrab.png", "position" : "115,89" } }';
                         game.newlevel(metadata, json);
                         dialog.close();
                         //

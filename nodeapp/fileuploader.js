@@ -29,7 +29,7 @@ FileWriter.prototype.writeChunk = function( ws, data ) {
         this.file.end();
         
         let source = './upload/' + this.filename;
-        let destination = './static/media/uploads/' + this.filename;
+        let destination = './media/uploads/' + this.filename;
         this.file.once('close', function() {
             if ( !fs.copyFile ) {
                 function copyFile( source, destination ) {

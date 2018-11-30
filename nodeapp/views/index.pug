@@ -1,12 +1,70 @@
+doctype html
 html
     head
-        title= title
-        link(rel='stylesheet', href='styles/platform.css')
-        meta( name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' )
-    body
-        h1 Welcome to Platform
-        if authorised
-            a( href='/logout' ) logout
-        else
-            a( href='/login' ) login
+        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1" )
         
+        // apple standalone config
+        meta( name="apple-mobile-web-app-capable" content="yes" )
+        meta( name="apple-mobile-web-app-status-bar-style" content="black-translucent" )
+        link( rel="apple-touch-icon" href="/appicons/icon32x32.png" )
+        link( rel="apple-touch-icon" sizes="57x57" href="/appicons/icon57x57.png" )
+        link( rel="apple-touch-icon" sizes="76x76" href="/appicons/icon76x76.png" )
+        link( rel="apple-touch-icon" sizes="120x120" href="/appicons/icon120x120.png" )
+        link( rel="apple-touch-icon" sizes="152x152" href="/appicons/icon152x152.png" )
+        link( rel="apple-touch-icon" sizes="167x167" href="/appicons/icon167x167.png" )
+        link( rel="apple-touch-icon" sizes="180x180" href="/appicons/icon180x180.png" )
+
+        // android webapp config TODO: manifest
+        meta( name="mobile-web-app-capable" content="yes" )
+
+        title Platform
+
+        // styles
+        link( href="/css/default.css" rel="stylesheet" )
+
+        // supporting libraries
+        script( src="/lib/mustache.js" )
+        script( src="/lib/Box2dWeb-2.1.a.3.js" )
+        
+        // legacy objects
+        script( src="/js/graphicsprimitives.js" )
+        
+        // app scripts
+        script( src="/js/localplay.js" )
+        script( src="/js/localplay.domutils.js" )
+        script( src="/js/localplay.log.js" )
+        script( src="/js/localplay.datasource.js" )
+        script( src="/js/localplay.dialogbox.js" )
+        script( src="/js/localplay.listview.js" )
+        script( src="/js/localplay.menu.js" )
+        script( src="/js/localplay.listview.js" )
+        script( src="/js/localplay.ratingpanel.js" )
+        script( src="/js/localplay.creator.js" )
+        script( src="/js/localplay.homepage.js" )
+        script( src="/js/localplay.game.arcade.js" )
+    
+    body( style="background-color: #41AEE4;" )
+        #homepage-content
+            p#homepage-header( style="font-size: 48px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
+            p#homepage-body( style="font-size: 32px;" ).
+                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='#' ) gallery of top ranked games ] or take part in our #[a( href='http://google.com' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='#' ) about ] section for more information.
+        #menu-backdrop
+        #title-bar
+            img#title-logo( src="/images/bc-logo.png" )
+            #title-progress-container
+                span( style="vertical-align: middle;" ) TIME&nbsp;
+                progress#title-progress( value="0" )
+            img#title-menu( src="/images/logo-menu.png" )
+        .main-menu#main-menu
+            .main-menu-item( id="menu.create" ) MAKE A GAME
+            .main-menu-item( id="menu.gallery" ) GALLERY
+            .main-menu-item( id="menu.people" ) PEOPLE
+            .main-menu-item( id="menu.help" ) HELP
+            .main-menu-item( id="menu.about" ) ABOUT
+            if authorised
+                .main-menu-item( id="menu.logout" ) LOGOUT
+            else
+                .main-menu-item( id="menu.login" ) LOGIN/SIGN UP
+
+        script.
+            localplay.homepage.init();

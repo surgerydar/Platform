@@ -37,9 +37,9 @@ localplay.game.controller.arcade = (function () {
     // resources
     //
     var pause = new Image();
-    pause.src = "images/pause.png";
+    pause.src = "/images/pause.png";
     var play = new Image();
-    play.src = "images/play.png";
+    play.src = "/images/play.png";
     //
     // TODO: export these to templates
     //
@@ -48,22 +48,22 @@ localplay.game.controller.arcade = (function () {
                 {{place}}<p/> \
                 {{change}}<p/> \
                 by&nbsp;<a href="creatorpage.php?id={{creatorid}}">{{creator}}</a><p/> \
-                <img id="arcadeplayer.list" title="go to arcade" class="imagebutton" style="margin: 4px;" src="images/list.png" /> \
-                <img id="arcadeplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="arcadeplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="arcadeplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
+                <img id="arcadeplayer.list" title="go to arcade" class="imagebutton" style="margin: 4px;" src="/images/list.png" /> \
+                <img id="arcadeplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
+                <img id="arcadeplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
+                <img id="arcadeplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="/images/play.png" />';
     /*
     var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/> \
-                <img id="arcadeplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="images/new.png" /> \
-                <img id="arcadeplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="images/edit.png" /> \
-                <img id="arcadeplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/replay.png" /> \
-                <img id="arcadeplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
+                <img id="arcadeplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
+                <img id="arcadeplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
+                <img id="arcadeplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="/images/replay.png" /> \
+                <img id="arcadeplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="/images/play.png" />';
     */
     var outro = '<h3>{{outcome}}</h3> \
                 {{{score}}}<p/> \
-                <img id="arcadeplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="images/replay.png" /> \
-                <img id="arcadeplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="images/play.png" />';
+                <img id="arcadeplayer.replay" title="play again" class="imagebutton" style="margin: 4px;" src="/images/replay.png" /> \
+                <img id="arcadeplayer.next" title="next level" class="imagebutton" style="margin: 4px;" src="/images/play.png" />';
     var info = '<h3>{{name}}</h3> \
                 <img src="{{thumbnail}}" /><p/> \
                 place - {{place}}<p/> \

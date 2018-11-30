@@ -46,7 +46,7 @@ localplay.game.thingeditor = (function () {
     var selectiontools = [
         {
             id: mousetrackingmode.move,
-            source: "images/icons/move-03.png",
+            source: "/images/icons/move-03.png",
             image: new Image(),
             offset: {
                 x: 0, y: 0
@@ -54,7 +54,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: "properties",
-            source: "images/icons/edit-big-02.png",
+            source: "/images/icons/edit-big-02.png",
             image: new Image(),
             offset: {
                 x: -1, y: -1
@@ -62,7 +62,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: "delete",
-            source: "images/icons/delete-03.png",
+            source: "/images/icons/delete-03.png",
             image: new Image(),
             offset: {
                 x: 1, y: -1
@@ -70,7 +70,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: mousetrackingmode.rotate,
-            source: "images/icons/rotate-03.png",
+            source: "/images/icons/rotate-03.png",
             image: new Image(),
             offset: {
                 x: 1, y: 1
@@ -78,7 +78,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: mousetrackingmode.scale,
-            source: "images/icons/resize-03.png",
+            source: "/images/icons/resize-03.png",
             image: new Image(),
             offset: {
                 x: -1, y: 1
@@ -92,7 +92,7 @@ localplay.game.thingeditor = (function () {
         selectiontools[i].image.src = selectiontools[i].source;
     }
     var backgroundscrollindicator = new Image();
-    backgroundscrollindicator.src = "images/hscroll.png";
+    backgroundscrollindicator.src = "/images/hscroll.png";
 
     function ThingSelection() {
         this.sprite = null;
@@ -228,20 +228,18 @@ localplay.game.thingeditor = (function () {
         //
         // shift game canvas into our layout
         //
-        level.background.setscale(1.0);
-        level.world.setscale(1.0);
         this.container = document.createElement("div");
         this.container.id = "thingeditor";
         this.container.style.position = "absolute";
         this.container.style.top = "0px";
-        this.container.style.left = "8px";
+        this.container.style.left = "0px";
         this.container.style.bottom = "0px";
-        this.container.style.right = "8px";
+        this.container.style.right = "0px";
         this.container.style.overflow = "hidden";
         this.canvas = document.createElement("canvas");
         this.canvas.className = "thingview";
-        this.canvas.width = localplay.defaultsize.width;
-        this.canvas.height = localplay.defaultsize.height;
+        this.canvas.width = level.canvas.width;
+        this.canvas.height = level.canvas.height;
         this.container.appendChild(this.canvas);
         this.level.game.setcanvas(this.canvas);
         //
@@ -258,95 +256,79 @@ localplay.game.thingeditor = (function () {
         // hook events
         //
         if ( localplay.touchsupport() ) {
-            var _self = this;
-            function touchPosition( p ) {
-                var offset = localplay.domutils.elementPosition( _self.canvas );
-                return new Point( (p.x - offset.x) + window.scrollX, (p.y - offset.y) + window.scrollY ); 
+            //
+            // TODO: move touch handling into convenience object
+            //
+            var ongoingTouches = [];
+            function copyTouch(touch) {
+                return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
             }
-            var mc = new Hammer.Manager(this.canvas);
-            _self.editActionCount = 0;
+            function ongoingTouchIndexById(idToFind) {
+              for (var i = 0; i < ongoingTouches.length; i++) {
+                var id = ongoingTouches[i].identifier;
+
+                if (id == idToFind) {
+                  return i;
+                }
+              }
+              return -1;    // not found
+            }
             //
-            // pan for move
             //
-            mc.add( new Hammer.Pan() );
-            mc.on( 'panstart panmove panend pancancel', function(e) {
-                var p = touchPosition( e.center ); 
-                console.log( e.type + ' : at : ' + JSON.stringify(p));
-                var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
-                switch( e.type ) {
-                    case 'panstart' :
-                        var sprite = _self.level.game.spriteatpoint(p);
-                        _self.selectedsprite = sprite; 
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.beginedit();
+            //
+            this.container.addEventListener("touchstart", function(e) {
+                e.preventDefault();
+                /*
+             var p = e.target === this.canvas ? new Point(e.offsetX, e.offsetY) : new Point(e.offsetX - this.canvasoffset.x, e.offsetY - this.canvasoffset.y);
+             */
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    ongoingTouches.push(copyTouch(touches[i]));
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                _this.pointerdown(p);
+            });
+            this.container.addEventListener("touchmove", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
+                    }
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                _this.pointermove(p);
+            });
+            this.container.addEventListener("touchend", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+                            _this.pointerup(p);
                         }
-                        break;
-                    case 'panmove' : 
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.editPosition.x = p.x * scale;
-                            _self.selectedsprite.editPosition.y = p.y * scale;
-                        }
-                        break;
-                    case 'panend' :
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.commitedit();
-                            _self.selectedsprite = null;                                
-                        }
-                        break;
-                    case 'pancancel' :
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.canceledit();
-                            _self.selectedsprite = null;
-                        }
-                        break;
+                        ongoingTouches.splice(idx, 1);  
+                    }
                 }
             });
-            //
-            // pinch and rotate selected item
-            //
-            var pinch = new Hammer.Pinch();
-            var rotate = new Hammer.Rotate();
-            pinch.recognizeWith(rotate);
-            mc.add([pinch, rotate]);
-            mc.on("pinchstart pinchmove pinchend pinchcancel rotatestart rotatemove rotateend rotatecancel", function(e) {
-                var p = touchPosition( e.center ); 
-                var scale = localplay.defaultsize.height / _self.canvas.offsetHeight;
-                switch( e.type ) {
-                    case 'pinchstart' :
-                    case 'rotatestart' :
-                        var sprite = _self.level.game.spriteatpoint(p);
-                        _self.selectedsprite = sprite; 
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.beginedit();
+            this.container.addEventListener("touchend", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY -  _this.canvasoffset.y );
+                            _this.pointerup(p);
                         }
-                        break;
-                    case 'pinchmove' :
-                    case 'rotatemove' :
-                        if ( _self.selectedsprite ) {
-                            _self.selectedsprite.editPosition.x = p.x * scale;
-                            _self.selectedsprite.editPosition.y = p.y * scale;
-                            _self.selectedsprite.editRotation = e.rotation * Math.PI/180.;
-                            _self.selectedsprite.editScale = e.scale;
-                        }
-                        break;
-                    case 'pinchend' :
-                    case 'rotateend' :
-                       if ( _self.selectedsprite ) {
-                            _self.selectedsprite.commitedit();
-                            _self.selectedsprite = null;                                
-                        }
-                        break;
-                    case 'pinchcancel' :
-                    case 'rotatecancel' :
-                       if ( _self.selectedsprite ) {
-                            _self.selectedsprite.canceledit();
-                            _self.selectedsprite = null;                                
-                        }
-                        break;
+                        ongoingTouches.splice(idx, 1);  
+                    }
                 }
-            });  
-            
-        } else {
+            });
+         } else {
             this.boundmousedown = this.onmousedown.bind(this);
             this.boundmouseup = this.onmouseup.bind(this);
             this.boundmousemove = this.onmousemove.bind(this);
@@ -379,13 +361,16 @@ localplay.game.thingeditor = (function () {
 
     ThingEditor.prototype.dealloc = function () {
         localplay.showtip();
-
         this.container.removeEventListener("mousedown", this.onmousedown);
         this.container.removeEventListener("mouseup", this.onmouseup);
         this.container.removeEventListener("mousemove", this.boundmousemove);
         window.removeEventListener("keydown", this.boundkeydown);
         window.removeEventListener("keyup", this.boundkeyup);
         window.removeEventListener("resize", this.boundresize);
+        
+        if (this.container) {
+            localplay.domutils.purgeDOMElement(this.container);
+        }
     }
     //
     // required controller methods
@@ -759,114 +744,129 @@ localplay.game.thingeditor = (function () {
         if (e.target === this.container || e.target === this.canvas) {
             localplay.domutils.fixEvent(e);
             var p = e.target === this.canvas ? new Point(e.offsetX, e.offsetY) : new Point(e.offsetX - this.canvasoffset.x, e.offsetY - this.canvasoffset.y);
-            var mp = p.duplicate(); // need the raw mouse point for selection mousedown
-            var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
-            var sprite = this.level.game.spriteatpoint(p);
-            if (this.selectedsprite) {
-                var command = this.selection.mousedown(p, scale);
-                switch (command) {
-                    case mousetrackingmode.move:
-                    case mousetrackingmode.rotate:
-                    case mousetrackingmode.scale:
-                        this.starttrackingmouse(command);
-                        mp.scale(scale);
-                        this.updatemousetracking(mp);
-                        break;
-                    case "properties":
-                        this.showpropertyeditor();
-                        break;
-                    case "delete":
-                        this.confirmdelete();
-                        break;
-                    default: {
-                        if (sprite != this.selectedsprite) {
-                            this.selectedsprite = sprite;
-                            this.selection.setsprite(sprite);
-                            if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
-                                localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
-                            } else {
-                                localplay.showtip();
-                            }
-                        }
-                    }
-                }
-            } else {
-                
-                if (sprite) {
-                    this.rolloversprite = null;
-                    this.selectedsprite = sprite;
-                    this.selection.setsprite(sprite, scale);
-                    if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
-                        localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
-                    } else {
-                        localplay.showtip();
-                    }
-                } else {
-                    this.selectedsprite = null;
-                    this.selection.setsprite(null);
-                    this.starttrackingmouse(mousetrackingmode.background);
-                    localplay.showtip("Drag to scroll the background", this.container);
-                }
-
-                
-            }
+            this.pointerdown(p);
        }
        return false;
     }
+    
+    ThingEditor.prototype.pointerdown = function (p) {
+        var mp = p.duplicate(); // need the raw mouse point for selection mousedown
+        var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
+        var sprite = this.level.game.spriteatpoint(p);
+        if (this.selectedsprite) {
+            var command = this.selection.mousedown(p, scale);
+            console.log( 'ThingEditor.onmousedown : command=' + command );
+            switch (command) {
+                case mousetrackingmode.move:
+                case mousetrackingmode.rotate:
+                case mousetrackingmode.scale:
+                    this.starttrackingmouse(command);
+                    mp.scale(scale);
+                    this.updatemousetracking(mp);
+                    break;
+                case "properties":
+                    this.showpropertyeditor();
+                    break;
+                case "delete":
+                    this.confirmdelete();
+                    break;
+                default: {
+                    if (sprite != this.selectedsprite) {
+                        this.selectedsprite = sprite;
+                        this.selection.setsprite(sprite);
+                        if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
+                            localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
+                        } else {
+                            localplay.showtip();
+                        }
+                    }
+                }
+            }
+        } else {
 
+            if (sprite) {
+                console.log( 'ThingEditor.onmousedown : selecting sprite' );
+                this.rolloversprite = null;
+                this.selectedsprite = sprite;
+                this.selection.setsprite(sprite, scale);
+                if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
+                    localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
+                } else {
+                    localplay.showtip();
+                }
+            } else {
+                console.log( 'ThingEditor.onmousedown : tracking background' );
+                this.selectedsprite = null;
+                this.selection.setsprite(null);
+                this.starttrackingmouse(mousetrackingmode.background);
+                localplay.showtip("Drag to scroll the background", this.container);
+            }
+        }
+    }
+    
     ThingEditor.prototype.onmouseup = function (e) {
+        this.pointerup();
+        return false;
+    }
+    
+    ThingEditor.prototype.pointerup = function (p) {
         if (this.istrackingmouse()) {
             this.endtrackingmouse();
         }
-        return false;
     }
-
+    
     ThingEditor.prototype.onmousemove = function (e) {
         //
         //
         //
         if (e.target === this.container || e.target === this.canvas) {
             localplay.domutils.fixEvent(e);
-            var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
             var p = e.target === this.canvas ? new Point(e.offsetX, e.offsetY) : new Point(e.offsetX - this.canvasoffset.x, e.offsetY - this.canvasoffset.y);
-            if (this.istrackingmouse()) {
-                p.scale(scale);
-                this.updatemousetracking(p);
-            } else {
-                if (this.scrollbar) {
-                    //
-                    // TODO: this condition needs a method
-                    //
-                    var totalwidth = this.level.bounds.width;
-                    var viewportwidth = this.level.world.viewport.width;
-                    if (totalwidth > viewportwidth) {
-                        if (e.offsetY > this.scrollbar.offsetTop) {
-                            this.scrollbar.style.visibility = "visible";
-                        } else {
-                            this.scrollbar.style.visibility = "hidden";
-                        }
-                    }
-                }
-                //
-                // update rollover
-                //
-                var sprite = this.level.game.spriteatpoint(p);
-                if (sprite && sprite !== this.selectedsprite) {
-                    this.rolloversprite = sprite;
-                } else {
-                    this.rolloversprite = null;
-                }
-                //
-                //
-                //
-                if (this.selectedsprite) {
-                    this.selection.mousemove(p, scale);
-                }
-
-            }
-        }
+            this.pointermove(p);
+         }
         return false;
     }
+    
+    ThingEditor.prototype.pointermove = function (p) {
+        var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
+        if (this.istrackingmouse()) {
+            p.scale(scale);
+            this.updatemousetracking(p);
+        } else {
+            if (this.scrollbar) {
+                //
+                // TODO: this condition needs a method
+                //
+                var totalwidth = this.level.bounds.width;
+                var viewportwidth = this.level.world.viewport.width;
+                if (totalwidth > viewportwidth) {
+                    //if (e.offsetY > this.scrollbar.offsetTop) {
+                    if (p.y >  this.scrollbar.offsetTop) {
+                        this.scrollbar.style.visibility = "visible";
+                    } else {
+                        this.scrollbar.style.visibility = "hidden";
+                    }
+                }
+            }
+            //
+            // update rollover
+            //
+            var sprite = this.level.game.spriteatpoint(p);
+            if (sprite && sprite !== this.selectedsprite) {
+                this.rolloversprite = sprite;
+            } else {
+                this.rolloversprite = null;
+            }
+            //
+            //
+            //
+            if (this.selectedsprite) {
+                this.selection.mousemove(p, scale);
+            }
+
+        }
+    }
+    
     ThingEditor.prototype.onkeydown = function (e) {
         this.keys[e.keyCode] = true;
         if (this.keys[localplay.keycode.ESC]) {
@@ -885,8 +885,15 @@ localplay.game.thingeditor = (function () {
     }
 
     ThingEditor.prototype.onresize = function (e) {
-        this.level.game.fittocontainer();
-        this.canvasoffset = new Point(this.canvas.offsetLeft, this.canvas.offsetTop);
+        //this.level.game.fittocontainer();
+        var aspect = this.canvas.offsetWidth / this.canvas.offsetHeight;
+        this.canvas.width = Math.round(this.canvas.height * aspect);
+        
+        if ( localplay.touchsupport() ) {
+            this.canvasoffset = localplay.domutils.elementPosition( this.canvas );
+        } else {
+            this.canvasoffset = new Point(this.canvas.offsetLeft, this.canvas.offsetTop);
+        }
         this.canvasbounds =
             new Rectangle(this.canvas.offsetLeft, this.level.offsetTop,
             this.canvas.offsetWidth, this.canvas.offsetHeight);

@@ -52,14 +52,14 @@ localplay.admin = (function () {
                     <input type="checkbox" id="{{tablename}}.{{id}}.flagged" name="{{tablename}}.{{id}}.flagged" value="flagged"><label for="{{tablename}}.{{id}}.flagged"></label>&nbsp;flagged&nbsp; \
                 </div>\
                 <div id="{{tablename}}.{{id}}.comments" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;view comments \
                 </div><br/> \
                 <div class="menubaritem disabled" style="margin-right: 0px;" > \
                     <input type="checkbox" id="{{tablename}}.{{id}}.blocked" name="{{tablename}}.{{id}}.blocked" value="blocked"><label for="{{tablename}}.{{id}}.blocked"></label>&nbsp;blocked&nbsp; \
                  </div> \
                 <div id="{{tablename}}.{{id}}.email" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/email-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/email-01.png" /> \
                     &nbsp;Email maker \
                 </div> \
             </div> \
@@ -82,15 +82,15 @@ localplay.admin = (function () {
                     <input type="checkbox" id="{{tablename}}.{{id}}.flagged" name="{{tablename}}.{{id}}.flagged" value="flagged"><label for="{{tablename}}.{{id}}.flagged"></label>&nbsp;flagged&nbsp; \
                 </div>\
                 <div id="{{tablename}}.{{id}}.comments" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;view comments \
                 </div><br/> \
                 <div id="{{tablename}}.{{id}}.delete" class="menubaritem" style="margin-right: 0px;" > \
-                    <img class="menubaritem" src="images/icons/delete-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/delete-01.png" /> \
                     &nbsp;Delete \
                 </div> \
                 <div id="{{tablename}}.{{id}}.email" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/email-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/email-01.png" /> \
                     &nbsp;Email maker \
                 </div> \
             </div> \
@@ -116,15 +116,15 @@ localplay.admin = (function () {
                     <input type="checkbox" id="{{tablename}}.{{id}}.flagged" name="{{tablename}}.{{id}}.flagged" value="flagged"><label for="{{tablename}}.{{id}}.flagged"></label>&nbsp;flagged&nbsp; \
                 </div>\
                 <div id="{{tablename}}.{{id}}.comments" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;view comments \
                 </div><br/> \
                 <div id="{{tablename}}.{{id}}.delete" class="menubaritem" style="margin-right: 0px;" > \
-                    <img class="menubaritem" src="images/icons/delete-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/delete-01.png" /> \
                     &nbsp;Delete \
                 </div> \
                 <div id="{{tablename}}.{{id}}.email" class="menubaritem" style="" > \
-                    <img class="menubaritem" src="images/icons/email-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/email-01.png" /> \
                     &nbsp;Email maker \
                 </div> \
             </div> \
@@ -147,7 +147,7 @@ localplay.admin = (function () {
        <input type="checkbox" id="{{prefix}}.flagged" name="{{prefix}}.flagged" value="flagged"><label for="{{prefix}}.flagged"></label>&nbsp;flagged&nbsp; \
        <input type="checkbox" id="{{prefix}}.blocked" name="{{prefix}}.blocked" value="blocked"><label for="{{prefix}}.blocked"></label>&nbsp;blocked&nbsp; \
        <div id="{{prefix}}.stats" class="menubaritem"> \
-            <img src="images/icons/add-01.png" class="menubaritem" />&nbsp;statistics \
+            <img src="/images/icons/add-01.png" class="menubaritem" />&nbsp;statistics \
        </div> \
     ';
 
@@ -164,11 +164,11 @@ localplay.admin = (function () {
             <textarea id="admin.email" style="width: 496px; height: 256px;" placeholder="Message" ></textarea>\
             <div style="height: 42px; width: 496px;">\
                 <div id="button.cancelemail" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Cancel \
                 </div> \
                 <div id="button.sendemail" class="menubaritem" style="float: right; margin-right: 0px;" > \
-                    <img class="menubaritem" src="images/icons/email-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/email-01.png" /> \
                     &nbsp;Send \
                 </div> \
             </div> \
@@ -191,7 +191,7 @@ localplay.admin = (function () {
             {{/comments}} \
             </div> \
             <div id="button.cancelcomment" class="menubaritem" style="float: right; margin-right: 0px;" > \
-                <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                 &nbsp;Cancel \
             </div> \
         </div>';
@@ -208,11 +208,11 @@ localplay.admin = (function () {
             </p>\
             <div style="height: 42px; width: 284px">\
                 <div id="button.stats.webstats" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                    <img class="menubaritem" src="images/icons/add-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/add-01.png" /> \
                     &nbsp;Webstats \
                 </div> \
                 <div id="button.stats.close" class="menubaritem" style="float: right; margin-right: 0px;" > \
-                    <img class="menubaritem" src="images/icons/close-cancel-01.png" /> \
+                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
                     &nbsp;Close \
                 </div> \
             </div> \

@@ -31,7 +31,7 @@ function GoalEditor(bounds, game) {
     var _this = this;
     this.game = game;
     this.view = new View(bounds, this);
-    var title = new Button('{ "images" : [ "images/goaleditor-button.png", "images/goaleditor-button.png", "images/goaleditor-button-over.png" ] }');
+    var title = new Button('{ "images" : [ "/images/goaleditor-button.png", "/images/goaleditor-button.png", "/images/goaleditor-button-over.png" ] }');
     title.view.bounds.x = 252;
     title.view.bounds.y = 0;
     title.view.bounds.width = 84;

@@ -45,20 +45,32 @@ localplay.game.backgroundeditor = (function () {
         this.hit = null;
         this.movebackground = -1;
         //
+        //
+        //
+        var vOffset = 0;
+        var titlebar = document.querySelector( '#title-bar' );
+        if ( titlebar ) {
+            vOffset = titlebar.offsetTop + titlebar.offsetHeight;
+        }
+        //
         // create container
         //
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = "0px";
+        this.container.style.top = vOffset + "px";
         this.container.style.left = "8px";
         this.container.style.bottom = "0px";
         this.container.style.right = "8px";
+        this.container.style.display = "flex";
+        this.container.style.flexDirection = "column";
+        this.container.style.justifyContent = "flex-start";
+        this.container.style.alignItems = "stretch";
         //
         //
         //
         this.backgroundview = document.createElement("div");
         this.backgroundview.id = "backgroundview";
-        this.backgroundview.className = "backgroundview";
+        this.backgroundview.className = "flexbackgroundview";
         //
         // hook drag events
         //
@@ -101,8 +113,10 @@ localplay.game.backgroundeditor = (function () {
         this.prefix = "background.medialibrary." + d.getTime();
         this.medialibrary = document.createElement("div");
         this.medialibrary.id = this.prefix;
-        this.medialibrary.className = "listview";
-        this.medialibrary.style.top = "260px";
+        this.medialibrary.className = "flexlistview";
+        //this.medialibrary.style.top = "260px";
+        this.medialibrary.style.flexGrow = "1";
+
         this.medialibrary.innerHTML = Mustache.render( localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "Upload background drawings" });
         //
         //
@@ -336,16 +350,16 @@ localplay.game.backgroundeditor = (function () {
     var uploadertemplate = '\
             <div class="menubar">\
                 <div class="menubaritem" > \
-                   <img class="menubaritem" src="images/icons/add-01.png" />&nbsp;Add Background\
+                   <img class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Add Background\
                 </div> \
                 <div id="backgrounduploader.button.close" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="images/icons/close-cancel-01.png" />&nbsp;Close\
+                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
                 </div> \
                 <div id="backgrounduploader.button.file" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="images/icons/load.png" />&nbsp;Choose Image\
+                   <img class="menubaritem" src="/images/icons/load.png" />&nbsp;Choose Image\
                 </div> \
                 <div id="backgrounduploader.button.save" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="images/icons/save.png" />&nbsp;Save Background\
+                   <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save Background\
                 </div> \
             </div> \
             <div style="position: absolute; top: 42px; left: 0px; bottom: 0px; right: 0px;"> \
@@ -362,10 +376,10 @@ localplay.game.backgroundeditor = (function () {
                     <!--\
                     <h3>brushes</h3> \
                     <div style="width: 256px; height: 42px"> \
-                        <img src="images/icons/brush-01.png" style="margin: 4px;"/> \
-                        <img src="images/icons/brush-02.png" style="margin: 4px;"/> \
-                        <img src="images/icons/brush-03.png" style="margin: 4px;"/> \
-                        <img src="images/icons/brush-04.png" style="margin: 4px;"/> \
+                        <img src="/images/icons/brush-01.png" style="margin: 4px;"/> \
+                        <img src="/images/icons/brush-02.png" style="margin: 4px;"/> \
+                        <img src="/images/icons/brush-03.png" style="margin: 4px;"/> \
+                        <img src="/images/icons/brush-04.png" style="margin: 4px;"/> \
                     </div> \
                     -->\
                 </div> \
@@ -478,6 +492,7 @@ localplay.game.backgroundeditor = (function () {
                     file: imageBlob
                 }
             ];
+            
             localplay.upload.upload(data, function(status) {
                 if ( status === 'OK' ) {
                     //

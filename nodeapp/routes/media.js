@@ -63,7 +63,7 @@ module.exports = function( authentication, db ) {
     router.get( '/:id', function (req, res) {
         let _id = db.ObjectId(req.params.id)
         db.findOne( 'media', { _id: _id } ).then( function(media) {
-            let path = './static/media/' + media.path;
+            let path = './media/' + media.path;
             if ( fs.existsSync(path) ) {
                 if ( req.query.thumbnail ) {
                     let transform = sharp().resize(256, 256).max();
@@ -72,9 +72,11 @@ module.exports = function( authentication, db ) {
                     fs.createReadStream(path).pipe(res);
                 }
             } else {
+                console.log( 'Media.get : unable to find file : ' + path);
                 res.status(404).send('Not Found');
             }
         }).catch( function( error ) {
+            console.log( 'Media.get : unable to find media : ' + req.params.id);
             res.status(404).send('Not Found');
         });
     }); 

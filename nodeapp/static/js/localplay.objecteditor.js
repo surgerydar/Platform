@@ -39,19 +39,19 @@ localplay.objecteditor = (function () {
     var uploadertemplate = '\
             <div class="menubar">\
                 <div class="menubaritem disabled" > \
-                   <img class="menubaritem" src="images/icons/breadcrumb.png" />&nbsp;<span id="objecteditor.title">Add Thing</span>\
+                   <img class="menubaritem" src="/images/icons/breadcrumb.png" />&nbsp;<span id="objecteditor.title">Add Thing</span>\
                 </div> \
                 <div id="objecteditor.button.close" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="images/icons/close-cancel-01.png" />&nbsp;Close\
+                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
                 </div> \
                 <div id="objecteditor.button.file" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="images/icons/load.png" />&nbsp;Choose Image\
+                   <img class="menubaritem" src="/images/icons/load.png" />&nbsp;Choose Image\
                 </div> \
                 <div id="objecteditor.button.cancel" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="images/icons/close-cancel-01.png" />&nbsp;Cancel\
+                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Cancel\
                 </div> \
                 <div id="objecteditor.button.save" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="images/icons/save.png" />&nbsp;Save\
+                   <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save\
                 </div> \
             </div> \
             <div id="objecteditor.container" style="position: absolute; top: 42px; left: 0px; bottom: 0px; right: 0px;"> \
@@ -70,19 +70,13 @@ localplay.objecteditor = (function () {
                         <input id="objecteditor.slider.brightness" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
                         <h3>contrast</h3>\
                         <input id="objecteditor.slider.contrast" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
-                        <!-- \
                         <h3>brushes</h3> \
                         <div style="width: 256px; height: 42px"> \
-                            <img id="objecteditor.button.brush.1" src="images/icons/brush-01.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.2" src="images/icons/brush-02.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.3" src="images/icons/brush-03.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.4" src="images/icons/brush-04.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.5" src="images/icons/brush-05.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.6" src="images/icons/brush-06.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.7" src="images/icons/brush-07.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.8" src="images/icons/brush-08.png" style="margin: 4px;"/> \
+                            <img id="objecteditor.button.brush.1" src="/images/icons/brush-01.png" style="margin: 4px;"/> \
+                            <img id="objecteditor.button.brush.2" src="/images/icons/brush-02.png" style="margin: 4px;"/> \
+                            <img id="objecteditor.button.brush.3" src="/images/icons/brush-03.png" style="margin: 4px;"/> \
+                            <img id="objecteditor.button.brush.4" src="/images/icons/brush-04.png" style="margin: 4px;"/> \
                         </div> \
-                    --> \
                     </div> \
                     <!-- selected thing --> \
                     <div class="backgroundgrid" style="position: absolute; top: 0px; left: 300px; bottom: 0px; right: 0px; overflow: auto; background-color: darkgray; "> \
@@ -194,31 +188,59 @@ localplay.objecteditor = (function () {
         // initialise event handling
         //
         this.canvas.objecteditor = this;
-        this.canvas.addEventListener("mousedown", this.onmousedown, true);
-        this.canvas.addEventListener("mouseup", this.onmouseup, true);
-        this.canvas.addEventListener("mousemove", this.onmousemove, true);
-        //
-        // add editing to canvas
-        //
-        this.cropcanvas.addEventListener("mousedown", function (e) {
-            localplay.domutils.fixEvent(e);
-            _this.cropcanvas.drawing = true;
-            var context = _this.cropcanvas.getContext("2d");
-            context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
-        });
-        this.cropcanvas.addEventListener("mouseup", function (e) {
-            _this.cropcanvas.drawing = false;
-        });
-        this.cropcanvas.addEventListener("mousemove", function (e) {
-            if (_this.cropcanvas.drawing) {
+        if ( localplay.touchsupport() ) {
+            this.canvas.addEventListener("mousedown", this.onmousedown, true);
+            this.canvas.addEventListener("mouseup", this.onmouseup, true);
+            this.canvas.addEventListener("mousemove", this.onmousemove, true);
+            //
+            // add editing to canvas
+            //
+            this.cropcanvas.addEventListener("mousedown", function (e) {
                 localplay.domutils.fixEvent(e);
+                _this.cropcanvas.drawing = true;
                 var context = _this.cropcanvas.getContext("2d");
                 context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
-            }
-        });
-        this.cropcanvas.addEventListener("mouseleave", function (e) {
-            _this.cropcanvas.drawing = false;
-        });
+            });
+            this.cropcanvas.addEventListener("mouseup", function (e) {
+                _this.cropcanvas.drawing = false;
+            });
+            this.cropcanvas.addEventListener("mousemove", function (e) {
+                if (_this.cropcanvas.drawing) {
+                    localplay.domutils.fixEvent(e);
+                    var context = _this.cropcanvas.getContext("2d");
+                    context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
+                }
+            });
+            this.cropcanvas.addEventListener("mouseleave", function (e) {
+                _this.cropcanvas.drawing = false;
+            });
+        } else {
+            this.canvas.addEventListener("mousedown", this.onmousedown, true);
+            this.canvas.addEventListener("mouseup", this.onmouseup, true);
+            this.canvas.addEventListener("mousemove", this.onmousemove, true);
+            //
+            // add editing to canvas
+            //
+            this.cropcanvas.addEventListener("mousedown", function (e) {
+                localplay.domutils.fixEvent(e);
+                _this.cropcanvas.drawing = true;
+                var context = _this.cropcanvas.getContext("2d");
+                context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
+            });
+            this.cropcanvas.addEventListener("mouseup", function (e) {
+                _this.cropcanvas.drawing = false;
+            });
+            this.cropcanvas.addEventListener("mousemove", function (e) {
+                if (_this.cropcanvas.drawing) {
+                    localplay.domutils.fixEvent(e);
+                    var context = _this.cropcanvas.getContext("2d");
+                    context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
+                }
+            });
+            this.cropcanvas.addEventListener("mouseleave", function (e) {
+                _this.cropcanvas.drawing = false;
+            });
+        }
         //
         //
         //

@@ -15,7 +15,7 @@ localplay.upload = (function () {
         //
         // start upload worker
         //
-        uploadWorker = new Worker('/scripts/upload.js');
+        uploadWorker = new Worker('/js/upload.js');
         //
         // hook messages
         //
@@ -29,12 +29,14 @@ localplay.upload = (function () {
                     }
                     break;
                 case "uploadprogress" :
+                    var percent = Math.round( 100. * evt.data.progress );
                     if ( progress ) {
-                        var percent = Math.round( 100. * evt.data.progress );
                         if ( isNaN( percent ) ) {
                             console.log( 'invalid progress : ' + evt.data.progress );
                         }
                         progress.innerHTML = "<h1>" + percent + "%</h1>";
+                    } else {
+                        console.log( 'upload : progress : ' + percent + '%' );
                     }
                     break;
                 case "uploaddone" :

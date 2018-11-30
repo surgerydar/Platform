@@ -58,7 +58,7 @@ localplay.ratingpanel = (function () {
                 for (var j = 0; j < 5; j++) {
                     var star = document.createElement("img");
                     star.className = "ratingpanelstar";
-                    star.src = "images/icons/rate-01.png";
+                    star.src = "/images/icons/rate-01.png";
                     star.category = i;
                     star.score = j + 1;
                     if (this.disabled) {
@@ -109,9 +109,9 @@ localplay.ratingpanel = (function () {
         for (var category = 0; category < this.stars.length; category++) {
             for (var i = 0; i < 5; i++) {
                 if (i < Math.round(this.score[category])) {
-                    this.stars[category][i].src = "images/icons/rate.png";
+                    this.stars[category][i].src = "/images/icons/rate.png";
                 } else {
-                    this.stars[category][i].src = "images/icons/rate-01.png";
+                    this.stars[category][i].src = "/images/icons/rate-01.png";
                 }
             }
         }
@@ -126,6 +126,7 @@ localplay.ratingpanel = (function () {
             //
             var json = datasource.response;
             try {
+                /*
                 var response = JSON.parse(json, function (key, value) {
                     return value;
                 });
@@ -133,26 +134,48 @@ localplay.ratingpanel = (function () {
                     var category = this.label.indexOf(response.category);
                     this.setScore(category, response.score);
                 }
+                */
+                console.log( 'RatingPanel.datasourceonloadend : rweponse : ' + json );
+                var response = JSON.parse(json);
+                if ( response.status === 'OK' ) {
+                    if ( response.data ) {
+                        var category = this.label.indexOf(response.data.category);
+                        this.setScore(category, response.data.score);
+                    }
+                } else {
+                    localplay.dialogbox.alert("Platform", JSON.stringify( response.error ) );
+                }
+
             } catch (error) {
                 //
                 // TODO: error dialog or fail gracefully?
                 //
             }
-        }
+        } 
 
     }
+    
+    RatingPanel.prototype.canonicalCategory = function( category ) {
+        return this.label[category].toLowerCase().replace(' ','_');
+    }
+    
     RatingPanel.prototype.getall = function () {
         for (var category = 0; category < this.score.length; category++) {
+            /*
             var param = {
                 category: this.label[category],
                 tablename: this.tablename,
                 targetid: this.targetid
             };
             localplay.datasource.get("getrating.php", param, this);
+            */
+            var url = '/rating/' + this.canonicalCategory(category) + '/' + this.tablename + '/' + this.targetid;
+            localplay.datasource.get(url, {}, this);
         }
     }
 
     RatingPanel.prototype.put = function (category) {
+        /*
         var data = {
             "category": this.label[category],
             "tablename": this.tablename,
@@ -162,6 +185,9 @@ localplay.ratingpanel = (function () {
         localplay.datasource.put("putrating.php", data, {}, {
 
         });
+        */
+        var url = '/rating/' + this.canonicalCategory(category) + '/' + this.tablename + '/' + this.targetid;
+        localplay.datasource.put(url, { score: this.score[category] }, {}, {} );
     }
 
     /*
