@@ -73,11 +73,6 @@ localplay.sprite = (function () {
         this.shadowtransform.rotate(0.05);
         this.shadow = new Point(10, 10);
         //
-        // create image and download
-        //
-        this.destroyed = false;
-        this.loadimage();
-        //
         // initialise editing 
         // TODO: this should probably be in a mutable version of sprite which handles the relationship between this and its item
         //
@@ -86,6 +81,11 @@ localplay.sprite = (function () {
         this.editScale = 1.0;
         this.editPosition = new Point();
         this.aabblisteners = [];
+        //
+        // create image and download
+        //
+        this.destroyed = false;
+        this.loadimage();
     }
 
     Sprite.prototype.loadimage = function () {
@@ -93,25 +93,16 @@ localplay.sprite = (function () {
         // create image and download
         //
         var _this = this;
-        this.image = new Image();
-        this.image.onload = function () {
-            if (_this.destroyed) return;
-            if (_this.scale > 1.0 || _this.scale < 1.0) {
-                localplay.imageprocessor.resizeImage(_this.image, _this.scale, function (scaledimage) {
-                    _this.image = scaledimage;
-                    _this.setup();
-                });
-            } else {
-                _this.setup();
-            }
-        };
-        this.image.onerror = function () {
-            //
-            // TODO: need  coherent response to this. At the moment it just is not added to the world
-            //
-        };
-        this.image.src = this.imageUrl;
-
+        this.image = localplay.objectcache.get(this.imageUrl);
+        if ( this.image.src.length > 0 && this.image.complete ) {
+            this.setup();
+        } else {
+            this.image.addEventListener( 'load', function(e) {
+                if ( !_this.destroyed ) {
+                    _this.setup();    
+                }
+            });
+        }
     }
 
     Sprite.prototype.replaceimage = function (imageUrl) {
@@ -164,27 +155,57 @@ localplay.sprite = (function () {
     }
 
     Sprite.prototype.setup = function () {
+        var _this = this;
+        /*
         if (this.body) {
             this.world.removeSprite(this);
         }
-        //
-        //
-        //
-        if (this.edgeshape) {
-            this.points = localplay.imageprocessor.findContours(this.image, false);
+        */
+        this.world.removeSprite(this);
+        if( this.scale > 1.0 || this.scale < 1.0 ) {
+            localplay.imageprocessor.resizeImage(this.image, this.scale, function (scaledimage) {
+                if ( !_this.destroyed ) {
+                    //
+                    // build collision shape
+                    //
+                    if (_this.edgeshape) {
+                        _this.points = localplay.imageprocessor.findContours(scaledimage, false);
+                    } else {
+                        _this.triangles = localplay.imageprocessor.findContours(scaledimage, true);
+                    }
+                    //
+                    // create body
+                    //
+                    _this.world.addSprite(_this);
+                    if (_this.body) {
+                        _this.body.SetFixedRotation(_this.fixedrottation);
+                        _this.body.SetActive(_this.active);
+                        _this.body.SetUserData(_this);
+                        _this.body.SetAngle(_this.rotation);
+                        _this.getAABB(true);
+                    }
+                }
+            });
         } else {
-            this.triangles = localplay.imageprocessor.findContours(this.image, true);
-        }
-        //
-        // create body
-        //
-        this.world.addSprite(this);
-        if (this.body) {
-            this.body.SetFixedRotation(this.fixedrottation);
-            this.body.SetActive(this.active);
-            this.body.SetUserData(this);
-            this.body.SetAngle(this.rotation);
-            this.getAABB(true);
+            //
+            // build collision shape
+            //
+            if (this.edgeshape) {
+                this.points = localplay.imageprocessor.findContours(this.image, false);
+            } else {
+                this.triangles = localplay.imageprocessor.findContours(this.image, true);
+            }
+            //
+            // create body
+            //
+            this.world.addSprite(this);
+            if (this.body) {
+                this.body.SetFixedRotation(this.fixedrottation);
+                this.body.SetActive(this.active);
+                this.body.SetUserData(this);
+                this.body.SetAngle(this.rotation);
+                this.getAABB(true);
+            }
         }
     }
 
@@ -240,7 +261,11 @@ localplay.sprite = (function () {
 
     Sprite.prototype.draw = function () {
         var context = this.world.context;
-        var size = new this.world.b2Vec2(this.image.naturalWidth, this.image.naturalHeight);
+        //
+        // TODO: support for realtime scale
+        //
+        //var size = new this.world.b2Vec2(this.image.naturalWidth, this.image.naturalHeight);
+        var size = new this.world.b2Vec2(this.image.naturalWidth*this.scale, this.image.naturalHeight*this.scale);
         var rotation = this.rotation;
         var position = this.position;
         if (this.editing) {
@@ -259,8 +284,10 @@ localplay.sprite = (function () {
         //
         if (this.userdata) {
             context.shadowColor = this.userdata.shadowcolour();
+            context.globalAlpha = this.userdata.opacity || 1.0;
         } else {
             context.shadowColor = 'rgba(0,0,0,0.25)';
+            context.globalAlpha = 1.0;
         }
         context.shadowOffsetX = 5;
         context.shadowOffsetY = 5;
@@ -399,8 +426,12 @@ localplay.sprite = (function () {
     Sprite.prototype.getAABB = function (update) {
         if (this.body != null && update) {
             if (!this.body.IsActive()) {
+                /* TODO: realtime scale
                 var halfwidth = (this.image.naturalWidth / 2);
                 var halfheight = (this.image.naturalHeight / 2);
+                */
+                var halfwidth = ((this.image.naturalWidth*this.scale) / 2);
+                var halfheight = ((this.image.naturalHeight*this.scale) / 2);
                 var corners = [];
                 corners.push(new Point(-halfwidth, -halfheight)); // top left
                 corners.push(new Point(halfwidth, -halfheight)); // top right

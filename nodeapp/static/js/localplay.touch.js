@@ -1,5 +1,6 @@
 //
 // touch module
+// simple single touch handling
 //
 ;
 localplay.touch = (function () {
@@ -8,10 +9,15 @@ localplay.touch = (function () {
     //
     //
     var touch = {};
-   /*
-    function TouchHandler( target ) {
-        this.target = target;
+    //
+    //
+    //
+    function TouchHandler( target, delegate ) {
+        
         if ( localplay.touchsupport() ) {
+            //
+            // handle touches
+            //
             var ongoingTouches = [];
             function copyTouch(touch) {
                 return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
@@ -29,69 +35,106 @@ localplay.touch = (function () {
             //
             //
             //
-            target.addEventListener("touchstart", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    ongoingTouches.push(copyTouch(touches[i]));
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                _this.pointerdown(p);
-            });
-            this.container.addEventListener("touchmove", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
+            if ( delegate.pointerdown ) {
+                target.addEventListener("touchstart", function (e) {
+                    e.preventDefault();
+                    var touches = e.changedTouches;
+                    for (var i = 0; i < touches.length; i++) {
+                        ongoingTouches.push(copyTouch(touches[i]));
                     }
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                _this.pointermove(p);
-            });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                            _this.pointerup(p);
+                    var offset = localplay.domutils.elementPosition(target);
+                    var p = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
+                    return delegate.pointerdown(p);
+                });
+            }
+            if ( delegate.pointermove ) {
+                target.addEventListener("touchmove", function (e) {
+                    e.preventDefault();
+                    var touches = e.changedTouches;
+                    for (var i = 0; i < touches.length; i++) {
+                        var idx = ongoingTouchIndexById(touches[i].identifier);
+                        if (idx >= 0) {
+                          ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
                         }
-                        ongoingTouches.splice(idx, 1);  
                     }
-                }
-            });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY -  _this.canvasoffset.y );
-                            _this.pointerup(p);
+                    var offset = localplay.domutils.elementPosition(target);
+                    var p = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
+                    return delegate.pointermove(p);
+                });
+            }
+            if ( delegate.pointerup ) {
+                target.addEventListener("touchend", function (e) {
+                    e.preventDefault();
+                    var touches = e.changedTouches;
+                    var ret = false;
+                    for (var i = 0; i < touches.length; i++) {
+                        var idx = ongoingTouchIndexById(touches[i].identifier);
+                        if (idx >= 0) {
+                            if ( idx === 0 ) {
+                                var offset = localplay.domutils.elementPosition(target);
+                                var p = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
+                                ret = delegate.pointerup(p);
+                            }
+                            ongoingTouches.splice(idx, 1);  
                         }
-                        ongoingTouches.splice(idx, 1);  
                     }
-                }
-            });
+                    return ret;
+                });
+                target.addEventListener("touchcancel", function (e) {
+                    e.preventDefault();
+                    var touches = e.changedTouches;
+                    var ret = false;
+                    for (var i = 0; i < touches.length; i++) {
+                        var idx = ongoingTouchIndexById(touches[i].identifier);
+                        if (idx >= 0) {
+                            if ( idx === 0 ) {
+                                var offset = localplay.domutils.elementPosition(target);
+                                var p = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
+                                ret = delegate.pointerup(p);
+                            }
+                            ongoingTouches.splice(idx, 1);  
+                        }
+                    }
+                    return ret;
+                });
+            }
          } else {
-            this.boundmousedown = this.onmousedown.bind(this);
-            this.boundmouseup = this.onmouseup.bind(this);
-            this.boundmousemove = this.onmousemove.bind(this);
-            this.boundkeydown = this.onkeydown.bind(this);
-            this.boundkeyup = this.onkeyup.bind(this);
-            this.container.addEventListener("mousedown", this.boundmousedown);
-            this.container.addEventListener("mouseup", this.boundmouseup);
-            this.container.addEventListener("mousemove", this.boundmousemove);
-            window.addEventListener("keydown", this.boundkeydown);
-            window.addEventListener("keyup", this.boundkeyup);
-        }
+             if ( delegate.pointerdown ) {
+                target.addEventListener("mousedown", function (e) {
+                    localplay.domutils.fixEvent(e);
+                    var p = new Point(e.offsetX,e.offsetY);
+                    return delegate.pointerdown(p);
+                });
+             }
+             if ( delegate.pointerup ) {
+                 target.addEventListener("mouseup", function (e) {
+                     localplay.domutils.fixEvent(e);
+                     var p = new Point(e.offsetX,e.offsetY);
+                     return delegate.pointerup(p);
+                 });
+                 target.addEventListener("mouseleave", function (e) {
+                     localplay.domutils.fixEvent(e);
+                     var p = new Point(e.offsetX,e.offsetY);
+                     return delegate.pointerup(p);
+                 });
+             }
+             if ( delegate.pointermove ) {
+                 target.addEventListener("mousemove", function (e) {
+                     localplay.domutils.fixEvent(e);
+                     var p = new Point(e.offsetX,e.offsetY);
+                     return delegate.pointermove(p);
+                 });             
+             }
+         }
     }
-    */
-    
+    //
+    //
+    //
+    touch.attach = function( target, delegate ) {
+        new TouchHandler( target, delegate );
+    }
+    //
+    //
+    //
     return touch;
 })();

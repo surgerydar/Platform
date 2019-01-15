@@ -569,7 +569,7 @@ Db.prototype.findAndModify = function( collection, query, sort, update, options 
         try {
             db.collection(collection).findAndModify( query, sort, update, options, function( err, result ) {
                 if ( err ) {
-                    console.log( 'findAndModify : ' + collection + ' : error : ' + err + ' : param : ' + JSON.stringify(document) );
+                    console.log( 'findAndModify : ' + collection + ' : error : ' + err );  
                     reject( err );
                 } else {
                     resolve( result );
@@ -582,9 +582,9 @@ Db.prototype.findAndModify = function( collection, query, sort, update, options 
     });
 }
 
-
 Db.prototype.ObjectId = function( hex ) {
     return new ObjectId.createFromHexString(hex);
 }
+
 module.exports = new Db();
 

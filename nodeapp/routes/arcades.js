@@ -17,22 +17,32 @@ module.exports = function( authentication, db ) {
         // build query
         //
         var query = {};
+        var order = { modified: -1 };
         if ( filter ) {
             var test = new RegExp(filter,'i');
             query = { $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] };
         }
-        if ( name === 'toppicks' ) {
-            query = Object.keys(query).length > 0 ? { $and: [ { toppick: true }, query ] } : { toppick: true };  
-            
-        } else if ( !( name === 'all' || name === 'latest' ) ) {
-            //
-            // TODO: 
-            //
+        switch ( name ) {
+            case 'toppicks' :
+                query = Object.keys(query).length > 0 ? { $and: [ { toppick: true }, query ] } : { toppick: true };  
+                break;
+            case 'mostplayed' :
+                order = { played: -1, modified: -1 };
+                break;
+            case 'highestrated' : // special case 
+                query = Object.keys(query).length > 0 ? { $and: [ { rating: {$gt:0} }, query ] } : { rating: {$gt:0} }; 
+                order = { rating: -1, modified: -1 };
+                break;
         }
         //
-        // dynamic arcade
+        // 
         //
-        db.find( 'levels', query, {}, { created: -1 }, offset, limit ).then( function(levels) {
+        db.find( 'levels', query, {}, order, offset, limit ).then( function(levels) {
+            for ( var i = 0; i < levels.length; i++ ) {
+                levels[ i ].candelete = req.user && levels[ i ].creatorid && req.user._id.toString() === levels[ i ].creatorid.toString();
+                levels[ i ].canflag = req.user && levels[ i ].creatorid && req.user._id.toString() !== levels[ i ].creatorid.toString();
+                levels[ i ].tablename = 'levels';
+            }
             db.count( 'levels', query ).then( function(count) {
                 res.json({ status: 'OK', data: {
                     pagecount: limit ? Math.ceil( count / limit ) : 1,

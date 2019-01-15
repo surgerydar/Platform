@@ -41,45 +41,59 @@ localplay.objecteditor = (function () {
                 <div class="menubaritem disabled" > \
                    <img class="menubaritem" src="/images/icons/breadcrumb.png" />&nbsp;<span id="objecteditor.title">Add Thing</span>\
                 </div> \
-                <div id="objecteditor.button.close" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
+                <div class="menubaritemgroup"> \
+                    <div id="objecteditor.button.cancel" class="menubaritem"> \
+                       <img class="menubaritem" src="/images/icons/arrow-previous-02.png" />&nbsp;Back \
+                    </div> \
+                    <div id="objecteditor.button.save" class="menubaritem" style="display: none;"> \
+                       <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save\
+                    </div> \
+                    <div id="objecteditor.button.file" class="menubaritem"> \
+                       <img class="menubaritem" src="/images/icons/load.png" />&nbsp;Choose Image\
+                    </div> \
+                    <div id="objecteditor.button.close" class="menubaritem"> \
+                       <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
+                    </div> \
                 </div> \
-                <div id="objecteditor.button.file" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="/images/icons/load.png" />&nbsp;Choose Image\
-                </div> \
-                <div id="objecteditor.button.cancel" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Cancel\
-                </div> \
-                <div id="objecteditor.button.save" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save\
-                </div> \
-            </div> \
+             </div> \
             <div id="objecteditor.container" style="position: absolute; top: 42px; left: 0px; bottom: 0px; right: 0px;"> \
                 <!-- image canvas --> \
                 <div id="objecteditor.scrollpane" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; overflow: auto; background-color: darkgray;"> \
                     <canvas id="objecteditor.canvas" class="backgrounduploader" style="cursor: url( ../images/icons/brush-01.png ); width: auto; height: auto;" width="1023" height="723">Your browser doesn&apos;t support HTML5 canvas</canvas> \
                 </div> \
-                <div id="objecteditor.savepanel" class="objecteditorsavepanel"> \
+                <img id="objecteditor.cropbutton" src="/images/tools/crop.png" style="position: absolute; top: 0px; right: 0px; width: 48px; height: 48px; background-color: rgba( 0, 0, 0, 0.5); visibility: hidden" />\
+                <div id="objecteditor.savepanel" class="uploader-container" style="visibility: hidden; top: 0px;"> \
                     <!-- toolbar --> \
-                    <div id="objecteditor.toolbar" class="objecteditortoolbar"> \
-                        <h3>name</h3>\
-                        <input id="objecteditor.name" type="text" style="width: 256px;" placeholder="name" /> \
-                        <h3>tags</h3>\
-                        <input id="objecteditor.tags" type="text" style="width: 256px;" placeholder="tags" /> \
-                        <h3>brightness</h3>\
-                        <input id="objecteditor.slider.brightness" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
-                        <h3>contrast</h3>\
-                        <input id="objecteditor.slider.contrast" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
-                        <h3>brushes</h3> \
-                        <div style="width: 256px; height: 42px"> \
-                            <img id="objecteditor.button.brush.1" src="/images/icons/brush-01.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.2" src="/images/icons/brush-02.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.3" src="/images/icons/brush-03.png" style="margin: 4px;"/> \
-                            <img id="objecteditor.button.brush.4" src="/images/icons/brush-04.png" style="margin: 4px;"/> \
-                        </div> \
+                    <div id="objecteditor.toolbar" class="uploader-toolbar open"> \
+                        <div id="objectuploader.meta" class="uploader-toolbar-group"> \
+                            <h3>name</h3>\
+                            <input id="objecteditor.name" type="text" style="width: 256px;" placeholder="name" /> \
+                            <h3>tags</h3>\
+                            <input id="objecteditor.tags" type="text" style="width: 256px;" placeholder="tags" /> \
+                        </div>\
+                        <div id="objectuploader.adjust" class="uploader-toolbar-group"> \
+                            <h3>brightness</h3>\
+                            <input id="objecteditor.slider.brightness" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
+                            <h3>contrast</h3>\
+                            <input id="objecteditor.slider.contrast" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
+                        </div>\
+                        <div id="objectuploader.edit" class="uploader-toolbar-group"> \
+                            <h3>erasers</h3> \
+                            <div id="objecteditor.brushes" style="width: 256px; height: 42px"> \
+                                <img id="objecteditor.button.brush.1" src="/images/icons/brush-04.png" style="margin: 4px; padding: 2px;"/> \
+                                <img id="objecteditor.button.brush.2" src="/images/icons/brush-03.png" style="margin: 4px; padding: 2px;"/> \
+                                <img id="objecteditor.button.brush.3" src="/images/icons/brush-02.png" style="margin: 4px; padding: 2px;"/> \
+                                <img id="objecteditor.button.brush.4" src="/images/icons/brush-01.png" style="margin: 4px; padding: 2px;"/> \
+                            </div> \
+                            <h3>zoom</h3> \
+                            <div id="objecteditor.zoom" style="width: 256px; height: 42px"> \
+                                <img id="objecteditor.button.zoomin" src="/images/icons/zoom-in.png" style="width: 48px; margin: 4px;"/> \
+                                <img id="objecteditor.button.zoomout" src="/images/icons/zoom-out.png" style="width: 48px; margin: 4px;"/> \
+                            </div> \
+                        </div>\
                     </div> \
                     <!-- selected thing --> \
-                    <div class="backgroundgrid" style="position: absolute; top: 0px; left: 300px; bottom: 0px; right: 0px; overflow: auto; background-color: darkgray; "> \
+                    <div class="uploader-scrollpane backgroundgrid"> \
                         <canvas id="objecteditor.cropcanvas" class="backgrounduploader" width="1023" height="723">Your browser doesn&apos;t support HTML5 canvas</canvas> \
                     </div> \
                 </div> \
@@ -88,6 +102,7 @@ localplay.objecteditor = (function () {
     ';
 
     function ObjectEditor(title,callback) {
+        var _this = this;
         //
         // create container
         //
@@ -112,13 +127,24 @@ localplay.objecteditor = (function () {
         //
         //
         //
+        this.cropbutton = document.getElementById("objecteditor.cropbutton");
+        if ( this.cropbutton ) {
+            this.cropbutton.onclick = function(e) {
+                e.preventDefault();
+                _this.cropbutton.style.visibility = 'hidden';
+                _this.showSelection();  
+                return true;
+            };
+        }
+        //
+        //
+        //
         this.name = document.getElementById("objecteditor.name");
         this.tags = document.getElementById("objecteditor.tags");
         //
         // initialise file selector
         // TODO: IE9 support
         //
-        var _this = this;
         var file = document.getElementById("objecteditor.file");
         if (file) {
             file.addEventListener("change", function (e) {
@@ -153,6 +179,8 @@ localplay.objecteditor = (function () {
         this.savebutton = document.getElementById("objecteditor.button.save");
         this.cancelbutton = document.getElementById("objecteditor.button.cancel");
         this.filebutton = document.getElementById("objecteditor.button.file");
+        this.brushes = document.getElementById("objecteditor.brushes");
+        this.zoom = 1;
         localplay.domutils.hookChildElementsWithPrefix(container, "objecteditor.button", "click", function (e) {
             var selector = localplay.domutils.getButtonSelector(e);
             if (selector.length >= 3) {
@@ -175,6 +203,38 @@ localplay.objecteditor = (function () {
                     case "cancel":
                         _this.showSavePanel(false);
                         break;
+                    case "brush":
+                        if ( selector.length >= 4 ) {
+                            var eraserRadius = 4 * parseInt(selector[3]);
+                            if ( isFinite(eraserRadius) ) {
+                                _this.eraserRadius = eraserRadius;
+                                if (_this.brushes) {
+                                    var brushId = selector.join('.');
+                                    localplay.domutils.forEachChildWithPrefix(_this.brushes, "objecteditor.button.brush", function( brush ) {
+                                        if ( brushId === brush.id ) {
+                                            brush.style.border = 'solid 1px white';
+                                        } else {
+                                            brush.style.border = 'none';
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        break;
+                    case "zoomin" :
+                        if ( _this.zoom < 8 ) {
+                            _this.cropcanvas.style.width = ( _this.cropcanvas.offsetWidth * 2 ) + "px";
+                            _this.cropcanvas.style.height = ( _this.cropcanvas.offsetHeight * 2 ) + "px";
+                            _this.zoom++;
+                        }
+                        break;
+                    case "zoomout" :
+                        if ( _this.zoom > 0 ) {
+                            _this.cropcanvas.style.width = ( _this.cropcanvas.offsetWidth / 2 ) + "px";
+                            _this.cropcanvas.style.height = ( _this.cropcanvas.offsetHeight / 2 ) + "px";
+                            _this.zoom++;
+                        }
+                        break;
                 }
             }
         });
@@ -185,62 +245,68 @@ localplay.objecteditor = (function () {
         this.objectname = "";
         this.objecttags = "";
         //
+        // eraser
+        //
+        this.brushes.firstElementChild.style.border = 'solid 1px white';
+        this.eraserRadius = 2; 
+        this.eraserPrevious = null;
+        function beginErase( ctx, p ) {
+            ctx.save();
+            erase(ctx, p)
+            _this.eraserPrevious = p;
+        }
+        function erase( ctx, p ) {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, _this.eraserRadius / 2, 0, 2 * Math.PI);
+            ctx.fill();
+            if ( _this.eraserPrevious ) {
+                ctx.lineWidth = _this.eraserRadius;
+                ctx.beginPath();
+                ctx.moveTo(_this.eraserPrevious.x, _this.eraserPrevious.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                _this.eraserPrevious.set(p.x,p.y);
+            } 
+            console.log( 'erasing : ' + p.tostring() );
+        };
+        function endErase( ctx, p ) {
+            _this.eraserPrevious = null;
+            ctx.restore();
+        }
+        //
         // initialise event handling
         //
         this.canvas.objecteditor = this;
-        if ( localplay.touchsupport() ) {
-            this.canvas.addEventListener("mousedown", this.onmousedown, true);
-            this.canvas.addEventListener("mouseup", this.onmouseup, true);
-            this.canvas.addEventListener("mousemove", this.onmousemove, true);
-            //
-            // add editing to canvas
-            //
-            this.cropcanvas.addEventListener("mousedown", function (e) {
-                localplay.domutils.fixEvent(e);
+        localplay.touch.attach( this.canvas, {
+            pointerdown: function(p) {
+                _this.pointerdown(_this,p);
+            },
+            pointermove: function(p) {
+                _this.pointermove(_this,p);
+            },
+            pointerup: function(p) {
+                _this.pointerup(_this,p);
+            }
+        });
+        localplay.touch.attach( this.cropcanvas, {
+            pointerdown: function(p) {
+                p.scale(_this.cropcanvas.width / _this.cropcanvas.offsetWidth);
                 _this.cropcanvas.drawing = true;
-                var context = _this.cropcanvas.getContext("2d");
-                context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
-            });
-            this.cropcanvas.addEventListener("mouseup", function (e) {
-                _this.cropcanvas.drawing = false;
-            });
-            this.cropcanvas.addEventListener("mousemove", function (e) {
+                beginErase(_this.cropcanvas.getContext("2d"),p);
+            },
+            pointermove: function(p) {
+                p.scale(_this.cropcanvas.width / _this.cropcanvas.offsetWidth);
                 if (_this.cropcanvas.drawing) {
-                    localplay.domutils.fixEvent(e);
-                    var context = _this.cropcanvas.getContext("2d");
-                    context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
+                    erase(_this.cropcanvas.getContext("2d"),p);
                 }
-            });
-            this.cropcanvas.addEventListener("mouseleave", function (e) {
+            },
+            pointerup: function(p) {
+                p.scale(_this.cropcanvas.width / _this.cropcanvas.offsetWidth);
                 _this.cropcanvas.drawing = false;
-            });
-        } else {
-            this.canvas.addEventListener("mousedown", this.onmousedown, true);
-            this.canvas.addEventListener("mouseup", this.onmouseup, true);
-            this.canvas.addEventListener("mousemove", this.onmousemove, true);
-            //
-            // add editing to canvas
-            //
-            this.cropcanvas.addEventListener("mousedown", function (e) {
-                localplay.domutils.fixEvent(e);
-                _this.cropcanvas.drawing = true;
-                var context = _this.cropcanvas.getContext("2d");
-                context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
-            });
-            this.cropcanvas.addEventListener("mouseup", function (e) {
-                _this.cropcanvas.drawing = false;
-            });
-            this.cropcanvas.addEventListener("mousemove", function (e) {
-                if (_this.cropcanvas.drawing) {
-                    localplay.domutils.fixEvent(e);
-                    var context = _this.cropcanvas.getContext("2d");
-                    context.clearRect(e.offsetX - 2, e.offsetY - 2, 4, 4);
-                }
-            });
-            this.cropcanvas.addEventListener("mouseleave", function (e) {
-                _this.cropcanvas.drawing = false;
-            });
-        }
+                endErase(_this.cropcanvas.getContext("2d"),p);
+            }
+        });
         //
         //
         //
@@ -263,16 +329,22 @@ localplay.objecteditor = (function () {
             this.savebutton.style.display = "block";
             this.cancelbutton.style.display = "block";
             this.filebutton.style.display = "none";
+            /*
             this.savepanel.style.right = "0px";
             this.savepanel.style.left = "0px";
+            */
+            this.savepanel.style.visibility = "visible";
             localplay.showtip("Give your thing a name<br />Adjust its contrast and brightness<br />Save or Cancel to finish or select again", document.getElementById("objecteditor.container"));
          } else {
             localplay.showtip("Click and drag to select an object", this.canvas);
             this.savebutton.style.display = "none";
             this.cancelbutton.style.display = "none";
             this.filebutton.style.display = "block";
+            /*
             this.savepanel.style.right = "100%";
             this.savepanel.style.left = "-100%";
+            */
+            this.savepanel.style.visibility = "hidden";
             this.name.value = "";
             this.tags.value = "";
             this.brightnessslider.value = 0;
@@ -337,8 +409,25 @@ localplay.objecteditor = (function () {
         
         this.canvas.width = Math.round(imagewidth);
         this.canvas.height = Math.round(imageheight);
+        /*
         this.canvas.style.width = this.canvas.width + "px";
         this.canvas.style.height = this.canvas.height + "px";
+        */
+        var maxwidth = Math.min( imagewidth, ( this.scroll.offsetWidth - 16 ));
+        var maxheight = Math.min( imageheight, ( this.scroll.offsetHeight - 16 ));
+        if ( imagewidth > imageheight ) {
+            this.canvas.style.width = maxwidth + "px";
+            this.canvas.style.height = ( maxwidth * ( imageheight / imagewidth ) ) + "px";
+        } else {
+            this.canvas.style.width = ( maxheight * ( imagewidth / imageheight ) ) + "px";
+            this.canvas.style.height = maxheight + "px";
+        }
+        //
+        //
+        //
+        if ( this.cropbutton ) {
+            this.cropbutton.style.visibility = 'hidden';
+        }
         //
         //
         //
@@ -369,7 +458,7 @@ localplay.objecteditor = (function () {
             //
             //
             //
-            if (this.trackingMouse) {
+            if (this.trackingMouse||(this.cropbutton&&this.cropbutton.style.visibility==='visible')) {
                 var p0 = new Point();
                 var p1 = new Point();
                 if (this.dragCurrent.x > this.dragStart.x) {
@@ -386,10 +475,17 @@ localplay.objecteditor = (function () {
                     p1.y = this.dragStart.y;
                     p0.y = this.dragCurrent.y;
                 }
+                context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                context.fillRect(0,0,this.canvas.width,p0.y);
+                context.fillRect(0,p1.y,this.canvas.width,this.canvas.height-p1.y);
+                context.fillRect(0,p0.y,p0.x,p1.y-p0.y);
+                context.fillRect(p1.x,p0.y,this.canvas.width-p1.x,p1.y-p0.y);
+                /*
                 if (context.setLineDash) {
                     context.setLineDash([5, 2]);
                 }
                 context.strokeRect(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
+                */
             }
         }
     }
@@ -397,58 +493,87 @@ localplay.objecteditor = (function () {
     //
     //
     ObjectEditor.prototype.onmousedown = function (e) {
-        var objecteditor = this.objecteditor;
-        localplay.showtip();
         localplay.domutils.fixEvent(e);
-        if (e.target === objecteditor.canvas) {
-            objecteditor.trackingMouse = true;
-            objecteditor.dragStart.set(e.offsetX, e.offsetY);
-            objecteditor.dragCurrent.set(e.offsetX, e.offsetY);
-         } else {
-            if (e.offsetX > e.target.clientWidth || e.offsetY > e.target.clientHeight) return;
-            objecteditor.trackingMouse = true;
-            var x = Math.max(0, Math.min(objecteditor.canvas.width, e.offsetX - objecteditor.canvas.offsetLeft));
-            var y = Math.max(0, Math.min(objecteditor.canvas.height, e.offsetY - objecteditor.canvas.offsetTop));
-            objecteditor.dragStart.set(x, y);
-            objecteditor.dragCurrent.set(x, y);
+        var objecteditor = this.objecteditor;
+        if ( objecteditor) {
+            var p = new Point(e.offsetX,e.offsetY);
+            if ( e.target !== objecteditor.canvas ) {
+                p.x -= objecteditor.canvas.offsetX;
+                p.y -= objecteditor.canvas.offsetY;
+            }
+            objecteditor.pointerdown(objecteditor,p);
+            localplay.domutils.stopPropagation(e);
         }
-        objecteditor.draw();
-        localplay.domutils.stopPropagation(e);
     }
 
     ObjectEditor.prototype.onmouseup = function (e) {
-        var objecteditor = this.objecteditor;
-        if (!objecteditor.trackingMouse) return;
-
         localplay.domutils.fixEvent(e);
-        objecteditor.trackingMouse = false;
-        objecteditor.draw();
-        objecteditor.showSelection();
-        localplay.domutils.stopPropagation(e);
+        var objecteditor = this.objecteditor;
+        if ( objecteditor ) {
+            var p = new Point(e.offsetX,e.offsetY);
+            if ( e.target !== objecteditor.canvas ) {
+                p.x -= objecteditor.canvas.offsetX;
+                p.y -= objecteditor.canvas.offsetY;
+            }
+            objecteditor.pointerup(objecteditor,p);
+            localplay.domutils.stopPropagation(e);
+        }
     }
 
     ObjectEditor.prototype.onmousemove = function (e) {
-        var objecteditor = this.objecteditor;
-        if (!objecteditor.trackingMouse) {
-            return;
-        }
-
         localplay.domutils.fixEvent(e);
-
-        if (e.target === objecteditor.canvas) {
-            objecteditor.dragCurrent.set(e.offsetX, e.offsetY);
-        } else {
-            var x = Math.max(0, Math.min(objecteditor.canvas.width, e.offsetX - objecteditor.canvas.offsetLeft));
-            var y = Math.max(0, Math.min(objecteditor.canvas.height, e.offsetY - objecteditor.canvas.offsetTop));
-            
-            objecteditor.dragCurrent.set(x, y);
+        var objecteditor = this.objecteditor;
+        if ( objecteditor ) {
+            var p = new Point(e.offsetX,e.offsetY);
+            if ( e.target !== objecteditor.canvas ) {
+                p.x -= objecteditor.canvas.offsetX;
+                p.y -= objecteditor.canvas.offsetY;
+            }
+            objecteditor.pointermove(objecteditor,p);
+            localplay.domutils.stopPropagation(e);
         }
-
-        objecteditor.draw();
-
-        localplay.domutils.stopPropagation(e);
     }
 
+    ObjectEditor.prototype.pointerdown = function( editor, p ) {
+        var scale = editor.canvas.width / editor.canvas.offsetWidth;
+        p.scale( scale );
+        localplay.showtip();
+        editor.trackingMouse = true;
+        var x = Math.max(0, Math.min(editor.canvas.width, p.x));
+        var y = Math.max(0, Math.min(editor.canvas.height, p.y));
+        editor.dragStart.set(x, y);
+        editor.dragCurrent.set(x, y);
+        editor.draw();
+        if ( editor.cropbutton ) {
+            editor.cropbutton.style.visibility = 'hidden';
+        }
+    }
+    
+    ObjectEditor.prototype.pointermove = function( editor, p ) {
+        var scale = editor.canvas.width / editor.canvas.offsetWidth;
+        p.scale( scale );
+        if (editor.trackingMouse) {
+            var x = Math.max(0, Math.min(editor.canvas.width, p.x));
+            var y = Math.max(0, Math.min(editor.canvas.height, p.y));
+            editor.dragCurrent.set(x, y);
+            editor.draw();
+        }
+    }
+    
+    ObjectEditor.prototype.pointerup = function( editor, p ) {
+        var scale = editor.canvas.width / editor.canvas.offsetWidth;
+        p.scale( scale );
+        if ( editor.trackingMouse ) {
+            if ( editor.cropbutton ) {
+                editor.cropbutton.style.visibility = 'visible';
+            } else {
+                editor.showSelection(); 
+            }
+            editor.trackingMouse = false;
+            editor.draw();
+        }
+    }
+    
     ObjectEditor.prototype.showSelection = function () {
         var _this = this;
         //
@@ -480,10 +605,21 @@ localplay.objecteditor = (function () {
             }
         }
         var scale = 1.0;
-        this.cropcanvas.width = Math.round(p1.x - p0.x);
-        this.cropcanvas.height = Math.round(p1.y - p0.y);
-        this.cropcanvas.style.width = this.cropcanvas.width + "px";
-        this.cropcanvas.style.height = this.cropcanvas.height + "px";
+        var imagewidth = Math.round(p1.x - p0.x);
+        var imageheight = Math.round(p1.y - p0.y);
+        var maxwidth = Math.min(imagewidth,this.cropcanvas.offsetParent.offsetWidth - 16);
+        var maxheight = Math.min(imageheight,this.cropcanvas.offsetParent.offsetHeight - 16);
+        this.cropcanvas.width = imagewidth;
+        this.cropcanvas.height = imageheight;
+        if ( imagewidth > imageheight ) {
+            this.cropcanvas.style.width = maxwidth + "px";
+            this.cropcanvas.style.height = ( ( imageheight / imagewidth ) * maxwidth ) + "px";
+        } else {
+            this.cropcanvas.style.width = ( ( imagewidth / imageheight ) * maxheight ) + "px";
+            this.cropcanvas.style.height = maxheight + "px";
+        }
+        //this.cropcanvas.style.width = this.cropcanvas.width + "px";
+        //this.cropcanvas.style.height = this.cropcanvas.height + "px";
         this.cropcanvas.style.position = "relative";
         this.cropcanvas.style.margin = "8px";
         this.cropcanvas.drawing = false;

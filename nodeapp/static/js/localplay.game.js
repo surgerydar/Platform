@@ -229,11 +229,10 @@ localplay.game = (function () {
                 try {
                     var response = JSON.parse(xhr.datasource.response);
                     if (response.status === "OK") {
-                        if (response._id !== undefined) {
-                            _this.levelid = response._id;
-                            _this.metadata.name = response.name;
+                        if (response.data) {
+                            _this.levelid = response.data._id;
+                            _this.metadata.name = response.data.name;
                             _this.level.resetdirty();
-                            history.replaceState( null, "Platform : " + param.name, "/play/" + response._id);
                         }
                     }
                     if ( callback ) callback(response.status === "OK");

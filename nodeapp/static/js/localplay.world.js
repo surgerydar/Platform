@@ -108,6 +108,7 @@ localplay.world = (function () {
     }
 
     World.prototype.reset = function () {
+        console.log( 'World.reset' );
         this.fps = 60.0;
         this.lasttime = -1;
         this.dtaccumilator = 0;
@@ -233,6 +234,12 @@ localplay.world = (function () {
     // sprite handling
     //
     World.prototype.addSprite = function (sprite) {
+        console.log( 'World.addSprite : ' + sprite.imageUrl + ' : sprite count : ' + this.sprites.length );
+        if ( this.sprites.length > 0 ) {
+            this.sprites.forEach( function( s ) {
+                console.log( 'sprite : ' + s.imageUrl );
+            });
+        }
         //
         // queue sprite creation if world is locked
         //
@@ -320,12 +327,14 @@ localplay.world = (function () {
         //
         //
         //
+        console.log( 'World.removeSprite : ' + sprite.imageUrl + ' : sprite count : ' + this.sprites.length );
         var index = this.sprites.indexOf(sprite);
         if (index > -1) {
+            console.log( 'World.removeSprite : sprite removed : ' + sprite.imageUrl );
             this.sprites.splice(index, 1);
         }
         //
-        // remove from Box2D world ( if it is in there )
+        // remove from Box2D world ( if it's in there )
         //
         if (sprite.body) {
             this.world.DestroyBody(sprite.body);

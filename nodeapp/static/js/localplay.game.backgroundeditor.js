@@ -45,12 +45,16 @@ localplay.game.backgroundeditor = (function () {
         this.hit = null;
         this.movebackground = -1;
         //
-        //
+        // allow for titlebar
         //
         var vOffset = 0;
-        var titlebar = document.querySelector( '#title-bar' );
-        if ( titlebar ) {
-            vOffset = titlebar.offsetTop + titlebar.offsetHeight;
+        var titleBar = document.querySelector( '#title-bar' );
+        if ( titleBar ) {
+            vOffset = titleBar.offsetHeight + 16;
+            window.addEventListener('resize', function(e) {
+                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
+            });
+
         }
         //
         // create container
@@ -72,40 +76,34 @@ localplay.game.backgroundeditor = (function () {
         this.backgroundview.id = "backgroundview";
         this.backgroundview.className = "flexbackgroundview";
         //
-        // hook drag events
         //
-        this.backgroundview.ondragenter = function (e) {
-            // this / e.target is the current hover target.
-            if (!_this.isFull()) _this.backgroundview.classList.add('over');
-
-        }
-        this.backgroundview.ondragleave = function (e) {
-            _this.backgroundview.classList.remove('over');  // this / e.target is previous target element.
-        }
-        this.backgroundview.ondragover = function (e) {
-            if (_this.movebackground < 0 && _this.isFull()) {
-                e.dataTransfer.dropEffect = 'none';
-            } else {
-                if (!_this.backgroundview.classList.contains('over')) {
-                    _this.backgroundview.classList.add('over');
-                }
-                e.dataTransfer.dropEffect = 'copy';
-            }
-            localplay.domutils.preventDefault(e);
-            return false;
-        }
-        this.backgroundview.ondrop = function (e) {
-            localplay.domutils.stopPropagation(e);
+        //
+        interact('#backgroundview').dropzone({
+          // only accept elements matching this CSS selector
+          //accept: '#yes-drop',
+          // Require a 75% element overlap for a drop to be possible
+          overlap: 0.25,
+          // listen for drop related events:
+          ondropactivate: function (e) {
+          },
+          ondragenter: function (e) {
+              if (!_this.isFull()) _this.backgroundview.classList.add('over');
+          },
+          ondragleave: function (e) {
+              _this.backgroundview.classList.remove('over');  // this / e.target is previous target element.
+          },
+          ondrop: function (e) {
             _this.backgroundview.classList.remove('over');
-            var url = e.dataTransfer.getData("Text");
+            var url = localplay.mediaurl(e.relatedTarget.src);
             if (_this.movebackground >= 0) {
                 _this.removeImage(_this.movebackground);
                 _this.movebackground = -1;
             }
             _this.addImage(url);
-            localplay.domutils.preventDefault(e);
-            return false;
-        }
+          },
+          ondropdeactivate: function (e) {
+          }
+        });
         //
         //
         //
@@ -116,8 +114,7 @@ localplay.game.backgroundeditor = (function () {
         this.medialibrary.className = "flexlistview";
         //this.medialibrary.style.top = "260px";
         this.medialibrary.style.flexGrow = "1";
-
-        this.medialibrary.innerHTML = Mustache.render( localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "Upload background drawings" });
+        this.medialibrary.innerHTML = Mustache.render( localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "Add" });
         //
         //
         //
@@ -154,18 +151,18 @@ localplay.game.backgroundeditor = (function () {
                         _this.medialibrary.controller.refresh();
                     }
                     if (_this.level.background.images.length > 1) {
-                        localplay.showtip("Drag your backgrounds here<br />Drag to reorder your backgrounds", _this.backgroundview);
+                        localplay.showtip("Tap image to add background<br />Drag to reorder your backgrounds", _this.backgroundview);
                     } else {
-                        localplay.showtip("Drag your backgrounds here", _this.backgroundview);
+                        localplay.showtip("Tap image to add background", _this.backgroundview);
                     }
                 });
 
             }
         }
         if (this.level.background.images.length > 1) {
-            localplay.showtip("Drag your backgrounds here<br />Drag to reorder your backgrounds", this.backgroundview);
+            localplay.showtip("Tap image to add background<br />Drag to reorder your backgrounds", this.backgroundview);
         } else {
-            localplay.showtip("Drag your backgrounds here", this.backgroundview);
+            localplay.showtip("Tap image to add background", this.backgroundview);
         }
     }
 
@@ -190,69 +187,72 @@ localplay.game.backgroundeditor = (function () {
                 for (var i = 0; i < background.images.length; i++) {
                     var item = document.createElement("div");
                     item.className = "backgroundviewitem";
+                    item.style.height = Math.round( this.backgroundview.offsetHeight * 0.8 ) + "px";
+                    item.style.width = item.style.height;
                     item.background = i;
                     item.onclick = function (e) {
-
                         localplay.domutils.fixEvent(e);
                         localplay.log(" e.offsetX=" + e.offsetX + " e.offsetY=" + e.offsetY);
-                        if (e.offsetX < 26 /*&& e.offsetY > 18*/ && e.offsetY < 42) {
+                        if (e.offsetX < 26  && e.offsetY < 42) {
                             _this.removeImage(e.target.background);
                         }
-
-                        /*
-                        TODO: need to fix the firefox and opera 'after' offset problem 
-                        */
-                        //_this.removeImage(e.target.background);
                     }
                     var image = new Image();
                     image.className = "backgroundview";
-                    image.src = background.images[i].src;
+                    image.style.visibility = 'hidden';
                     image.background = i;
-                    image.ondragenter = function (e) {
-                        //e.target.classList.add('over');
-
-                    };
-                    image.onmousemove = function (e) {
-                        this.hoverx = e.offsetX;
-                        this.hovery = e.offsetY;
-                    };
-
-                    image.ondragleave = function (e) {
+                    image.addEventListener('load',function(e){
+                        var aspect = e.target.naturalWidth / e.target.naturalHeight;
+                        var imageHeight = Math.round( _this.backgroundview.offsetHeight * 0.8 );
+                        var imageWidth = Math.round( imageHeight * aspect );
+                        e.target.style.width = imageWidth + 'px';
+                        e.target.style.height = imageHeight + 'px';
+                        e.target.parentElement.style.width = imageWidth + 'px';
+                        e.target.parentElement.style.height = imageHeight + 'px';
+                        e.target.style.visibility = 'visible';
+                    });
+                    image.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                    item.appendChild(image);
+                    image.src = background.images[i].src;
+                    this.backgroundview.appendChild(item);
+                }
+                //
+                // drag and drop
+                //
+                interact('img.backgroundview').dropzone({
+                    // only accept elements matching this CSS selector
+                    //accept: '#yes-drop',
+                    // Require a 25% element overlap for a drop to be possible
+                    overlap: 0.25,
+                    // listen for drop related events:
+                    ondropactivate: function (e) {
+                    },
+                    ondragenter: function (e) {
+                      if (!_this.isFull()) _this.backgroundview.classList.add('over');
+                    },
+                    ondragleave: function (e) {
                         e.target.classList.remove('overleft');
                         e.target.classList.remove('overright');
-                    };
-                    image.ondragover = function (e) {
-                        if (e.preventDefault) {
-                            e.preventDefault();
-                        }
+                    },
+                    ondropmove: function(e) {
                         if (_this.movebackground < 0 && _this.isFull()) {
-                            e.dataTransfer.dropEffect = 'none';
+                            //e.dataTransfer.dropEffect = 'none';
                         } else {
-                            localplay.domutils.fixEvent(e);
                             //localplay.log("dragx=" + e.offsetX + " dragy=" + e.offsetY + " hoverx=" + this.hoverx + " hovery" + this.hovery );
-                            var cx = e.target.offsetWidth / 2.0;
-                            if (e.target.hoverx > cx) {
+                            var cx = e.target.offsetLeft + ( e.target.offsetWidth / 2.0 );
+                            if (e.target.pageX > cx) {
                                 e.target.classList.remove('overleft');
                                 e.target.classList.add('overright');
                             } else {
                                 e.target.classList.remove('overright');
                                 e.target.classList.add('overleft');
                             }
-                            /*
-                            if (e.dataTransfer.effectAllowed == 'copyLink') {
-                                e.dataTransfer.dropEffect = 'copy';
-                            } else if (e.dataTransfer.effectAllowed == 'linkMove') {
-                                e.dataTransfer.dropEffect = 'move';
-                            } else {
-                                e.dataTransfer.dropEffect = 'none';
-                            }
-                            */
-                            e.dataTransfer.dropEffect = 'copy';
                         }
-                        return false;
-                    };
-                    image.ondrop = function (e) {
-                        localplay.domutils.stopPropagation(e);
+                    },
+                    ondrop: function (e) {
                         e.target.classList.remove('overleft');
                         e.target.classList.remove('overright');
                         _this.backgroundview.classList.remove('over');
@@ -262,7 +262,7 @@ localplay.game.backgroundeditor = (function () {
                         if (e.offsetX > cx) {
                             i++;
                         }
-                        var url = e.dataTransfer.getData("Text");
+                        var url = localplay.mediaurl(e.relatedTarget.src);
                         var newimage = true;
                         if (_this.movebackground >= 0) {
                             _this.removeImage(_this.movebackground);
@@ -274,27 +274,66 @@ localplay.game.backgroundeditor = (function () {
                         if (newimage&&_this.isFull()) {
                             localplay.showtip("You have reached the limit of 7 backgrounds<br />Drag to reorder your backgrounds<br />Delete backgrounds to add new ones", _this.backgroundview);
                         }
-                        if (e.preventDefault) {
-                            e.preventDefault(); // Necessary. Allows us to drop.
-                        }
-                        
-                        return false;
-                    }; 
-                    image.ondragstart = function (e) {
+                    },
+                    ondropdeactivate: function (e) {
+                    }
+                });
+                interact('img.backgroundview').draggable({
+                    restrict: { restriction: _this.backgroundview },
+                    manualStart: true,
+                    // disable autoScroll
+                    autoScroll: false,
+                    // call this function on every dragmove event
+                    onmove: function(e) {
+                        var target = e.target,
+                        // keep the dragged position in the data-x/data-y attributes
+                        x = (parseFloat(target.getAttribute('data-x')) || 0) + e.dx,
+                        y = (parseFloat(target.getAttribute('data-y')) || 0) + e.dy;
 
-                        if (e.shiftKey) { // duplicate
-                            //e.dataTransfer.effectAllowed = 'copyLink';
-                        } else { // move
-                            //e.dataTransfer.effectAllowed = 'linkMove';
-                            e.target.style.opacity = "0";
-                            _this.movebackground = e.target.background;
-                        }
-                        e.dataTransfer.effectAllowed = 'copy';
-                        e.dataTransfer.setData('Text', e.target.src);
-                    };
-                    item.appendChild(image);
-                    this.backgroundview.appendChild(item);
-                }
+                        // translate the element
+                        target.style.webkitTransform =
+                        target.style.transform =
+                        'translate(' + x + 'px, ' + y + 'px)';
+
+                        // update the posiion attributes
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    },
+                }).on('down', function(e) {
+                    e.preventDefault();
+                }).on('hold', function(e) {
+                    e.preventDefault();
+                    var source = e.target;
+                    var position = localplay.domutils.elementPosition( source );
+                    var proxy = document.createElement('img');
+                    proxy.id = 'listdragproxy';
+                    proxy.style.position = 'absolute';
+                    var width = Math.min( 64, source.offsetWidth );
+                    var height = Math.min( 64, source.offsetHeight );
+                    position.x += ( source.offsetWidth - width ) / 2.0;
+                    position.y += ( source.offsetHeight - height ) / 2.0;
+                    proxy.style.top = position.y + 'px';
+                    proxy.style.left = position.x + 'px';
+                    proxy.style.width = width + 'px';
+                    proxy.style.height = height + 'px';
+                    proxy.style.opacity = '0.5';
+                    proxy.src = source.src;
+                    document.body.appendChild(proxy);
+                    source.parentElement.style.opacity = '0.5';
+                    _this.movebackground = source.background;                        
+                    var interaction = e.interaction;
+                    if (!interaction.interacting()) {
+                        interaction.start({ name: 'drag' },
+                                        e.interactable,
+                                        proxy);
+                    }
+                }).on('dragend', function(e) {
+                    e.preventDefault();
+                    var proxy = document.querySelector('#listdragproxy');
+                    if ( proxy ) {
+                        document.body.removeChild(proxy);
+                    }
+                });
             }
         }
     }
@@ -304,10 +343,11 @@ localplay.game.backgroundeditor = (function () {
         // add image to background
         //
         if (this.level) {
-            this.level.background.addimage(url);
-            this.level.reserialise();
             if (this.isFull()) {
                 localplay.showtip("You have reached the limit of 7 backgrounds<br />Drag to reorder your backgrounds<br />Delete backgrounds to add new ones", this.backgroundview);
+            } else { 
+                this.level.background.addimage(url);
+                this.level.reserialise();
             }
         }
         //
@@ -350,29 +390,34 @@ localplay.game.backgroundeditor = (function () {
     var uploadertemplate = '\
             <div class="menubar">\
                 <div class="menubaritem" > \
-                   <img class="menubaritem" src="/images/icons/add-01.png" />&nbsp;Add Background\
+                   Add Background\
                 </div> \
-                <div id="backgrounduploader.button.close" class="menubaritem" style="float: right;"> \
-                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
-                </div> \
+                <div style="flex-grow: 1; flex-shrink: 1; width: 16px;" ></div> \
                 <div id="backgrounduploader.button.file" class="menubaritem" style="float: right;"> \
                    <img class="menubaritem" src="/images/icons/load.png" />&nbsp;Choose Image\
                 </div> \
                 <div id="backgrounduploader.button.save" class="menubaritem" style="float: right; display: none;"> \
-                   <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save Background\
+                   <img class="menubaritem" src="/images/icons/save.png" />&nbsp;Save&nbsp;Background\
+                </div> \
+                <div id="backgrounduploader.button.close" class="menubaritem" style="float: right;"> \
+                   <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close\
                 </div> \
             </div> \
-            <div style="position: absolute; top: 42px; left: 0px; bottom: 0px; right: 0px;"> \
+            <div class="uploader-container"> \
                 <!-- toolbar --> \
-                <div id="backgrounduploader.toolbar" style="position: absolute; top: 0px; left: -272px; bottom: 0px; width: 272px; padding: 16px; background-color: lightgray; overflow-x: hidden; overflow-y: auto;"> \
-                    <h3>name</h3>\
-                    <input id="backgrounduploader.name" type="text" style="width: 256px;" placeholder="name" /> \
-                    <h3>tags</h3>\
-                    <input id="backgrounduploader.tags" type="text" style="width: 256px;" placeholder="tags" /> \
-                    <h3>brightness</h3>\
-                    <input id="backgrounduploader.slider.brightness" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
-                    <h3>contrast</h3>\
-                    <input id="backgrounduploader.slider.contrast" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
+                <div id="backgrounduploader.toolbar" class="uploader-toolbar"> \
+                    <div id="backgrounduploader.meta" class="uploader-toolbar-group"> \
+                        <h3>name</h3>\
+                        <input id="backgrounduploader.name" type="text" placeholder="name" /> \
+                        <h3>tags</h3>\
+                        <input id="backgrounduploader.tags" type="text" placeholder="tags" /> \
+                    </div>\
+                    <div id="backgrounduploader.adjust" class="uploader-toolbar-group"> \
+                        <h3>brightness</h3>\
+                        <input id="backgrounduploader.slider.brightness" type="range" min="-255" max="255" value="0" /> \
+                        <h3>contrast</h3>\
+                        <input id="backgrounduploader.slider.contrast" type="range" min="-255" max="255" value="0" /> \
+                    </div>\
                     <!--\
                     <h3>brushes</h3> \
                     <div style="width: 256px; height: 42px"> \
@@ -384,7 +429,7 @@ localplay.game.backgroundeditor = (function () {
                     -->\
                 </div> \
                 <!-- image canvas --> \
-                <div id="backgrounduploader.scrollpane" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; overflow: auto; background-color: darkgray;"> \
+                <div id="backgrounduploader.scrollpane" class="uploader-scrollpane"> \
                     <canvas id="backgrounduploader.canvas" class="backgrounduploader" width="1023" height="723">Your browser doesn&apos;t support HTML5 canvas</canvas> \
                 </div> \
             </div> \
@@ -601,12 +646,14 @@ localplay.game.backgroundeditor = (function () {
         if (window.Worker) {
             if (enable) {
                 this.savebutton.style.display = "block";
-                this.toolbar.style.left = "0px";
-                this.scrollpane.style.left = "300px";
+                //this.toolbar.style.left = "0px";
+                //this.scrollpane.style.left = "300px";
+                this.toolbar.classList.add("open");
+                this.scrollpane.classList.add("open");
             } else {
                 this.savebutton.style.display = "none";
-                this.toolbar.style.left = "-272px";
-                this.scrollpane.style.left = "0px";
+                this.toolbar.classList.remove("open");
+                this.scrollpane.classList.remove("open");
                 this.name.value = "";
                 this.tags.value = "";
                 this.brightnessslider.value = 0;
@@ -660,7 +707,7 @@ localplay.game.backgroundeditor = (function () {
             //
             // convert to grayscale
             //
-            localplay.imageprocessor.canvastograyscale(_this.originalcanvas, _this.originalcanvas);
+            //localplay.imageprocessor.canvastograyscale(_this.originalcanvas, _this.originalcanvas);
             localplay.imageprocessor.copycanvas(_this.originalcanvas, _this.canvas);
             //
             //

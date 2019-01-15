@@ -4,6 +4,15 @@ localplay.homepage = (function () {
     return { 
         init: function() {
             //
+            //
+            //
+            var logo = document.querySelector('#title-logo');
+            if ( logo ) {
+                logo.addEventListener('click', function(e) {
+                    location = '/';
+                });
+            }
+            //
             // 
             //
             var menubutton  = document.querySelector('#title-menu');
@@ -16,9 +25,11 @@ localplay.homepage = (function () {
                 if( show ) {
                     backdrop.classList.add('open');
                     menu.classList.add('open');
+                    menu.scrollTop = '0px';
                 } else {
                     backdrop.classList.remove('open');
                     menu.classList.remove('open');
+                    menu.scrollTop = '0px';
                 }
             }
             if ( menubutton ) {
@@ -48,7 +59,8 @@ localplay.homepage = (function () {
                                 window.location = '/edit/create'
                                 break;
                             case "gallery":
-                                localplay.game.arcade.showarcadedialog();
+                                //localplay.game.arcade.showarcadedialog();
+                                location = '/arcade/latest?title=Latest';
                                 break;
                             case 'people':
                                 localplay.creator.showpeopledialog();
@@ -101,7 +113,6 @@ localplay.homepage = (function () {
                 //
                 contentHeader.style.fontSize = newHeaderFontSize + 'px';
                 contentBody.style.fontSize = newBodyFontsize + 'px';
-                
             }
             window.addEventListener('resize', fitContent, false );
             fitContent();

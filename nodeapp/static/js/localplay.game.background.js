@@ -45,6 +45,7 @@ localplay.game.background = (function () {
         this.loaded = false;
         var _this = this;
         this.images = [];
+        this.opacity = 1.0;
         for (var i = 0; i < images.length; i++) {
             var path = localplay.normaliseurl(images[i]);
             this.addimage(path);
@@ -108,6 +109,11 @@ localplay.game.background = (function () {
             var dstx = 0.0;
             var index;
             var viewport = this.level.world.viewport.duplicate();
+            context.save();
+            if ( this.opacity < 1.0 ) {
+                context.clearRect(0, 0, this.level.world.canvas.width, this.level.world.canvas.height);
+            }
+            context.globalAlpha = this.opacity;
             for (var i = 0; i < this.images.length && dstx < viewport.width; i++) {
                 var imagewidth = this.images[i].naturalWidth * this.scale;
                 var imageheight = this.images[i].naturalHeight * this.scale;
@@ -127,6 +133,7 @@ localplay.game.background = (function () {
                 //if (dstx >= viewport.width) break;
                 x += imagewidth;
             }
+            context.restore();
             //
             // compensate for images not as wide as the standard canvas
             //

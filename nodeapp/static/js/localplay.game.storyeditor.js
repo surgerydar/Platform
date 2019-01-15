@@ -45,7 +45,10 @@ localplay.game.storyeditor = (function () {
         var titleBar = document.querySelector('#title-bar');
         var vOffset = 0;
         if ( titleBar ) {
-            vOffset = titleBar.offsetTop + titleBar.offsetHeight;
+            vOffset = titleBar.offsetHeight + 16;
+            window.addEventListener('resize', function(e) {
+                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
+            });
         }
         //
         // container

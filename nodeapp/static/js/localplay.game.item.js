@@ -68,6 +68,7 @@ localplay.game.item = (function () {
         this.scale = properties.scale ? parseFloat(properties.scale) : 1.0;
         this.rotation = properties.rotation ? parseFloat(properties.rotation) : 0.0;
         this.zindex = properties.zindex ? parseInt(properties.zindex) : 0;
+        this.opacity = 1.0;
         this.sprite = null;
         //
         // behavious
@@ -107,16 +108,42 @@ localplay.game.item = (function () {
     GameItem.prototype.setupaudio = function () {
         var _this = this;
         if (this.audio) {
+            console.log( 'setupaudio : ' + this.audio[localplay.domutils.getTypeForAudio()] );
             this.audioready = false;
             try {
                 if (!this.audioplayer) {
                     this.audioplayer = new Audio();
                     this.audioplayer.addEventListener("canplaythrough", function () {
+                        console.log( 'oncanplaythrough : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
                         _this.audioready = true;
                     });
                     this.audioplayer.addEventListener("ended", function () {
+                        console.log( 'onended : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
+                        console.log( 'onended : audio readyState : ' + _this.audioplayer.readyState );
+                        _this.audioplayer.load();
                         _this.audioready = true;
                     });
+                    this.audioplayer.addEventListener("error", function (e) {
+                        console.log( 'error : audio : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
+                        switch (_this.audioplayer.error.code) {
+                             case _this.audioplayer.error.MEDIA_ERR_ABORTED:
+                               console.log('audioplayer error : aborted : ' + _this.audioplayer.error.message );
+                               break;
+                             case _this.audioplayer.error.MEDIA_ERR_NETWORK:
+                               console.log('audioplayer error : network error : ' + _this.audioplayer.error.message);
+                               break;
+                             case _this.audioplayer.error.MEDIA_ERR_DECODE:
+                               console.log('audioplayer error : decode error : ' + _this.audioplayer.error.message);
+                               break;
+                             case _this.audioplayer.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                               console.log('audioplayer error : format error : ' + _this.audioplayer.error.message);
+                               break;
+                             default:
+                               console.log('audioplayer error : unknown : ' + _this.audioplayer.error.message );
+                               break;
+                           }                    
+                    });
+
                 }
                 this.audioplayer.src = this.audio[localplay.domutils.getTypeForAudio()];
                 this.audioplayer.load();
@@ -449,7 +476,7 @@ localplay.game.item = (function () {
             if (changeaudio) {
                 changeaudio.onclick = function (e) {
                     var pin = localplay.domutils.elementPosition(e.target);
-                    var dialog = localplay.game.soundeditor.createaudiodialog("Select collison sound", "effect", _this.audio, pin);
+                    var dialog = localplay.game.soundeditor.createaudiodialog("Select collison sound", "effect", _this.audio);//, pin);
                     dialog.addEventListener("save", function () {
                         if (!_this.audio) _this.audio = {};
                         _this.audio.id = dialog.selection.id;

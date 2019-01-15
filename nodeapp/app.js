@@ -84,8 +84,11 @@ db.connect(
         app.get('/play/:levelid', function (req, res) {
 			res.render('play',{authorised: req.user && req.isAuthenticated(), levelid:req.params.levelid });
         });
-        app.get('/edit/:levelid', passport.isAuthenticated, function (req, res) { // TODO: include authentication
+        app.get('/edit/:levelid', passport.isAuthenticated, function (req, res) { 
 			res.render('edit',{authorised: req.user && req.isAuthenticated(), levelid:req.params.levelid });
+        });
+        app.get('/arcade/:arcade', function (req, res) { 
+			res.render('arcade',{authorised: req.user && req.isAuthenticated(), arcade:req.params.arcade, title:req.query.title });
         });
         //
         // ui templates

@@ -363,12 +363,31 @@ localplay.domutils = (function () {
     }
 
     domutils.elementPosition = function (element) {
+        /*
         var p = new Point();
         do {
             p.x += element.offsetLeft;
             p.y += element.offsetTop;
             element = element.offsetParent;
         } while (element);
+        return p;
+        */
+        var p = new Point();
+        while (element) {
+            if (element.tagName == "BODY") {
+                // deal with browser quirks with body/window/document and page scroll
+                var xScroll = element.scrollLeft || document.documentElement.scrollLeft;
+                var yScroll = element.scrollTop || document.documentElement.scrollTop;
+
+                p.x += (element.offsetLeft - xScroll + element.clientLeft);
+                p.y += (element.offsetTop - yScroll + element.clientTop);
+            } else {
+                // for all other non-BODY elements
+                p.x += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+                p.y += (element.offsetTop - element.scrollTop + element.clientTop);
+            }
+            element = element.offsetParent;
+        }
         return p;
     }
 
@@ -395,8 +414,7 @@ localplay.domutils = (function () {
         } else if (audio.canPlayType("/audio/ogg")) {
             return "ogg";
         }
-
-        return "";
+        return "mp3";
     }
     //
     //

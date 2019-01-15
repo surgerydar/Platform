@@ -2,7 +2,13 @@ include includes/head.pug
 
 #canvascontainer( style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: white;" )
     canvas( id="game.canvas" class="slider" width="1024" height="723" ) Your browser doesn't support HTML5 canvas 
-
+.fullscreen( id="mobileleveleditor.createlevel" )
+    .editorcontainer( id="mobileleveleditor.createlevel.editorcontainer" class="editorcontainer")
+#title-bar
+    img#title-logo( src="/images/bc-logo.png" )
+    img#title-menu( src="/images/logo-menu.png" )
+#menu-backdrop
+.main-menu#main-menu
 script.
     (function( _id ) {
         var canvas = document.getElementById("game.canvas");

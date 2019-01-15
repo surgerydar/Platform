@@ -41,6 +41,10 @@ function Point(x, y) {
     }
 }
 
+Point.prototype.equals = function( other ) {
+    return this.x === other.x && this.y === other.y;
+}
+
 Point.prototype.set = function (x, y) {
     this.x = x;
     this.y = y;
@@ -68,6 +72,9 @@ Point.prototype.moveby = function (p) {
     this.y += p.y;
 }
 
+Point.prototype.isvalid = function() {
+    return isFinite(this.x) && isFinite(this.y);
+}
 //
 // vector functions
 //
@@ -116,6 +123,11 @@ function Triangle(a, b, c) {
         this.c = c;
     }
 }
+
+Triangle.prototype.equals = function( other ) {
+    return this.a.equals(other.a) && this.b.equals(other.b) && this.c.equals(other.c);
+}
+
 Triangle.prototype.duplicate = function () {
     return new Triangle(this.a.duplicate(), this.b.duplicate(), this.c.duplicate());
 }
@@ -162,6 +174,10 @@ function Rectangle(x,y,width,height) {
     }
 }
 
+Rectangle.prototype.equals = function (other) {
+    return this.x === other.x && this.y === other.y && this.width === other.width && this.height === other.height;
+}
+
 Rectangle.prototype.duplicate = function () {
     return new Rectangle(this.x, this.y, this.width, this.height);
 }
@@ -191,6 +207,21 @@ Rectangle.prototype.left = function () {
 
 Rectangle.prototype.right = function () {
     return this.x + this.width;
+}
+
+Rectangle.prototype.topleft = function() {
+    return new Point( this.left(), this.top() );
+}
+Rectangle.prototype.topright = function() {
+    return new Point( this.right(), this.top() );
+}
+
+Rectangle.prototype.bottomleft = function() {
+    return new Point( this.left(), this.bottom() );
+}
+
+Rectangle.prototype.bottomright = function() {
+    return new Point( this.right(), this.bottom() );
 }
 
 Rectangle.prototype.getcenter = function () {

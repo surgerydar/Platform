@@ -381,8 +381,8 @@ localplay.authentication = (function () {
     };
     //
     // start authentication poll
-    //
-    authentication.poll(1);
+    // JONS: disable for now, perhaps reinstate???
+    // authentication.poll(1);
     //
     //
     //

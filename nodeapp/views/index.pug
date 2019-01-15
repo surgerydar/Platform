@@ -3,6 +3,9 @@ html
     head
         meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1" )
         
+        // default app icon
+        link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
+        
         // apple standalone config
         meta( name="apple-mobile-web-app-capable" content="yes" )
         meta( name="apple-mobile-web-app-status-bar-style" content="black-translucent" )
@@ -16,6 +19,7 @@ html
 
         // android webapp config TODO: manifest
         meta( name="mobile-web-app-capable" content="yes" )
+        link( rel="manifest" href="/manifest.json" )
 
         title Platform
 
@@ -47,7 +51,7 @@ html
         #homepage-content
             p#homepage-header( style="font-size: 48px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
             p#homepage-body( style="font-size: 32px;" ).
-                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='#' ) gallery of top ranked games ] or take part in our #[a( href='http://google.com' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='#' ) about ] section for more information.
+                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='/arcade/highestrated?title=Highest Rated' ) gallery of top ranked games ] or take part in our #[a( href='/challenge' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='/about' ) about ] section for more information.
         #menu-backdrop
         #title-bar
             img#title-logo( src="/images/bc-logo.png" )
@@ -58,7 +62,6 @@ html
         .main-menu#main-menu
             .main-menu-item( id="menu.create" ) MAKE A GAME
             .main-menu-item( id="menu.gallery" ) GALLERY
-            .main-menu-item( id="menu.people" ) PEOPLE
             .main-menu-item( id="menu.help" ) HELP
             .main-menu-item( id="menu.about" ) ABOUT
             if authorised

@@ -33,16 +33,19 @@ localplay.game.thingeditor = (function () {
     //
     //
     var mousetrackingmode = {
+        rotatescale: "rotatescale",
         rotate: "rotate",
         scale: "scale",
         move: "move",
         background: "background",
+        duplicate: "duplicate",
         none: "none"
     }
     //
     // thing selection indicator
     //
     var deleteindex = 2;
+    var duplicateindex = 4;
     var selectiontools = [
         {
             id: mousetrackingmode.move,
@@ -69,6 +72,23 @@ localplay.game.thingeditor = (function () {
             }
         },
         {
+            id: mousetrackingmode.rotatescale,
+            source: "/images/icons/rotate-03.png",
+            image: new Image(),
+            offset: {
+                x: 1, y: 1
+            }
+        },
+        {
+            id: mousetrackingmode.duplicate,
+            source: "/images/icons/duplicate-01.png",
+            image: new Image(),
+            offset: {
+                x: -1, y: 1
+            }
+        }
+        /*
+        {
             id: mousetrackingmode.rotate,
             source: "/images/icons/rotate-03.png",
             image: new Image(),
@@ -84,6 +104,7 @@ localplay.game.thingeditor = (function () {
                 x: -1, y: 1
             }
         }
+        */
     ];
     //
     // preload icons
@@ -132,8 +153,9 @@ localplay.game.thingeditor = (function () {
 
     ThingSelection.prototype.update = function (scale) {
         if (this.sprite) {
-            this.isavatar = this.sprite.userdata.level.isAvatar(this.sprite.body)
-            var minimumdim = 64 * ( scale ? scale : 1.0 );
+            this.isavatar = this.sprite.body && this.sprite.userdata.level.isAvatar(this.sprite.body);
+            //var minimumdim = 64 * ( scale ? scale : 1.0 );
+            var minimumdim = 128 * ( scale ? scale : 1.0 );
             this.aabb = this.sprite.getAABB().duplicate();
             if (this.aabb.width < minimumdim || this.aabb.height < minimumdim) {
                 var growth = Math.max(minimumdim - this.aabb.height, minimumdim - this.aabb.width) / 2;
@@ -170,7 +192,7 @@ localplay.game.thingeditor = (function () {
             // draw tool icons
             //
             for (var i = 0; i < selectiontools.length; i++) {
-                if (this.isavatar && i == deleteindex) continue;
+                if (this.isavatar && ( i === deleteindex || i === duplicateindex ) ) continue;
                 var bounds = this.toolbounds[i].duplicate();
                 bounds.scalefromcenter(scale);
                 if (this.rollover[i]) {
@@ -187,7 +209,7 @@ localplay.game.thingeditor = (function () {
     ThingSelection.prototype.mousedown = function (p, scale) {
         if (this.sprite) {
             for (var i = 0; i < this.toolbounds.length; i++) {
-                if (this.isavatar && i == deleteindex) continue;
+                if (this.isavatar && ( i === deleteindex || i === duplicateindex ) ) continue;
                 var bounds = this.toolbounds[i].duplicate();
                 bounds.scalefromcenter(scale);
                 if (bounds.contains(p)) {
@@ -208,14 +230,16 @@ localplay.game.thingeditor = (function () {
     ThingSelection.prototype.mousemove = function (p, scale) {
         if (this.sprite) {
             for (var i = 0; i < this.toolbounds.length; i++) {
-                if (this.isavatar && i == deleteindex) continue;
+                if (this.isavatar && ( i === deleteindex || i === duplicateindex )) continue;
                 var bounds = this.toolbounds[i].duplicate();
                 bounds.scalefromcenter(scale);
                 this.rollover[i] = bounds.contains(p);
             }
         }
     }
-
+    //
+    //
+    //
     function ThingEditor(level) {
         var _this = this;
         this.level = level;
@@ -236,12 +260,16 @@ localplay.game.thingeditor = (function () {
         this.container.style.bottom = "0px";
         this.container.style.right = "0px";
         this.container.style.overflow = "hidden";
+        /*
         this.canvas = document.createElement("canvas");
         this.canvas.className = "thingview";
         this.canvas.width = level.canvas.width;
         this.canvas.height = level.canvas.height;
         this.container.appendChild(this.canvas);
         this.level.game.setcanvas(this.canvas);
+        this.canvasoffset = new Point();
+        */
+        this.canvas = level.canvas;
         //
         // build ui
         //
@@ -255,96 +283,50 @@ localplay.game.thingeditor = (function () {
         //
         // hook events
         //
-        if ( localplay.touchsupport() ) {
-            //
-            // TODO: move touch handling into convenience object
-            //
-            var ongoingTouches = [];
-            function copyTouch(touch) {
-                return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
-            }
-            function ongoingTouchIndexById(idToFind) {
-              for (var i = 0; i < ongoingTouches.length; i++) {
-                var id = ongoingTouches[i].identifier;
-
-                if (id == idToFind) {
-                  return i;
-                }
-              }
-              return -1;    // not found
-            }
-            //
-            //
-            //
-            this.container.addEventListener("touchstart", function(e) {
-                e.preventDefault();
-                /*
-             var p = e.target === this.canvas ? new Point(e.offsetX, e.offsetY) : new Point(e.offsetX - this.canvasoffset.x, e.offsetY - this.canvasoffset.y);
-             */
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    ongoingTouches.push(copyTouch(touches[i]));
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+        /*
+        localplay.touch.attach( this.canvas, {
+            pointerdown: function(p) {
                 _this.pointerdown(p);
-            });
-            this.container.addEventListener("touchmove", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
-                    }
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
+            },
+            pointermove: function(p) {
                 _this.pointermove(p);
+            },
+            pointerup: function(p) {
+                _this.pointerup(p);
+            }
+        });
+        */
+        localplay.touch.attach( this.container, {
+            pointerdown: function(p) {
+                _this.pointerdown(p);
+            },
+            pointermove: function(p) {
+                _this.pointermove(p);
+            },
+            pointerup: function(p) {
+                _this.pointerup(p);
+            }
+        });
+        //
+        //
+        //
+        if ( !localplay.touchsupport() ) {
+            //this.boundkeydown = this.onkeydown.bind(this);
+            //this.boundkeyup = this.onkeyup.bind(this);
+            window.addEventListener("keydown", function(e) {
+                _this.onkeydown(e);
             });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                            _this.pointerup(p);
-                        }
-                        ongoingTouches.splice(idx, 1);  
-                    }
-                }
+            window.addEventListener("keyup", function(e) {
+                _this.onkeyup(e);
             });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY -  _this.canvasoffset.y );
-                            _this.pointerup(p);
-                        }
-                        ongoingTouches.splice(idx, 1);  
-                    }
-                }
-            });
-         } else {
-            this.boundmousedown = this.onmousedown.bind(this);
-            this.boundmouseup = this.onmouseup.bind(this);
-            this.boundmousemove = this.onmousemove.bind(this);
-            this.boundkeydown = this.onkeydown.bind(this);
-            this.boundkeyup = this.onkeyup.bind(this);
-            this.container.addEventListener("mousedown", this.boundmousedown);
-            this.container.addEventListener("mouseup", this.boundmouseup);
-            this.container.addEventListener("mousemove", this.boundmousemove);
-            window.addEventListener("keydown", this.boundkeydown);
-            window.addEventListener("keyup", this.boundkeyup);
         }
         //
         //
         //
-        this.boundresize = this.onresize.bind(this);
-        window.addEventListener("resize", this.boundresize);
+        //this.boundresize = this.onresize.bind(this);
+        window.addEventListener("resize", function(e) {
+            _this.onresize(e);
+        });
         //
         //
         //
@@ -361,13 +343,6 @@ localplay.game.thingeditor = (function () {
 
     ThingEditor.prototype.dealloc = function () {
         localplay.showtip();
-        this.container.removeEventListener("mousedown", this.onmousedown);
-        this.container.removeEventListener("mouseup", this.onmouseup);
-        this.container.removeEventListener("mousemove", this.boundmousemove);
-        window.removeEventListener("keydown", this.boundkeydown);
-        window.removeEventListener("keyup", this.boundkeyup);
-        window.removeEventListener("resize", this.boundresize);
-        
         if (this.container) {
             localplay.domutils.purgeDOMElement(this.container);
         }
@@ -403,23 +378,7 @@ localplay.game.thingeditor = (function () {
                 context.beginPath();
                 context.arc(p0.x, p0.y, radius, 0.0, Math.PI * 2.0);
                 context.stroke();
-
-                /*
-                */
-                var icon = null;
-                /*
-                switch (this.mousetrackingmode) {
-                    case mousetrackingmode.rotate:
-                        icon = rotate;
-                        break;
-                    case mousetrackingmode.scale:
-                        icon = scale;
-                        break;
-                    case mousetrackingmode.move:
-                        icon = move;
-                        break;
-                }
-                */
+                
                 if (this.selection.selectedicon) {
                     context.drawImage(this.selection.selectedicon, p1.x - 11, p1.y - 11, 22, 22);
                 } else {
@@ -428,7 +387,6 @@ localplay.game.thingeditor = (function () {
                     context.stroke();
                 }
             } else {
-                // TODO: draw scrolling icon
                 var p1 = this.mousetrackingposition;
                 context.drawImage(backgroundscrollindicator, p1.x - 11, p1.y - 11, 22, 22);
             }
@@ -488,6 +446,7 @@ localplay.game.thingeditor = (function () {
     }
 
     ThingEditor.prototype.adjustscrollbar = function () {
+        if( localplay.touchsupport() ) return;
         if (!this.scrollbar) {
             //
             // TODO: move this into generic scrollbar class
@@ -586,7 +545,7 @@ localplay.game.thingeditor = (function () {
         this.mousetrackingmode = mode;
         this.firstmousetrackingupdate = true;
         this.mousetrackingduplicate = null;
-       if (this.selectedsprite) {
+        if (this.selectedsprite) {
             if (this.keys[localplay.keycode.ALT] && !this.level.isAvatar(this.selectedsprite.body)) {
                 //
                 // duplicate
@@ -601,8 +560,6 @@ localplay.game.thingeditor = (function () {
     }
 
     ThingEditor.prototype.endtrackingmouse = function () {
-       
-       
         if (this.selectedsprite) {
             this.mousetrackingduplicate = null;
             this.selectedsprite.commitedit();
@@ -635,7 +592,17 @@ localplay.game.thingeditor = (function () {
         var offset = this.level.game.getviewportoffset();
         if (p0) p0.moveby(offset);
 
-        if (this.mousetrackingmode === mousetrackingmode.rotate) {
+        if (this.mousetrackingmode === mousetrackingmode.rotatescale) {
+            var rotation = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+            var scaled = p1.distance(p0);
+            if (this.firstmousetrackingupdate) {
+                this.mousetrackingreference = { rotation: rotation, scaled: scaled };
+                this.firstmousetrackingupdate = false;
+            } else {
+                this.selectedsprite.editRotation = rotation - this.mousetrackingreference.rotation;
+                this.selectedsprite.editScale = Math.min(100.0, Math.max(0.1, scaled / this.mousetrackingreference.scaled));
+            }
+        } else if (this.mousetrackingmode === mousetrackingmode.rotate) {
             var rotation = Math.atan2(p1.y - p0.y, p1.x - p0.x);
             if (this.firstmousetrackingupdate) {
                 this.mousetrackingreference = rotation;
@@ -653,7 +620,6 @@ localplay.game.thingeditor = (function () {
                 this.selectedsprite.editScale = scale;
             }
         } else if (this.mousetrackingmode === mousetrackingmode.move) {
-
             if (this.firstmousetrackingupdate) {
                 this.mousetrackingreference = new Point(p0.x - p1.x, p0.y - p1.y);
                 this.firstmousetrackingupdate = false;
@@ -661,19 +627,17 @@ localplay.game.thingeditor = (function () {
                 this.selectedsprite.editPosition.x = (p1.x + this.mousetrackingreference.x) - offset.x;
                 this.selectedsprite.editPosition.y = (p1.y + this.mousetrackingreference.y) - offset.y;
             }
-            //localplay.log("edit position: " + this.selectedsprite.editPosition.tostring());
-            //localplay.log("p1: " + p1.tostring() + " reference: " + this.mousetrackingreference.tostring() + " offset: " + offset.tostring());
         } else if (this.mousetrackingmode === mousetrackingmode.background) {
-                if (this.firstmousetrackingupdate) {
-                    this.mousetrackingreference = new Point(p1.x, p1.y);
-                    this.firstmousetrackingupdate = false;
-                } else {
-                    this.level.scrollviewportby(this.mousetrackingreference.x - p1.x);
-                    this.mousetrackingreference.x = p1.x;
-                    this.mousetrackingreference.y = p1.y;
-                    this.adjustscrollbar();
-                }
+            if (this.firstmousetrackingupdate) {
+                this.mousetrackingreference = new Point(p1.x, p1.y);
+                this.firstmousetrackingupdate = false;
+            } else {
+                this.level.scrollviewportby(this.mousetrackingreference.x - p1.x);
+                this.mousetrackingreference.x = p1.x;
+                this.mousetrackingreference.y = p1.y;
+                this.adjustscrollbar();
             }
+        }
     }
 
     ThingEditor.prototype.istrackingmouse = function () {
@@ -689,6 +653,12 @@ localplay.game.thingeditor = (function () {
             var item = this.selectedsprite.userdata;           
             if (item) {
                 var _this = this;
+                var editor = localplay.game.thingpropertyeditor.createthingpropertyeditor(item, function() {
+                    
+                });
+                this.container.parentElement.appendChild(editor.container);
+                editor.initialise();
+                /*
                 var propertyeditor = item.geteditor();
                 if (propertyeditor) {
                     localplay.showtip();
@@ -700,7 +670,9 @@ localplay.game.thingeditor = (function () {
                             _this.selectedsprite = item.sprite;
                             _this.selection.setsprite(item.sprite);
                             item.closeeditor();
-                            localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", _this.container);
+                            if ( !localplay.touchsupport() ) {
+                                localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", _this.container);
+                            }
                         });
                     dialog.show();
                     //
@@ -708,6 +680,7 @@ localplay.game.thingeditor = (function () {
                     //
                     item.initialiseeditor();
                 }
+                */
             }
         }
     }
@@ -716,9 +689,9 @@ localplay.game.thingeditor = (function () {
         if (this.selectedsprite) {
             var item = this.selectedsprite.userdata;
             if (item) {
-                if (this.level.gameplay.containsItem(item)) {
+                if (true) {//this.level.gameplay.containsItem(item)) {
                     var _this = this;
-                    localplay.dialogbox.confirm("Delete item", "This item is part of the gameplay.<br />Are you sure you want to delete it?",
+                    localplay.dialogbox.confirm("Delete item", "Are you sure you want to delete this item?",
                     function (confirm) {
                         if (confirm) {
                             _this.level.removeitem(item, true);
@@ -750,16 +723,18 @@ localplay.game.thingeditor = (function () {
     }
     
     ThingEditor.prototype.pointerdown = function (p) {
+        var _this = this;
         var mp = p.duplicate(); // need the raw mouse point for selection mousedown
         var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
         var sprite = this.level.game.spriteatpoint(p);
         if (this.selectedsprite) {
             var command = this.selection.mousedown(p, scale);
-            console.log( 'ThingEditor.onmousedown : command=' + command );
+            //console.log( 'ThingEditor.onmousedown : command=' + command );
             switch (command) {
                 case mousetrackingmode.move:
                 case mousetrackingmode.rotate:
                 case mousetrackingmode.scale:
+                case mousetrackingmode.rotatescale:
                     this.starttrackingmouse(command);
                     mp.scale(scale);
                     this.updatemousetracking(mp);
@@ -770,11 +745,19 @@ localplay.game.thingeditor = (function () {
                 case "delete":
                     this.confirmdelete();
                     break;
+                case "duplicate":
+                    var duplicate = this.selectedsprite.userdata.duplicate();
+                    this.level.additem(duplicate);
+                    duplicate.sprite.moveby({x:44,y:44});
+                    //duplicate.sethometocurrentposition();
+                    this.selectedsprite = duplicate.sprite;
+                    this.selection.setsprite(this.selectedsprite);
+                    break;
                 default: {
                     if (sprite != this.selectedsprite) {
                         this.selectedsprite = sprite;
-                        this.selection.setsprite(sprite);
-                        if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
+                        this.selection.setsprite(this.selectedsprite);
+                        if (this.selectedsprite && !localplay.touchsupport() && !this.level.isAvatar(this.selectedsprite.body)) {
                             localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
                         } else {
                             localplay.showtip();
@@ -783,9 +766,8 @@ localplay.game.thingeditor = (function () {
                 }
             }
         } else {
-
             if (sprite) {
-                console.log( 'ThingEditor.onmousedown : selecting sprite' );
+                //console.log( 'ThingEditor.onmousedown : selecting sprite' );
                 this.rolloversprite = null;
                 this.selectedsprite = sprite;
                 this.selection.setsprite(sprite, scale);
@@ -795,7 +777,7 @@ localplay.game.thingeditor = (function () {
                     localplay.showtip();
                 }
             } else {
-                console.log( 'ThingEditor.onmousedown : tracking background' );
+                //console.log( 'ThingEditor.onmousedown : tracking background' );
                 this.selectedsprite = null;
                 this.selection.setsprite(null);
                 this.starttrackingmouse(mousetrackingmode.background);
@@ -829,6 +811,7 @@ localplay.game.thingeditor = (function () {
     
     ThingEditor.prototype.pointermove = function (p) {
         var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
+        //console.log( 'ThingEditor.pointermove : scale = ' + scale );
         if (this.istrackingmouse()) {
             p.scale(scale);
             this.updatemousetracking(p);
@@ -888,15 +871,22 @@ localplay.game.thingeditor = (function () {
         //this.level.game.fittocontainer();
         var aspect = this.canvas.offsetWidth / this.canvas.offsetHeight;
         this.canvas.width = Math.round(this.canvas.height * aspect);
-        
+        /*
         if ( localplay.touchsupport() ) {
             this.canvasoffset = localplay.domutils.elementPosition( this.canvas );
         } else {
             this.canvasoffset = new Point(this.canvas.offsetLeft, this.canvas.offsetTop);
         }
+        */
         this.canvasbounds =
             new Rectangle(this.canvas.offsetLeft, this.level.offsetTop,
             this.canvas.offsetWidth, this.canvas.offsetHeight);
+        
+        var scale = this.canvas.height / localplay.defaultsize.height;
+        if (this.level.background) {
+            this.level.background.setscale(scale);
+            this.level.adjustviewport();
+        }
         this.adjustscrollbar();
         return false;
     }

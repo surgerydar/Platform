@@ -1,0 +1,28 @@
+include includes/head.pug
+
+.listview#arcade-container
+    .listviewheader( id= arcade + '.listview.header')
+        img.listviewpagination( id= arcade + '.prev.medialibrarypage' src= '/images/icons/arrow-previous-02.png' )
+        .listviewpagination( id= arcade + '.pagenumbers.medialibrary')
+        img.listviewpagination( id= arcade + '.next.medialibrarypage' src='/images/icons/arrow-next-02.png' )
+        input( type='search' class='listviewsearch' placeholder='creator, name or tags' )
+    .listviewcontent( id= arcade + '.listviewcontent' )
+#menu-backdrop
+#title-bar
+    img#title-logo( src="/images/bc-logo.png" )
+    h1#title-header GALLERY:#{title}
+    img#title-menu( src="/images/logo-menu.png" )
+.main-menu#main-menu
+    .main-menu-item( id="menu.arcade.latest" ) LATEST
+    .main-menu-item( id="menu.arcade.toppicks" ) TOP PICKS
+    .main-menu-item( id="menu.arcade.highestrated" ) HIGHEST RATED
+    .main-menu-item( id="menu.arcade.mostplayed" ) MOST PLAYED
+    .main-menu-item( id="menu.create" ) CREATE GAME
+    .main-menu-item( id="menu.about" ) ABOUT
+    if authorised
+        .main-menu-item( id="menu.logout" ) LOGOUT
+    else
+        .main-menu-item( id="menu.login" ) LOGIN/SIGN UP
+
+script.
+    localplay.arcade.init('#{arcade}');

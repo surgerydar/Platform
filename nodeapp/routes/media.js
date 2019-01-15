@@ -34,11 +34,16 @@ module.exports = function( authentication, db ) {
                 rows.push({
                     _id: entry._id,
                     name: entry.name,
+                    requestorid: req.user ? req.user._id : "anon",
+                    creatorid: entry.creatorid,
                     creator: entry.creator,
                     tags: entry.tags,
                     url: 'media/' + entry._id,
-                    thumbnail: 'media/' + entry._id + '?thumbnail=true'
-                })
+                    thumbnail: 'media/' + entry._id + '?thumbnail=true',
+                    candelete: req.user && entry.creatorid && req.user._id.toString() === entry.creatorid.toString(),
+                    canflag: req.user && entry.creatorid && req.user._id.toString() !== entry.creatorid.toString(),
+                    tablename: 'media'
+                });
             });
             if ( listview ) {
                 db.count( 'media', query ).then(function(count) {
@@ -61,23 +66,33 @@ module.exports = function( authentication, db ) {
     //
     //
     router.get( '/:id', function (req, res) {
-        let _id = db.ObjectId(req.params.id)
+        let _id = db.ObjectId(req.params.id);
         db.findOne( 'media', { _id: _id } ).then( function(media) {
-            let path = './media/' + media.path;
+            let path = media.flagged ? './static/images/flagged.png' : './media/' + media.path;
             if ( fs.existsSync(path) ) {
-                if ( req.query.thumbnail ) {
-                    let transform = sharp().resize(256, 256).max();
-                    fs.createReadStream(path).pipe(transform).pipe(res);
-                } else {
-                    fs.createReadStream(path).pipe(res);
+                try {
+                    if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + ( 60 * 15 ) );
+                    if ( req.query.thumbnail ) {
+                        let transform = sharp().resize(256, 256).max();
+                        transform.on('error', function( error ) {
+                            console.log('media transform error : ' + req.params.id + ' : ' + err);
+                        });
+                        fs.createReadStream(path).pipe(transform).pipe(res);
+                    } else {
+                        fs.createReadStream(path).pipe(res);
+                    }
+                } catch( error ) {
+                    res.status(500).send('Invalid image format');
                 }
             } else {
                 console.log( 'Media.get : unable to find file : ' + path);
-                res.status(404).send('Not Found');
+                //res.status(404).send('Not Found');
+                fs.createReadStream('./static/images/deleted.png').pipe(res);
             }
         }).catch( function( error ) {
             console.log( 'Media.get : unable to find media : ' + req.params.id);
-            res.status(404).send('Not Found');
+            //res.status(404).send('Not Found');
+            fs.createReadStream('./static/images/deleted.png').pipe(res);
         });
     }); 
     //
@@ -94,9 +109,23 @@ module.exports = function( authentication, db ) {
         }).catch( function( error ) {
             res.json({ status: 'ERROR', error: error});
         });
-    });  
+    }); 
+    //
+    //
+    //
+    router.delete('/:id', authentication, function (req, res) { // delete media entry
+        var query = {
+            _id: db.ObjectId(req.params.id),
+            creatorid: req.user._id
+        };
+        db.remove('media', query).then( function( response ) {
+            res.json({ status: 'OK', data: response });
+        }).catch( function( error ) {
+            res.json({ status: 'ERROR', error: error});
+        });
+    });
     /*
-    router.put('/:id', authentication, function (req, res) { // update level
+    router.put('/:id', authentication, function (req, res) { // update media entry
         var _id         = db.ObjectId(req.params.id);
         var level       = req.body;
         level.creatorid = req.user._id;

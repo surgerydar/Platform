@@ -90,7 +90,9 @@ localplay.datasource = (function () {
             xhr.send();
         }
     }
-    
+    //
+    //
+    //
     datasource.post = function (target, data, param, delegate) {
         //
         // create request object
@@ -114,6 +116,19 @@ localplay.datasource = (function () {
         // create request object
         //
         var xhr = this.createrequest('GET', source, param, delegate);
+        //
+        // build request
+        //
+        xhr.send();
+    }
+    //
+    //
+    //
+    datasource.delete = function (target, param, delegate) {
+        //
+        // create request object
+        //
+        var xhr = this.createrequest('DELETE', target, param, delegate);
         //
         // build request
         //
@@ -393,7 +408,12 @@ localplay.datasource = (function () {
 
         try {
             var response = JSON.parse(xhr.datasource.response);
-            localplay.dialogbox.alert("Platform", response.message);
+            // TODO: handle error
+            if ( response.status === 'OK' ) {
+                localplay.dialogbox.alert("Platform", response.message||'Success');
+            } else {
+                localplay.dialogbox.alert("Platform - error", response.error||'Error');
+            }
         } catch (error) {
             localplay.dialogbox.alert("Platform - server error", xhr.datasource.response);
         }

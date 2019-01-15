@@ -520,9 +520,8 @@ localplay.imageprocessor = (function () {
     imageprocessor.adjustBrightness = function (source, target, brightness) { // brightness -255 => 255
         this.processCanvas(source, target, function (data) {
             //
-            // adjust contrast
+            // adjust brightness
             //
-            //var factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast))
             var factor = Math.abs(brightness / 255.0);
             for (var i = 0; i < data.data.length; i += 4) {
                 for (var j = 0; j < 3; j++) {
@@ -544,7 +543,6 @@ localplay.imageprocessor = (function () {
             //
             // adjust contrast
             //
-            //var factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast))
             var factor = Math.abs(contrast / 255.0);
             for (var i = 0; i < data.data.length; i += 4) {
                 for (var j = 0; j < 3; j++) {
@@ -565,6 +563,67 @@ localplay.imageprocessor = (function () {
         });
     }
 
+    function interpolate( a, b, factor ) {
+        return a + ( ( b - a ) * factor );
+    }
+    
+    imageprocessor.adjust = function ( source, target, brightness, contrast, saturation ) { // all adjustments -255 to 255
+        this.processCanvas(source, target, function (data) {
+            var fBrightness = Math.abs(brightness / 255.0);
+            var fContrast = Math.abs(contrast / 255.0);
+            var fSaturation = Math.abs(saturation / 255.0);
+            for (var i = 0; i < data.data.length; i += 4) {
+                for (var j = 0; j < 3; j++) {
+                    //
+                    //
+                    //
+                    var value = data.data[i + j];
+                    //
+                    // brightness
+                    //
+                    if (brightness > 0) {
+                        value = interpolate( value, 255, fBrightness );
+                    } else if ( brightness < 0 ) {
+                        value = interpolate( value, 0, fBrightness );
+                    }
+                    //
+                    // contrast
+                    //
+                    if (contrast > 0) {
+                        if (value < 128) {
+                            value = interpolate(value,0,fContrast);
+                        } else {
+                            value = interpolate(value,255,fContrast);
+                        }
+                    } else if ( contrast < 0 ) {
+                        value = interpolate( value, 128, fContrast);
+                    }
+                    //
+                    // clamp value
+                    //
+                    data.data[i + j] = Math.max( 0, Math.min( 255, Math.round( value ) ) );
+                }
+                //
+                // saturation
+                //
+                var cMax = Math.max( data.data[i], Math.max(data.data[i+1], data.data[i+2]));
+                var sMax = [ data.data[i] / cMax, data.data[i+1] / cMax, data.data[i+2] / cMax ];
+                var sMin = Math.min(255, Math.round(0.2126 * data.data[i] + 0.7152 * data.data[i+1] + 0.0722 * data.data[i+2]));
+                for ( j = 0; j < 3; j++ ) {
+                    value = data.data[i + j];
+                    if ( saturation > 0 ) {
+                        // iterpolate towards max saturation
+                        value = interpolate( value, 255 * sMax[j], fSaturation );
+                    } else if ( saturation < 0 ) {
+                        // interpolate towards grayscale
+                        value = interpolate( value, sMin, fSaturation );
+                    }
+                    data.data[i + j] = Math.max( 0, Math.min( 255, Math.round( value ) ) );
+                }
+            }
+        });
+    }
+    
     imageprocessor.triangulate = function (points) {
 
         var triangles = [];

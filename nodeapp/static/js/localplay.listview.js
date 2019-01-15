@@ -34,6 +34,7 @@ localplay.listview = (function () {
     //
     // public templates
     //
+    /*
     listview.editablecontainer = '\
         <div id="{{prefix}}.listview.header" class="listviewheader"> \
             <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
@@ -47,12 +48,31 @@ localplay.listview = (function () {
         </div> \
         <div class="listviewcontent"></div>\
     ';
+    */
+    listview.editablecontainer = '\
+        <div id="{{prefix}}.listview.header" class="listviewheader"> \
+            <div id="{{prefix}}.pagination" class="menubaritem"> \
+                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
+                <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
+                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+            </div> \
+            <input type="search" class="listviewsearch" placeholder="creator, name or tags"/> \
+            <div style="flex-grow:1; flex-shrink:1; width: 16px;"></div>\
+            <div id="{{prefix}}.localplay.addlistitem" class="menubaritem"> \
+                <img class="menubaritem" id="localplay.addlistitem" src="/images/icons/add-01.png" />\
+                {{{addlabel}}} \
+            </div> \
+        </div> \
+        <div class="listviewcontent"></div>\
+    ';
 
     listview.container = '\
          <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
-            <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+            <div id="{{prefix}}.pagination" class="menubaritem"> \
+                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
+                <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
+                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+            </div> \
             <input type="search" class="listviewsearch" placeholder="creator, name or tags" value="{{filter}}"/> \
         </div> \
         <div class="listviewcontent"></div>\
@@ -85,7 +105,14 @@ localplay.listview = (function () {
             <img id="item.image.{{_id}}" class="listitemimage" src="{{thumbnail}}" /> \
             <div class="listitemfooter"> \
                 <span class="listitemheader">{{name}}</span>\
-                <br />by&nbsp;{{creator}} \
+                <br />by&nbsp;{{creator}}<br />\
+                <span class="ratingpanelstars"> \
+                    <img id="item.rating.{{_id}}.1" class="ratingpanelstar" src="/images/icons/rate-01.png" /> \
+                    <img id="item.rating.{{_id}}.2" class="ratingpanelstar" src="/images/icons/rate-01.png" /> \
+                    <img id="item.rating.{{_id}}.3" class="ratingpanelstar" src="/images/icons/rate-01.png" /> \
+                    <img id="item.rating.{{_id}}.4" class="ratingpanelstar" src="/images/icons/rate-01.png" /> \
+                    <img id="item.rating.{{_id}}.5" class="ratingpanelstar" src="/images/icons/rate-01.png" /> \
+                </span> \
             </div> \
         </div> \
         {{/rows}} \
@@ -241,11 +268,75 @@ localplay.listview = (function () {
                 var item = document.getElementById("item." + data._id);
                 if (item) {
                     this.attachDataToItem(item, data);
+                    item.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
                 }
             }
             if (this.postprocessor) {
                 this.postprocessor(this);
             }
+            //
+            //
+            //
+            /*
+            interact('img.listitemimage').draggable({
+                preventDefault: true,
+                manualStart: true,
+                // disable autoScroll
+                autoScroll: false,
+                // call this function on every dragmove event
+                onmove: function(e) {
+                    e.preventDefault();
+                    var target = e.target,
+                    // keep the dragged position in the data-x/data-y attributes
+                    x = (parseFloat(target.getAttribute('data-x')) || 0) + e.dx,
+                    y = (parseFloat(target.getAttribute('data-y')) || 0) + e.dy;
+
+                    // translate the element
+                    target.style.webkitTransform =
+                    target.style.transform =
+                    'translate(' + x + 'px, ' + y + 'px)';
+
+                    // update the posiion attributes
+                    target.setAttribute('data-x', x);
+                    target.setAttribute('data-y', y);
+                }
+            }).on('down', function(e) {
+                e.preventDefault();
+            }).on('hold', function(e) {
+                e.preventDefault();
+                var source = e.target;
+                var position = localplay.domutils.elementPosition( source );
+                var proxy = document.createElement('img');
+                proxy.id = 'listdragproxy';
+                proxy.style.position = 'absolute';
+                var width = Math.min( 64, source.offsetWidth );
+                var height = Math.min( 64, source.offsetHeight );
+                position.x += ( source.offsetWidth - width ) / 2.0;
+                position.y += ( source.offsetHeight - height ) / 2.0;
+                proxy.style.top = position.y + 'px';
+                proxy.style.left = position.x + 'px';
+                proxy.style.width = width + 'px';
+                proxy.style.height = height + 'px';
+                proxy.style.opacity = '0.5';
+                proxy.src = e.target.src;
+                document.body.appendChild(proxy);
+                var interaction = e.interaction;
+                if (!interaction.interacting()) {
+                    interaction.start({ name: 'drag' },
+                                    e.interactable,
+                                    proxy);
+                }
+            }).on('dragend', function(e) {
+                e.preventDefault();
+                var proxy = document.querySelector('#listdragproxy');
+                if ( proxy ) {
+                    document.body.removeChild(proxy);
+                }
+            });
+            */
         }
     }
 
@@ -267,16 +358,21 @@ localplay.listview = (function () {
         localplay.dialogbox.confirm("Delete", "Are you sure you want to delete '" + data.name + "'?",
             function (confirm) {
                 if (confirm) {
-                    var command = "delete" + data.tablename + ".php";
-                    localplay.datasource.get(command, { id: data._id },
+                    var url = '/' + data.tablename + '/' + data._id;
+                    localplay.datasource.delete(url,{},
                     {
                         datasourceonloadend: function (e) {
                             var xhr = e.target;
                             try {
                                 var response = JSON.parse(xhr.datasource.response);
-                                localplay.dialogbox.alert("Delete", response.message);
+                                if ( response.status === "OK" ) {
+                                    localplay.dialogbox.alert("Delete", "Item deleted");
+                                } else {
+                                    localplay.dialogbox.alert("Delete", "Unable to delete item  : error : " + JSON.stringify( response.error ) );
+                                }
+                                
                             } catch (error) {
-                                localplay.dialogbox.alert("Delete", "Unknown error!");
+                                localplay.dialogbox.alert("Delete", "Unknown error!<br/>" + xhr.datasource.responseText );
                             }
                             _this.source.update();
                         }
@@ -354,6 +450,54 @@ localplay.listview = (function () {
 
         }
         //
+        // attach to rating panel
+        //
+        var panel = item.querySelector(".ratingpanelstars");
+        if ( panel ) {
+            //
+            // update rating
+            //
+            var getRating = function() {
+                var request = '/rating/' + data.tablename + '/' + data._id;
+                localplay.datasource.get(request, {}, {
+                    datasourceonloadend: function(e) {
+                        var xhr = e.target;
+                        if ( xhr.datasource && xhr.datasource.response ) {
+                            var response = JSON.parse(e.target.datasource.response);
+                            var score = response.data ? response.data.score : 0;
+                            for ( var star = 0; star < 5; star++ ) {
+                                panel.children[ star ].src = ( score > star ) ? "/images/icons/rate.png" : "/images/icons/rate-01.png"; 
+                            }       
+                        }
+                    }
+                } );
+            }
+            //
+            //
+            //
+            if (data.canflag) {
+                panel.onclick = function( e ) {
+                    var selector = e.target.id.split('.');
+                    if ( selector.length >= 4 && selector[1] === 'rating' ) {
+                        var score = parseInt(selector[3]);
+                        var request = '/rating/' + data.tablename + '/' + data._id;
+                        localplay.datasource.put(request, { score: score }, {}, {
+                            datasourceonloadend : function(e) {
+                                //getRating(category,tablename,targetid);
+                                getRating();
+                            }
+                        } );
+                    }
+                };
+            } else {
+                for ( var star = 0; star < 5; star++ ) {
+                    panel.children[ star ].classList.add('disabled');
+                }       
+            }
+            getRating();
+        }
+        
+        //
         // setup drag and drop
         //
         var image = document.getElementById("item.image." + data._id);
@@ -362,12 +506,14 @@ localplay.listview = (function () {
             image.onclick = function (e) {
                 _this.onselect(item);
             }
+            /*
             image.ondragstart = function (e) {
                 e.dataTransfer.effectAllowed = 'copyLink';
                 e.dataTransfer.setData('Text', localplay.normaliseurl(data.url));
             }
+            */
         }
-
+        
 
     }
     ListView.prototype.updatePagination = function () {
@@ -464,11 +610,13 @@ localplay.listview = (function () {
             image.onclick = function (e) {
                 DialogBox.confirm("Platform", "Are you sure you want to delete '" + data.name + "' ?", function (confirm) {
                     if (confirm) {
+                        /*
                         localplay.datasource.get( e.target.deletecommand, {}, {}, {
                             datasourceonloadend : function(e) {
                                 _this.parent.source.update();
                             }
                         });
+                        */
                     }
                 });
             };

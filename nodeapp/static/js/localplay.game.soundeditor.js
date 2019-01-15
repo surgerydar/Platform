@@ -56,87 +56,191 @@ localplay.game.soundeditor = (function () {
 
     AudioDialog.prototype.show = function () {
         var _this = this;
-        if (this.pin) {
-            var template = '\
-                <div> \
-                    <div style="font-size: larger; font-weight: bold; padding: 8px;">{{prompt}}</div>\
-                    <div style="padding: 8px">\
-                    <div id="audiodialog.title"></div><br/>\
-                    <audio id="audiodialog.player" controls></audio>\
-                    </div>\
-                    <div id="audiodialog.listing" class="audiolistingcontainer">\
-                    </div>\
-                    <div style="height: 42px; width: 100%;">\
-                        <div id="button.audiodialog.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                            <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
-                            &nbsp;Cancel \
-                        </div> \
-                        <div id="button.audiodialog.save" class="menubaritem" style="float: right;" > \
-                            <img class="menubaritem" src="/images/icons/save-01.png" /> \
-                            &nbsp;Save \
-                        </div> \
-                    </div> \
+        var template = '\
+            <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; overflow-y: auto; padding: 16px;"> \
+                <div style="font-size: larger; font-weight: bold; padding: 8px;">{{prompt}}</div>\
+                <div id="audiodialog.title"></div><br/>\
+                <div id="audiodialog.listing" class="audiolistingcontainer">\
                 </div>\
-            ';
-            var data = {
-                prompt: this.prompt
+                <div id="audiodialog.pagination" style="display: flex; flex-direction: row; justify-content: space-between; margin: 8px 0 8px 0;">\
+                    <img id="audiodialog.pagination.prev" src="/images/icons/arrow-previous-02.png" />\
+                    <img id="audiodialog.pagination.next" src="/images/icons/arrow-next-02.png" />\
+                </div>\
+                <h2 id="audiodialog.soundname" style="color: white;"></h2>\
+                <audio id="audiodialog.player" controls></audio>\
+                <div id="audiodialog.tags" style="display: flex; flex-direction: row; flex-wrap: wrap; margin: 8px 0 8px 0;">\
+                </div>\
+                <input id="audiodialog.search" type="search" style="width: calc( 100% - 16px ); margin: 8px 0 8px 0;"/>\
+                <div style="height: 42px; width: 100%;">\
+                    <div id="button.audiodialog.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
+                        <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
+                        &nbsp;Cancel \
+                    </div> \
+                    <div id="button.audiodialog.save" class="menubaritem" style="float: right;" > \
+                        <img class="menubaritem" src="/images/icons/save-01.png" /> \
+                        &nbsp;Save \
+                    </div> \
+                </div> \
+            </div>\
+        ';
+        this.dialog = localplay.dialogbox.createfullscreendialogboxwithtemplate(this.prompt,template);
+        this.dialog.show();
+        this.scrollpane = document.getElementById("audiodialog.listing");
+        this.title = document.getElementById("audiodialog.title");
+        this.searchTerm = document.getElementById("audiodialog.search");
+        this.soundname = document.getElementById("audiodialog.soundname");
+        this.player = document.getElementById("audiodialog.player");
+        this.player.addEventListener('ended', function(e){
+            _this.player.load();
+        });
+        //
+        //
+        //
+        this.pagination = document.getElementById("audiodialog.pagination");
+        this.paginationPrev = document.getElementById("audiodialog.pagination.prev");
+        if ( this.paginationPrev ) {
+            this.paginationPrev.onclick = function(e) {
+                if ( _this.pageNo > 1 ) {
+                    _this.pageNo--;
+                    _this.search(_this.searchTerm.value);
+                }
             };
-            localplay.dialogbox.pinnedpopupatpoint(this.pin, template, data, function (e) {
-                var selector = e.target.id;
-                if (selector == "") {
-                    selector = e.target.parentNode.id;
+         }
+        this.paginationNext = document.getElementById("audiodialog.pagination.next");
+        if ( this.paginationNext ) {
+            this.paginationNext.onclick = function(e) {
+                if ( _this.pageNo < _this.pageCount ) {
+                    _this.pageNo++;
+                    _this.search(_this.searchTerm.value);
                 }
-                var parts = selector.split(".");
-                if (parts && parts.length >= 3) {
-                    var command = parts[2];
-                    switch (command) {
-                        case "save":
-                            _this.save();
-                            break;
-                    }
-                }
-                return true;
-            });
-            this.player = document.getElementById("audiodialog.player");
-            if (this.selection) {
-                this.player.src = this.selection[localplay.domutils.getTypeForAudio()]
-            }
-            this.scrollpane = document.getElementById("audiodialog.listing");
-            this.title = document.getElementById("audiodialog.title");
-        } else {
-            var content = [];
-            //
-            //
-            //
-            this.title = document.createElement( "div" );
-            content.push(this.title);
-            this.player = new Audio();
-            this.player.controls = true;
-            var playercontainer = document.createElement("div");
-            playercontainer.style.padding = "8px";
-            playercontainer.style.marginTop = "4px";
-            playercontainer.style.marginBottom = "4px";
-            playercontainer.appendChild(this.player);
-            content.push(playercontainer);
-            //
-            //
-            //
-            this.scrollpane = document.createElement("div");
-            this.scrollpane.classList.add("audiolistingcontainer");
-            content.push(this.scrollpane);
-            //
-            //
-            //
-            this.dialog = localplay.dialogbox.createdialogbox(this.prompt, content,
-                [],
-                [], 0, 0, function () {
-
-                });
-            this.dialog.show();
+            };
         }
-        this.datasource.update();
+        this.pageNo = 0;
+        this.pageCount = 0;
+        this.pagination.visibility = 'hidden';
+        //
+        //
+        //
+        function close(e) {
+            var selector = e.target.id;
+            if (selector == "") {
+                selector = e.target.parentNode.id;
+            }
+            var parts = selector.split(".");
+            if (parts && parts.length >= 3) {
+                var command = parts[2];
+                switch (command) {
+                    case "save":
+                        _this.save();
+                        break;
+                }
+            }
+            _this.dialog.close();
+        }  
+        var cancel = document.getElementById("button.audiodialog.cancel");
+        if ( cancel ) {
+            cancel.onclick = close;
+        }
+        var save = document.getElementById("button.audiodialog.save");
+        if ( save ) {
+            save.onclick = close;
+        }
+        //
+        //
+        //
+        if ( this.searchTerm ) {
+            this.searchTerm.onkeydown = function(e) {
+                var code = (e.keyCode ? e.keyCode : e.which);
+                if (code == 13) { //Enter keycode                        
+                    e.preventDefault();
+                    _this.search(_this.searchTerm.value);
+                 }
+            };
+        }
+        this.tags = document.getElementById("audiodialog.tags");
+        if ( this.tags ) {
+            ['background music', 'crash', 'bang', 'dog', 'cat', 'explosion' ].forEach( function( tag ) {
+                var tagContainer = document.createElement('div');
+                tagContainer.style.height = '42px';
+                tagContainer.style.borderRadius = '21px';
+                tagContainer.style.backgroundColor = 'white';
+                tagContainer.style.color = 'black';
+                tagContainer.style.padding = '0 4px 0 4px';
+                tagContainer.style.margin = '4px';
+                tagContainer.style.lineHeight = '42px';
+                tagContainer.style.fontWeight = '900';
+                tagContainer.innerHTML = tag;
+                tagContainer.onclick = function( e ) {
+                    if ( _this.searchTerm ) {
+                        _this.searchTerm.value = tag;
+                    }
+                    _this.search(tag);
+                };
+                _this.tags.appendChild(tagContainer);
+            });
+        }
     }
-
+    
+    AudioDialog.prototype.search = function(term) {
+        var _this = this;
+        var url = '/audio/search/' + escape(term) + ( _this.pageNo > 0 ? '?page=' + _this.pageNo : '' );
+        localplay.datasource.get(url,{},{
+            datasourceonloadend: function(e) {
+                var xhr = e.target;
+                _this.scrollpane.innerHTML = '';
+                var results = '';
+                try {
+                    var response = JSON.parse(xhr.datasource.response);
+                    for ( var i = 0; i < response.results.length; i++ ) {
+                        // TODO: use mustache
+                        results += 
+                        '<div class="audiolistitem" style="color: black;" data-mp3="/audio/file?url={audiosource-mp3}" data-ogg="/audio/file?url={audiosource-ogg}" data-name="{audioname}"> \
+                            <h3>{audioname}</h3> \
+                        </div>'.replace(/{audioname}/g, response.results[i].name ).replace(/{audiosource-mp3}/g, response.results[i].previews['preview-hq-mp3'] ).replace(/{audiosource-ogg}/g, response.results[i].previews['preview-hq-ogg'] );
+                    }
+                    _this.pageNo = 0;
+                    _this.pageCount = 0;
+                    if ( response.results.length < parseInt(response.count ) ) {
+                        var nextPage = parseInt(response.next.substring(response.next.indexOf('page=')+'page='.length));
+                        if ( nextPage > 0 ) {
+                            _this.pageCount = parseInt(response.count) / response.results.length;
+                            _this.pageNo = nextPage - 1;
+                        } else {
+                            _this.pageCount = 0;
+                            _this.pageNo = 0;
+                        }
+                    }
+                    if ( _this.pageCount > 0 ) {
+                        _this.pagination.style.visibility = 'visisble';
+                        _this.paginationPrev.style.visibility = _this.pageNo === 1 ? 'hidden' : 'visible';
+                        _this.paginationNext.style.visibility = _this.pageNo >= _this.pageCount ? 'hidden' : 'visible';
+                    } else {
+                        _this.pagination.style.visibility = 'hidden';
+                    }
+                } catch (error) {
+                }
+                _this.scrollpane.innerHTML = results;
+                var items = _this.scrollpane.querySelectorAll('.audiolistitem');
+                items.forEach( function( item ) {
+                    item.onclick = function( e ) {
+                        //
+                        // update ui
+                        //
+                        _this.soundname.innerHTML = item.getAttribute('data-name');
+                        //var audioSelector = 'data-' + localplay.domutils.getTypeForAudio();
+                        _this.player.src = item.getAttribute('data-mp3');
+                        //
+                        // update selection
+                        //
+                        _this.selection.name    = item.getAttribute('data-name');
+                        _this.selection.mp3     = item.getAttribute('data-mp3');
+                        _this.selection.ogg     = item.getAttribute('data-ogg');
+                    };
+                });
+            }
+        });
+    }
+                              
     AudioDialog.prototype.close = function () {
         if (this.dialog) {
             this.dialog.close();
@@ -192,6 +296,7 @@ localplay.game.soundeditor = (function () {
     }
 
     AudioListDataSource.prototype.update = function () {
+        /*
         //
         // create request object
         //
@@ -227,6 +332,8 @@ localplay.game.soundeditor = (function () {
         var query = "getaudio.php?type=" + this.type;
         xhr.open('GET', query, true);
         xhr.send();
+        */
+        localplay.datasource.get('/audio')
     }
     //
     // event handling
@@ -310,14 +417,26 @@ localplay.game.soundeditor = (function () {
     function LevelSoundEditor(level) {
         var _this = this;
         this.level = level;
+        //
+        //
+        //
+        var titleBar = document.querySelector('#title-bar');
+        var vOffset = 0;
+        if ( titleBar ) {
+            vOffset = titleBar.offsetHeight + 16;
+            window.addEventListener('resize', function(e) {
+                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
+            });
+        }
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = "0px";
+        this.container.style.top = vOffset + "px";
         this.container.style.left = "8px";
         this.container.style.bottom = "0px";
         this.container.style.right = "8px";
         this.container.style.padding = "16px";
-        this.container.style.backgroundColor = "rgb(255,143,33)";
+        this.container.style.backgroundColor = "#0F467B";
+        this.container.style.overflowY = "auto";
         var data = {
             music: level.music[localplay.domutils.getTypeForAudio()],
             winsound: level.winsound[localplay.domutils.getTypeForAudio()],
@@ -358,7 +477,7 @@ localplay.game.soundeditor = (function () {
                     var pin = localplay.domutils.elementPosition(player);
                     pin.x += player.offsetWidth;
                     pin.y += player.offsetHeight;
-                    var dialog = new AudioDialog("Select " + title, audio.type, audio, pin);
+                    var dialog = new AudioDialog("Select " + title, audio.type, audio);//, pin);
                     dialog.addEventListener("save", function () {
                         audio.id = dialog.selection.id;
                         audio.type = dialog.selection.type;
@@ -392,8 +511,7 @@ localplay.game.soundeditor = (function () {
         button.audio = audio;
         button.onclick = function (e) {
             var pin = localplay.domutils.elementPosition(e.target);
-            var dialog = soundeditor.createaudiodialog("Select " + title, button.audio.type, button.audio, pin);
-            //var dialog = new AudioDialog("Select " + title, button.audio.type, button.audio);
+            var dialog = soundeditor.createaudiodialog("Select " + title, button.audio.type, button.audio);//, pin);
             dialog.addEventListener("save", function () {
                 audio.id = dialog.selection.id;
                 audio.type = dialog.selection.type;
@@ -421,7 +539,7 @@ localplay.game.soundeditor = (function () {
         return new LevelSoundEditor(level);
     }
     soundeditor.createaudiodialog = function(prompt, type, selection,pin) {
-        return new AudioDialog(prompt, type, selection,pin);
+        return new AudioDialog(prompt, type, selection || {},pin);
     }
     //
     //

@@ -69,9 +69,6 @@ localplay.upload = (function () {
     return {
         upload: function( files, c ) {
             callback = c;
-            if ( uploadWorker === null ) {
-                startUploadWorker();
-            }
             if ( !progress ) {
                 //
                 // create UI
@@ -87,7 +84,11 @@ localplay.upload = (function () {
                 progress.style.backgroundColor = 'black';
                 progress.style.opacity = '.5';
                 progress.style.visibility = 'hidden';
+                progress.style.zIndex = 25;
                 document.body.appendChild(progress);
+            }
+            if ( uploadWorker === null ) {
+                startUploadWorker();
             }
             var message = {
                 command: "upload",

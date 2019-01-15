@@ -55,7 +55,7 @@ function upload( data ) {
                     ws.send(ws.pendingCommands.shift());
                 } else {
 					ws.waiting = true;
-                    console.log( 'upload worker : ran out of blocks before upload end' );
+                    //console.log( 'upload worker : ran out of blocks before upload end' );
                     self.postMessage({ command: "uploaderror", guid: guid, error: "ran out of blocks before upload end" });
                 }
             }
@@ -100,7 +100,7 @@ function upload( data ) {
                     // write chunk
                     //
                     var buffer = evt.target.result;
-                    console.log( 'read ' + buffer.byteLength + ' bytes' );
+                    //console.log( 'read ' + buffer.byteLength + ' bytes' );
                     var command = makeCommandHeader( 'upld', guid, 24 + buffer.byteLength );
                     dv = new DataView(command);
                     offset = 20;
@@ -118,7 +118,7 @@ function upload( data ) {
                     ws.pendingCommands.push( command );
                     sent += buffer.byteLength;
                     if ( sent >= filesize ) {
-                        console.log('done');
+                        //console.log('done');
                     }
 					//
 					// wake up transaction
@@ -169,6 +169,7 @@ self.onmessage = function(evt) {
             break;
         }
         default :
-            console.log( "upload worker : unknown command : " + evt.data.command );  
+            //console.log( "upload worker : unknown command : " + evt.data.command );  
+            ;
     }
 };

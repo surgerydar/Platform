@@ -66,6 +66,23 @@ module.exports = function( authentication, db ) {
     //
     //
     //
+    router.get( '/file', function (req, res) {
+        console.log( 'getting audio escaped : ' + req.query.url ); 
+        try {
+            let url = unescape( req.query.url );
+            let filename = url.substring( url.lastIndexOf('/') + 1 );
+            console.log( 'getting audio unescaped : ' + url );
+            if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + ( 60 * 60 * 24 ) );
+            res.setHeader('Content-Disposition','attachment; filename="' + filename + '"');
+            request.get(url).pipe(res);
+        } catch( error ) {
+            console.log( 'error getting audio : ' + req.query.url + ' : ' + error );
+            res.status(500).send('Error : ' + error );
+        }
+    }); 
+    //
+    //
+    //
     router.get( '/:id', function (req, res) {
         try {
             let _id = db.ObjectId(req.params.id)
@@ -79,7 +96,7 @@ module.exports = function( authentication, db ) {
             if ( fs.existsSync(path) ) {
                 fs.createReadStream(path).pipe(res);
             } else {
-                res.status(404).send('Not Found');
+                res.status(404).send('Not Found ' + req.params.id );
             }
         }
     }); 
@@ -89,15 +106,16 @@ module.exports = function( authentication, db ) {
     router.get( '/search/:term', function (req, res) {
         try {
             let url = 'https://freesound.org/apiv2/search/text/?token=kKVkzONrJQCpynFL6SPM7UnRVC9tjeQ9r5915UV9&filter=type:(wav%20OR%20mp3)&fields=name,username,tags,download,type,previews&query=' + req.params.term;
+            let page = req.query.page;
+            if ( page ) {
+                url += '&page=' + page;
+            }
+            console.log( 'audio : search : ' + url );
             request.get(url).pipe(res);
         } catch( error ) {
             res.status(500).send('Error : ' + error );
         }
     }); 
-    //
-    //
-    //
-    
     //
     //
     //

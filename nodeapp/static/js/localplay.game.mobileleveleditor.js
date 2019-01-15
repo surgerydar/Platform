@@ -33,6 +33,12 @@ localplay.game.mobileleveleditor = (function () {
     //
     // templates
     //
+    var mainmenu = '\
+        {{#items}} \
+            <div class="main-menu-item" id="menuitem.{{id}}">{{name}}</div> \
+        {{/items}} \
+    ';
+    
     var createlevel = '\
         <div class="fullscreen" style="background-color: white;" > \
             <div id="mobileleveleditor.createlevel.editorcontainer" class="editorcontainer"> \
@@ -109,6 +115,7 @@ localplay.game.mobileleveleditor = (function () {
         breadcrumb: "Edit background",
         prompt: "MAKE A NEW GAME - START BY CREATING YOUR BACKGROUND",
         init: function () {
+            coverGame(true);
             var editor = localplay.game.backgroundeditor.createbackgroundeditor(level);
             createleveleditorcontainer.appendChild(editor.container);
             editor.initialise();
@@ -119,6 +126,7 @@ localplay.game.mobileleveleditor = (function () {
                 createleveleditorcontainer.localplay.backgroundeditor.dealloc();
                 delete createleveleditorcontainer.localplay.backgroundeditor;
                 createleveleditorcontainer.localplay.backgroundeditor = null;
+                coverGame(false);
             }
         },
         exitcondition: function() {
@@ -130,28 +138,35 @@ localplay.game.mobileleveleditor = (function () {
         }
     }
     
-    var layouteditor = {
+    var addthingseditor = {
         breadcrumb: "Add things",
         prompt: "ADD THINGS TO YOUR GAME LEVEL",
         init: function () {
-            var editor = localplay.game.layouteditor.createlayouteditor(level);
+            coverGame(true);
+            var editor = localplay.game.addthingseditor.createaddthingseditor(level);
             createleveleditorcontainer.appendChild(editor.container);
-            editor.initialise();
-            createleveleditorcontainer.localplay.layouteditor = editor;
+            editor.initialise(function() {
+                gotocreatelevelphase(0);
+            });
+            createleveleditorcontainer.localplay.addthingseditor = editor;
         },
         dealloc: function () {
-            if (createleveleditorcontainer.localplay.layouteditor) {
-                createleveleditorcontainer.localplay.layouteditor.dealloc();
-                createleveleditorcontainer.removeChild(createleveleditorcontainer.localplay.layouteditor.container);
-                delete createleveleditorcontainer.localplay.layouteditor;
-                createleveleditorcontainer.localplay.layouteditor = null;
+            if (createleveleditorcontainer.localplay.addthingseditor) {
+                //createleveleditorcontainer.localplay.addthingseditor.save();
+                createleveleditorcontainer.localplay.addthingseditor.dealloc();
+                createleveleditorcontainer.removeChild(createleveleditorcontainer.localplay.addthingseditor.container);
+                delete createleveleditorcontainer.localplay.addthingseditor;
+                createleveleditorcontainer.localplay.addthingseditor = null;
+                coverGame(false);
             }
         },
         exitcondition: function () {
+            /*
             if (level.countitems() <= 0) {
                 localplay.dialogbox.alert("Platform", "Your level needs some things!<br />Please add some platforms, obstacles, pickups or goals.");
                 return false;
             }
+            */
             return true;
         }
     };
@@ -160,6 +175,7 @@ localplay.game.mobileleveleditor = (function () {
         breadcrumb: "Edit layout",
         prompt: "MAKE THINGS DO STUFF - EDIT YOUR THINGS",
         init: function () {
+            coverGame(false);
             var editor = localplay.game.thingeditor.createnewthingeditor(level);
             createleveleditorcontainer.appendChild(editor.container);
             editor.initialise();
@@ -182,6 +198,7 @@ localplay.game.mobileleveleditor = (function () {
         breadcrumb: "Edit gameplay",
         prompt: "MAKE THINGS DO STUFF - ADD GAMEPLAY RULES",
         init: function () {
+            coverGame(true);
             var editor = localplay.game.storyeditor.createstoryeditor(level);
             createleveleditorcontainer.appendChild(editor.container);
             editor.initialise();
@@ -194,6 +211,7 @@ localplay.game.mobileleveleditor = (function () {
                 createleveleditorcontainer.removeChild(createleveleditorcontainer.localplay.storyeditor.container);
                 delete createleveleditorcontainer.localplay.storyeditor;
                 createleveleditorcontainer.localplay.storyeditor = null;
+                coverGame(false);
             }
         },
         exitcondition: function () {
@@ -205,6 +223,7 @@ localplay.game.mobileleveleditor = (function () {
         breadcrumb: "Edit sounds",
         prompt: "MAKE THINGS DO STUFF - ADD LEVEL SOUNDS",
         init: function () {
+            coverGame(true);
             var editor = localplay.game.soundeditor.createlevelsoundeditor(level);
             createleveleditorcontainer.appendChild(editor.container);
             editor.initialise();
@@ -216,6 +235,7 @@ localplay.game.mobileleveleditor = (function () {
                 createleveleditorcontainer.removeChild(createleveleditorcontainer.localplay.soundeditor.container);
                 delete createleveleditorcontainer.localplay.soundeditor;
                 createleveleditorcontainer.localplay.soundeditor = null;
+                coverGame(false);
             }
         },
         exitcondition: function () {
@@ -264,7 +284,7 @@ localplay.game.mobileleveleditor = (function () {
     var createlevelsequence = [
         thingeditor,
         backgroundeditor,
-        layouteditor,
+        addthingseditor,
         storyeditor,
         soundeditor
     ];
@@ -275,24 +295,38 @@ localplay.game.mobileleveleditor = (function () {
 
     function initialisecreatelevel() {
         //
-        // initialise navigation
+        //
+        //
+        var logo = document.querySelector('#title-logo');
+        if ( logo ) {
+            logo.addEventListener('click', function(e) {
+                closeeditor('/');
+            });
+        }
+        //
+        //
+        //
+        createMenu();
+        //
+        // initialise ui
         //
         createlevelphase = 0;
-        createleveleditorcontainer = null;
-        createlevelcontainer = document.createElement("div");
-        createlevelcontainer.className = "fullscreen";
-        document.body.appendChild(createlevelcontainer);
-        //
-        //
-        //
+        createlevelcontainer = document.querySelector("#mobileleveleditor\\.createlevel");
+        createleveleditorcontainer = document.querySelector("#mobileleveleditor\\.createlevel\\.editorcontainer");
+        if ( createleveleditorcontainer ) {
+            createleveleditorcontainer.localplay = {};
+        }
     }
+    
     function cleanup() {
         //
         // remove mainmenu
         //
+        /*
         if (createlevelmainmenu) {
             localplay.menu.dettachmenu(createlevelmainmenu);
         }
+        */
         //
         //
         //
@@ -364,25 +398,13 @@ localplay.game.mobileleveleditor = (function () {
     }
     function rendercreateleveltemplate(template) {
         //
-        // editors, these are rendered into the editor container
+        // remove previous editor
         //
-        if (createleveleditorcontainer === null) {
-            createlevelcontainer.innerHTML = maintemplate; //createlevel;
-            createleveleditorcontainer = document.getElementById("mobileleveleditor.createlevel.editorcontainer");
-            createlevelmainmenu = document.getElementById("title-menu");
-            if (createlevelmainmenu) {
-                mainmenu(createlevelmainmenu);
-            }
-            createleveleditorcontainer.localplay = {};
-        } else if (createleveleditorcontainer.localplay.dealloc) {
+        if( createleveleditorcontainer.localplay.dealloc) {
             createleveleditorcontainer.localplay.dealloc();
         }
         //
-        //
-        //
-        //setbreadcrumb(template.breadcrumb);
-        //
-        //
+        // editors, these are rendered into the editor container
         //
         if (template.prompt) {
             setprompt(template.prompt);
@@ -426,64 +448,88 @@ localplay.game.mobileleveleditor = (function () {
             nextbutton.style.visibility = (createlevelphase < createlevelsequence.length - 1) ? 'visible' : 'hidden';
         }
     }
-    function mainmenu(target) {
-        var _this = this;
-        var items = [];
-        //
-        // add editors
-        //
-        for (var i = 0; i < createlevelsequence.length; i++) {
+    function coverGame( cover ) {
+        if ( cover ) {
+            createlevelcontainer.classList.add('cover');
+        } else {
+            createlevelcontainer.classList.remove('cover');
+        }
+    }
+    
+    function createMenu() {
+        var menu = document.querySelector('#main-menu');
+        if ( menu ) {
+            var items = [];
+            //
+            // add editors
+            //
+            for (var i = 0; i < createlevelsequence.length; i++) {
+                items.push({
+                    name: createlevelsequence[i].breadcrumb,
+                    id: "phase." + i
+                });
+            }
+            //
+            // add global commands
+            //
             items.push({
-                name: createlevelsequence[i].breadcrumb,
-                id: "phase." + i
+                name: "Save game",
+                id: "save"
+            });
+            items.push({
+                name: "Play game",
+                id: "play"
+            });
+            //
+            // render menu
+            //
+            menu.innerHTML = Mustache.render( mainmenu, { items: items } );
+            //
+            // hook menu button
+            //
+            var menuButton = document.querySelector('#title-menu');
+            if ( menuButton ) {
+                menuButton.addEventListener('click',function(e) {
+                    menu.classList.toggle('open'); 
+                    menuBackdrop.classList.toggle('open');
+                });
+            }
+            var menuBackdrop = document.querySelector('#menu-backdrop');
+            if ( menuBackdrop ) {
+                menuBackdrop.addEventListener('click', function(e) {
+                    menu.classList.remove('open'); 
+                    menuBackdrop.classList.remove('open'); 
+                });
+            }    
+            menu.addEventListener('click',function(e) {
+                var item = e.target;
+                var command = item.id.split('.');
+                if (command.length >= 3) {
+                    var phase = parseInt(command[2]);
+                    gotocreatelevelphase(phase);
+                } else if ( command.length >= 2 ) {
+                    //
+                    // save etc
+                    //
+                    switch( command[ 1 ] ) {
+                        case 'add' :
+                            break;
+                        case 'save' :
+                            savelevel();
+                            break;
+                        case 'play' :
+                            closeeditor( '/play/' + level.game.levelid );
+                            break;
+                    }
+                }
+                menu.classList.remove('open'); 
+                menuBackdrop.classList.remove('open'); 
             });
         }
-        //
-        // add global commands
-        //
-        items.push({
-            name: "Add items",
-            id: "add"
-        });
-        items.push({
-            name: "Save game",
-            id: "save"
-        });
-        items.push({
-            name: "Play game",
-            id: "play"
-        });
-        items.push({
-            name: "Exit",
-            id: "exit"
-        });
-        target.menupopup = localplay.menu.attachmenu(target, items, function (id) {
-            var command = id.split(".");
-            if (command.length >= 3) {
-                var phase = parseInt(command[2]);
-                gotocreatelevelphase(phase);
-            } else if ( command.length >= 2 ) {
-                //
-                // save etc
-                //
-                switch( command[ 1 ] ) {
-                    case 'add' :
-                        break;
-                    case 'save' :
-                        savelevel();
-                        break;
-                    case 'play' :
-                        closeeditor( '/play/' + _this.game.levelid );
-                        break;
-                    case 'exit' :
-                        closeeditor();
-                        break;
-                }
-            }
-        });
     }
-    function savelevel() {
+    function savelevel(successAction) {
         localplay.showtip();
+        
         //
         // force the story editor to save it's state
         // TODO: this should be automated
@@ -551,6 +597,15 @@ localplay.game.mobileleveleditor = (function () {
                             level.game.setcanvas(canvas);
                             level.draw();
                             */
+                            level.game.savelevel(function (success) {
+                                if (success) {
+                                    level.resetdirty();
+                                }
+                                rendercreatelevelphase();
+                                if ( successAction ) {
+                                    successAction();
+                                }
+                            },copy);
                         }
                         break;
                 }
@@ -572,15 +627,19 @@ localplay.game.mobileleveleditor = (function () {
             if ( targeturl ) {
                 window.location = targeturl;
             } else {
-                window.history.back();
+                window.location = '/';
             }
         }
         //
         // confirm cancel
         //
         if (level.isdirty()) {
-            localplay.dialogbox.confirm("Platform", "Do you really want to close without saving?", function (confirm) {
+            localplay.dialogbox.confirm("Platform", "Do you want to save changes?", function (confirm) {
                 if (confirm) {
+                    savelevel( function successAction() {
+                        closeeditor(targeturl);
+                    });
+                } else {
                     cancel();
                 }
             });
@@ -623,22 +682,6 @@ localplay.game.mobileleveleditor = (function () {
             previewgame.play();
             previewgame.level.play();
         }
-    }
-
-    function authenticate(failprompt, succeedaction) {
-        var _this = this;
-        localplay.authentication.authenticate(function () {
-            if (localplay.authentication.isauthenticated()) {
-                succeedaction();
-            } else {
-                localplay.dialogbox.alert("Localplay", failprompt, function () {
-                    //
-                    // restore current phase
-                    //
-                    rendercreatelevelphase();
-                });
-            }
-        });
     }
     //
     //

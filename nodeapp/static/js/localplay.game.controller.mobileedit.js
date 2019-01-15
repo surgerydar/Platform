@@ -540,9 +540,11 @@ localplay.game.controller.mobileedit = (function () {
             this.game.level.pause(true);
             this.backdrop.style.opacity = 1.;
             this.menu.classList.add('open');
+            this.menu.scrollTop = '0px';
         } else {
             this.backdrop.style.opacity = 0.;
             this.menu.classList.remove('open');
+            this.menu.scrollTop = '0px';
         }
     }
     

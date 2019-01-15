@@ -108,10 +108,17 @@
                                             </div>'.replace('{audioname}', response.results[i].name ).replace('{audiosource}', response.results[i].download ).replace('{audiotype}', response.results[i].type );
                                             */
                                             results += 
+                                            /*
                                             '<div style="color: black;"> \
                                                 <h3>{audioname}</h3> \
-                                                <audio controls> \
-                                                    <source src="{audiosource}" type="/audio/{audiotype}"/> \
+                                                <audio preload="auto" crossorigin="anonymous" controls> \
+                                                    <source src="/audio/file?url={audiosource}" type="/audio/{audiotype}"/> \
+                                                </audio> \
+                                            </div>'.replace('{audioname}', response.results[i].name ).replace('{audiosource}', response.results[i].previews['preview-hq-mp3'] ).replace('{audiotype}', 'mp3' );
+                                            */
+                                            '<div style="color: black;"> \
+                                                <h3>{audioname}</h3> \
+                                                <audio preload="auto" src="/audio/file?url={audiosource}" controls> \
                                                 </audio> \
                                             </div>'.replace('{audioname}', response.results[i].name ).replace('{audiosource}', response.results[i].previews['preview-hq-mp3'] ).replace('{audiotype}', 'mp3' );
                                         }

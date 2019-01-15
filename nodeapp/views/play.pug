@@ -2,7 +2,7 @@ include includes/head.pug
 
 #canvascontainer( style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: white;" )
     canvas( id="game.canvas" class="slider" width="1024" height="723" ) Your browser doesn't support HTML5 canvas
-#menu-backdrop
+    img#play-button( title="play game" class="imagebutton" src="/images/icons/play-game-01.png" )
 #title-bar
     img#title-logo( src="/images/bc-logo.png" )
     #title-progress-container
@@ -15,13 +15,11 @@ include includes/head.pug
     .play-bar-button-group#play-bar-direction-buttons
         img.play-bar-button#play-bar-button-left( src="/images/arrow-left.png" )
         img.play-bar-button#play-bar-button-right( src="/images/arrow-right.png" )
+#menu-backdrop
 .main-menu#main-menu
-    .main-menu-item( id="menu.play" ) PLAY
-    if authorised
-        .main-menu-item( id="menu.edit" ) EDIT THIS GAME
+    .main-menu-item( id="menu.edit" ) EDIT GAME
     .main-menu-item( id="menu.create" ) MAKE A GAME
     .main-menu-item( id="menu.gallery" ) GALLERY
-    .main-menu-item( id="menu.people" ) PEOPLE
     .main-menu-item( id="menu.help" ) HELP
     .main-menu-item( id="menu.about" ) ABOUT
     if authorised

@@ -1,6 +1,6 @@
 /**
  *
- * @source: https://github.com/LocalPlay/PlayYourPlace/tree/master/htdocs/js/localplay.game.layouteditor.js
+ * @source: https://github.com/LocalPlay/PlayYourPlace/tree/master/htdocs/js/localplay.game.addthingseditor.js
  *
  * @licstart  The following is the entire license notice for the 
  *  JavaScript code in this page.
@@ -27,8 +27,8 @@
  *
  */
 
-localplay.game.layouteditor = (function () {
-    var layouteditor = {};
+localplay.game.addthings = (function () {
+    var addthings = {};
 
     //
     //
@@ -64,7 +64,7 @@ localplay.game.layouteditor = (function () {
     //
     //
     //
-    function LayoutEditor(level) {
+    function AddThingsEditor(level) {
         var _this = this;
         this.level = level;
         //
@@ -115,17 +115,9 @@ localplay.game.layouteditor = (function () {
         //this.canvas.style.height = this.canvas.height + "px";
         this.layoutview.appendChild(this.canvas);
         this.level.game.setcanvas(this.canvas);
-        //
-        //
-        //
-        function fitCanvas() {
-            console.log( 'layouteditor : resizing canvas' );
-            _this.scale = _this.layoutview.offsetHeight / _this.level.background.height;
-            _this.canvas.height = _this.layoutview.offsetHeight;
-            _this.canvas.width = Math.round(_this.level.background.width * _this.scale);
-            _this.canvas.style.width = _this.canvas.width + "px";
-        }
-        window.addEventListener("resize", fitCanvas );
+        window.addEventListener("resize", function() {
+            _this.fitCanvas();
+        });
         //
         //
         //
@@ -136,16 +128,89 @@ localplay.game.layouteditor = (function () {
             _this.selectedsprite = _this.rollover;
         };
         this.layoutview.appendChild(this.selection);
+        
         //
         // hook mouse events
         //
         this.selectedsprite = null;
         this.rollover = null;
         this.duplicate = null;
-        this.layoutview.onmousedown = this.onmousedown.bind(this);
-        this.layoutview.onmouseup = this.onmouseup.bind(this);
-        this.layoutview.onmousemove = this.onmousemove.bind(this);
-        //this.layoutview.onmouseout = this.onmouseout.bind(this);
+        if ( localplay.touchsupport() ) {
+            //
+            // TODO: replace with interact
+            //
+            var ongoingTouches = [];
+            function copyTouch(touch) {
+                return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
+            }
+            function ongoingTouchIndexById(idToFind) {
+              for (var i = 0; i < ongoingTouches.length; i++) {
+                var id = ongoingTouches[i].identifier;
+
+                if (id == idToFind) {
+                  return i;
+                }
+              }
+              return -1;    // not found
+            }
+            //
+            //
+            //
+            this.layoutview.addEventListener("touchstart", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    ongoingTouches.push(copyTouch(touches[i]));
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.layoutview.offsetLeft, ongoingTouches[0].pageY -  _this.layoutview.offsetTop );
+                _this.pointerdown(p);
+            });
+            this.layoutview.addEventListener("touchmove", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
+                    }
+                }
+                var p = new Point( ongoingTouches[0].pageX - _this.layoutview.offsetLeft, ongoingTouches[0].pageY -  _this.layoutview.offsetTop );
+                _this.pointermove(p);
+            });
+            this.layoutview.addEventListener("touchend", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.layoutview.offsetLeft, ongoingTouches[0].pageY -  _this.layoutview.offsetTop );
+                            _this.pointerup(p);
+                        }
+                        ongoingTouches.splice(idx, 1);  
+                    }
+                }
+            });
+            this.layoutview.addEventListener("touchcancel", function(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    var idx = ongoingTouchIndexById(touches[i].identifier);
+                    if (idx >= 0) {
+                        if ( idx === 0 ) {
+                            var p = new Point( ongoingTouches[0].pageX - _this.layoutview.offsetLeft, ongoingTouches[0].pageY -  _this.layoutview.offsetTop );
+                            _this.pointerup(p);
+                        }
+                        ongoingTouches.splice(idx, 1);  
+                    }
+                }
+            });
+        } else {
+            this.layoutview.onmousedown = this.onmousedown.bind(this);
+            this.layoutview.onmouseup = this.onmouseup.bind(this);
+            this.layoutview.onmousemove = this.onmousemove.bind(this);
+            //this.layoutview.onmouseout = this.onmouseout.bind(this);
+        }
         //
         //
         //
@@ -155,42 +220,39 @@ localplay.game.layouteditor = (function () {
         this.boundkeyup = this.onkeyup.bind(this);
         window.addEventListener("keyup", this.boundkeyup, true);
         //
-        // hook drag events
+        // drag and drop
         //
-        var _this = this;
-        this.canvas.onselectstart =
-        this.layoutview.onselectstart =
-        this.canvas.ondragstart =
-        this.layoutview.ondragstart = function (e) {
-            localplay.domutils.preventDefault(e);
-            localplay.domutils.stopPropagation(e);
-            return false;
-        }
-        this.layoutview.ondragenter = function (e) {
-            _this.layoutview.classList.add('over');
-
-        }
-        this.layoutview.ondragleave = function (e) {
+        interact('#layoutview').dropzone({
+          // only accept elements matching this CSS selector
+          //accept: '#yes-drop',
+          // Require a 75% element overlap for a drop to be possible
+          overlap: 0.25,
+          // listen for drop related events:
+          ondropactivate: function (e) {
+          },
+          ondragenter: function (e) {
+              _this.layoutview.classList.add('over');
+          },
+          ondragleave: function (e) {
+              _this.layoutview.classList.remove('over');
+          },
+          ondrop: function (e) {
             _this.layoutview.classList.remove('over');
-        }
-        this.layoutview.ondragover = function (e) {
-            localplay.domutils.preventDefault(e);
-            if (!_this.layoutview.classList.contains('over')) {
-                _this.layoutview.classList.add('over');
+            var url = localplay.mediaurl(e.relatedTarget.src);
+            var offset = localplay.domutils.elementPosition(_this.canvas);
+            var p = new Point(parseFloat(e.relatedTarget.getAttribute('data-x'))+e.x0,parseFloat(e.relatedTarget.getAttribute('data-y'))+e.y0);
+            p.subtract(offset);
+            if( !p.isvalid() ) {
+                p.x = _this.canvas.offsetWidth / 2;
+                p.y = _this.canvas.offsetHeight / 2;
             }
-            e.dataTransfer.dropEffect = 'copy';
-            return false;
-        }
-        this.layoutview.ondrop = function (e) {
-            localplay.domutils.fixEvent(e);
-            localplay.domutils.stopPropagation(e);
-            _this.layoutview.classList.remove('over');
-            var url = e.dataTransfer.getData("Text");
-            var p = new Point(e.offsetX, e.offsetY);
+            //p.scale(_this.scale);
             _this.addthing(url, p);
-            localplay.domutils.preventDefault(e);
-            return false;
-        }
+          },
+          ondropdeactivate: function (e) {
+          }
+        });
+        
         //
         //
         //
@@ -215,7 +277,7 @@ localplay.game.layouteditor = (function () {
     //
     // required editor methods
     //
-    LayoutEditor.prototype.initialise = function () {
+    AddThingsEditor.prototype.initialise = function () {
         var _this = this;
         this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "/media?type=object&listview=true", 20);
         this.medialibrary.controller.onselect = function (item) {
@@ -245,10 +307,16 @@ localplay.game.layouteditor = (function () {
         //
         this.scale = this.layoutview.clientHeight / localplay.defaultsize.height;
         this.inversescale = 1.0 / this.scale;
-
+        //
+        //
+        //
         localplay.showtip("Drag things here to add them to your level<br />Click and drag to move them<br />Press the alt key then click and drag to duplicate", this.layoutview);
+        //
+        //
+        //
+        this.fitCanvas();
     }
-    LayoutEditor.prototype.dealloc = function () {
+    AddThingsEditor.prototype.dealloc = function () {
         localplay.showtip();
         window.removeEventListener("keydown", this.boundkeydown, true);
         window.removeEventListener("keyup", this.boundkeyup, true);
@@ -256,7 +324,7 @@ localplay.game.layouteditor = (function () {
     //
     //
     //
-    LayoutEditor.prototype.draw = function () {
+    AddThingsEditor.prototype.draw = function () {
         if (this.rollover) {
             var dim = new Point(rolloverimage.naturalWidth, rolloverimage.naturalHeight);
             dim.scale(this.inversescale);
@@ -275,7 +343,7 @@ localplay.game.layouteditor = (function () {
         }
     }
 
-    LayoutEditor.prototype.detach = function () {
+    AddThingsEditor.prototype.detach = function () {
         this.level.removeEventListener("statechange", this.boundstatechange);
         this.level.reserialise();
         var canvas = document.getElementById("game.canvas");
@@ -284,7 +352,7 @@ localplay.game.layouteditor = (function () {
         }
     }
 
-    LayoutEditor.prototype.onstatechange = function (e) {
+    AddThingsEditor.prototype.onstatechange = function (e) {
         switch (this.level.state) {
             case localplay.game.level.states.clear:
                 break;
@@ -299,8 +367,21 @@ localplay.game.layouteditor = (function () {
         }
 
     }
-
-    LayoutEditor.prototype.addthing = function (url, position) {
+    //
+    //
+    //
+    AddThingsEditor.prototype.fitCanvas = function () {
+        console.log( 'addthingseditor : resizing canvas' );
+        this.scale = this.layoutview.offsetHeight / this.level.background.height;
+        this.inversescale = 1.0 / this.scale;
+        this.canvas.height = this.layoutview.offsetHeight;
+        this.canvas.width = Math.round(this.level.background.width * this.scale);
+        this.canvas.style.width = this.canvas.width + "px";
+    }
+    //
+    //
+    //
+    AddThingsEditor.prototype.addthing = function (url, position) {
         //
         // scale position into level and ensure it is within the viewport
         //
@@ -350,10 +431,7 @@ localplay.game.layouteditor = (function () {
         }
     }
 
-    LayoutEditor.prototype.onmousedown = function (e) {
-        localplay.domutils.fixEvent(e);
-        localplay.domutils.stopPropagation(e);
-        var p = new Point(e.offsetX, e.offsetY);
+    AddThingsEditor.prototype.pointerdown = function(p) {
         p.scale(this.inversescale);
         this.selectedsprite = this.level.world.spriteAtPoint(p);
         if (this.selectedsprite) {
@@ -368,14 +446,8 @@ localplay.game.layouteditor = (function () {
             this.selectedsprite.beginedit();
             this.rollover = null;
         }
-        return false;
     }
-
-    LayoutEditor.prototype.onmousemove = function (e) {
-        //if (e.target == this.selection) return; // stops the selection from flickering
-        localplay.domutils.fixEvent(e);
-        localplay.domutils.stopPropagation(e);
-        var p = new Point(e.offsetX, e.offsetY);
+    AddThingsEditor.prototype.pointermove = function(p) {
         p.scale(this.inversescale);
         if (this.selectedsprite) {
             this.selectedsprite.editPosition.x = p.x;
@@ -383,21 +455,43 @@ localplay.game.layouteditor = (function () {
         } else {
             this.rollover = this.level.world.spriteAtPoint(p);
         }
-        return false;
     }
-
-    LayoutEditor.prototype.onmouseup = function (e) {
-        localplay.domutils.fixEvent(e);
-        localplay.domutils.stopPropagation(e);
+    AddThingsEditor.prototype.pointerup = function(p) {
         if (this.selectedsprite) {
             this.selectedsprite.commitedit();
             this.selectedsprite = null;
             this.duplicate = null;
         }
+    }
+    //
+    //
+    //
+    AddThingsEditor.prototype.onmousedown = function (e) {
+        localplay.domutils.fixEvent(e);
+        localplay.domutils.stopPropagation(e);
+        var p = new Point(e.offsetX, e.offsetY);
+        this.pointerdown(p);
         return false;
     }
 
-    LayoutEditor.prototype.onmouseout = function (e) {
+    AddThingsEditor.prototype.onmousemove = function (e) {
+        //if (e.target == this.selection) return; // stops the selection from flickering
+        localplay.domutils.fixEvent(e);
+        localplay.domutils.stopPropagation(e);
+        var p = new Point(e.offsetX, e.offsetY);
+        this.pointermove(p);
+        return false;
+    }
+
+    AddThingsEditor.prototype.onmouseup = function (e) {
+        localplay.domutils.fixEvent(e);
+        localplay.domutils.stopPropagation(e);
+        var p = new Point(e.offsetX, e.offsetY);
+        this.pointerup(p);
+        return false;
+    }
+
+    AddThingsEditor.prototype.onmouseout = function (e) {
         localplay.domutils.fixEvent(e);
         localplay.domutils.stopPropagation(e);
         if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
@@ -419,7 +513,7 @@ localplay.game.layouteditor = (function () {
         return false;
     }
 
-    LayoutEditor.prototype.onkeydown = function (e) {
+    AddThingsEditor.prototype.onkeydown = function (e) {
         this.keys[e.keyCode] = true;
         if (e.keyCode == localplay.keycode.ESC) {
             if (this.duplicate) {
@@ -432,15 +526,15 @@ localplay.game.layouteditor = (function () {
         }
     }
 
-    LayoutEditor.prototype.onkeyup = function (e) {
+    AddThingsEditor.prototype.onkeyup = function (e) {
         this.keys[e.keyCode] = false;
     }
 
 
 
-    layouteditor.createlayouteditor = function (level) {
-        return new LayoutEditor(level);
+    addthings.createaddthingseditor = function (level) {
+        return new AddThingsEditor(level);
     }
-    return layouteditor;
+    return addthings;
 
 })();

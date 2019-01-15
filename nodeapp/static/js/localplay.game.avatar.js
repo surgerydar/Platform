@@ -39,7 +39,7 @@ localplay.game.avatar = (function () {
     function Avatar(level, properties) {
         this.level = level;
         this.homeposition = properties.position;
-        this.image = properties.image.startsWith('/') ? properties.image : '/' + properties.image;
+        this.image = localplay.mediaurl(properties.image.startsWith('/') ? properties.image : '/' + properties.image);
         this.scale = properties.scale ? parseFloat(properties.scale) : 1.0;
         this.rotation = properties.rotation ? parseFloat(properties.rotation) : 0.0;
         this.gravityscale = properties.gravityscale && !isNaN(properties.gravityscale) ? parseFloat(properties.gravityscale) : 1.0;
@@ -336,7 +336,7 @@ localplay.game.avatar = (function () {
             //
             var contents = "/media?type=object&listview=true";
             localplay.listview.createlibrarydialog("Choose your Avatar", contents, function (item) {
-                image.src = item.data.url;
+                image.src = localplay.mediaurl(item.data.url);
             }, 20, "",
             function (controller) {
                 var objecteditor = localplay.objecteditor.createobjecteditor("Add Avatar", function () {

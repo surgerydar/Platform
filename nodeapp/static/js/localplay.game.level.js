@@ -166,6 +166,7 @@ localplay.game.level = (function () {
     }
 
     Level.prototype.clear = function () {
+        console.log( 'Level.clear' );
         this.loaded = false;
         this.setstate(level.states.clear);
         if (this.avatar) {
@@ -273,11 +274,13 @@ localplay.game.level = (function () {
         var _this = this;
         var currentSentence = null;
         var currentClause = null;
+        console.log( 'Level.reset : parsing JSON' );
         JSON.parse(this.json, function (key, value) {
             if (key === 'background') {
                 _this.background = localplay.game.background.createbackground(_this, value.images);
                 _this.background.setscale(_this.canvas.height / localplay.defaultsize.height);
             } else if (key === 'avatar') {
+                console.log( 'Level.reset : adding avatar' );
                 _this.avatar = localplay.game.avatar.createavatar(_this, value);
             } else if (localplay.game.item.isitemtype(key)) {
                 var item = localplay.game.item.createitem(_this, key, value, false);
@@ -326,6 +329,7 @@ localplay.game.level = (function () {
 
             return value;
         });
+        console.log( 'Level.reset : done parsing JSON' );
         //
         // default gameplay
         //
@@ -349,6 +353,32 @@ localplay.game.level = (function () {
             this.musicplayer.addEventListener("canplaythrough", function () {
                 _this.musicready = true;
                 _this.musicplayer.loop = true;
+            });
+            this.musicplayer.addEventListener("ended", function () {
+                console.log( 'musicplayer : onended : audio ready : ' + _this.music[localplay.domutils.getTypeForAudio()] );
+                console.log( 'musicplayer : onended : audio readyState : ' + _this.musicplayer.readyState );
+                _this.musicplayer.load();
+                _this.musicready = true;
+            });
+            this.musicplayer.addEventListener("error", function (e) {
+                console.log( 'musicplayer : error for audio : ' + _this.music[localplay.domutils.getTypeForAudio()] );
+                switch (_this.musicplayer.error.code) {
+                     case _this.musicplayer.error.MEDIA_ERR_ABORTED:
+                       console.log('musicplayer error : aborted : ' + _this.musicplayer.error.message );
+                       break;
+                     case _this.audioplayer.error.MEDIA_ERR_NETWORK:
+                       console.log('musicplayer error : network error : ' + _this.musicplayer.error.message);
+                       break;
+                     case _this.audioplayer.error.MEDIA_ERR_DECODE:
+                       console.log('musicplayer error : decode error : ' + _this.musicplayer.error.message);
+                       break;
+                     case _this.audioplayer.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                       console.log('musicplayer error : format error : ' + _this.musicplayer.error.message);
+                       break;
+                     default:
+                       console.log('musicplayer error : unknown : ' + _this.musicplayer.error.message );
+                       break;
+                   }                    
             });
             this.musicplayer.src = this.music[localplay.domutils.getTypeForAudio()];
             this.musicplayer.load();
@@ -527,7 +557,7 @@ localplay.game.level = (function () {
                     _this.adjustviewport();
                 });
         } else if (object == this.avatar) {
-            ////localplay.log("avatar loaded");
+            //localplay.log("avatar loaded");
         }
 
     }
@@ -693,7 +723,7 @@ localplay.game.level = (function () {
             container.push(item);
             return true;
         } else {
-            //localplay.log("unable to find container for type : '" + item.type + "'");
+            localplay.log("unable to find container for type : '" + item.type + "'");
         }
         return false;
     }
@@ -1050,7 +1080,7 @@ localplay.game.level = (function () {
         if (this.isAvatar(sprite.body)) { // we can't remove the avatar ( so don't try )
             return false;
         }
-
+        
         if (sprite.userdata !== undefined && sprite.userdata) {
             if (this.removeitem(sprite.userdata)) {
                 this.reserialise();
@@ -1059,7 +1089,6 @@ localplay.game.level = (function () {
         }
         return false;
     }
-
 
     Level.prototype.newitem = function (type, url, position) {
         this.additem(localplay.game.item.createitem(this, type,
@@ -1342,6 +1371,9 @@ localplay.game.level = (function () {
     }
     Level.prototype.isplaying = function () {
         return !this.gameover && this.gamestarted;
+    }
+    Level.prototype.ispaused = function () {
+        return this.paused;
     }
 
     Level.prototype.countitems = function () {

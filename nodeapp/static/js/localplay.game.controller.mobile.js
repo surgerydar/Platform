@@ -78,6 +78,15 @@ localplay.game.controller.mobile = (function () {
         this.timelimit = -1;
         this.loadingprogress = -1;
         //
+        //
+        //
+        this.logo = document.querySelector('#title-logo');
+        if ( this.logo ) {
+            this.logo.addEventListener('click', function(e) {
+                location = '/';
+            });
+        }
+        //
         // controls
         //
         this.progressindicatorcontainer = document.querySelector('#title-progress-container');
@@ -93,30 +102,10 @@ localplay.game.controller.mobile = (function () {
         //
         //
         //
-        /*
-                if (this.keys[37]) { // left
-                    this.impulse.x = -1;
-                }
-                if (this.keys[39]) { // right
-                    this.impulse.x = 1;
-                }
-                if (this.keys[32]) { // space
-                    this.impulse.y = -1;
-                }
-        */
         if ( this.playbutton ) {
             this.playbutton.addEventListener('click', function(e) {
                 e.preventDefault();
-                //_this.game.level.reset();
                 _this.game.level.play();
-                /*
-                if ( _this.game.level.state === localplay.game.level.states.ready ) {
-                    _this.game.level.play();
-                } else {
-                    _this.game.level.reset();
-                    _this.game.level.play();
-                }
-                */
             });
         }
         if ( this.menubutton ) {
@@ -154,7 +143,8 @@ localplay.game.controller.mobile = (function () {
                             window.location = '/edit/' + _this.game.levelid;
                             break;
                         case 'gallery':
-                            localplay.game.arcade.showarcadedialog();
+                            //localplay.game.arcade.showarcadedialog();
+                            location = '/arcade/latest?title=Latest';
                             break;
                         case 'people':
                             localplay.creator.showpeopledialog();
@@ -338,16 +328,23 @@ localplay.game.controller.mobile = (function () {
                 context.shadowOffsetX = 5;
                 context.shadowOffsetY = 5;
                 context.shadowBlur = 4;
-                var x = 8;
+                var p;
+                if ( this.logo ) {
+                    p = localplay.domutils.elementPosition(this.logo);
+                    p.y += this.logo.offsetHeight + 20;
+                } else {
+                    p = new Point(8,8);
+                }
+                var height = 32;
                 var pickups = this.game.level.avatar.pickups;
                 for (var i = 0; i < pickups.length; i++) {
                     if (pickups[i].sprite) {
                         var image = pickups[i].sprite.image;
                         if (image && image.complete && image.naturalHeight > 0) {
-                            var height = 32;
+                            
                             var width = image.naturalWidth * (height / image.naturalHeight);
-                            context.drawImage(image, x, 8, width, height);
-                            x += width + 4;
+                            context.drawImage(image, p.x, p.y, width, height);
+                            p.x += width + 4;
                         }
                     }
                 }
@@ -450,14 +447,15 @@ localplay.game.controller.mobile = (function () {
     MobileController.prototype.showmenu = function (show) {
         if( show ) {
             var playmenuitem = document.getElementById('menu.play');
-            if ( playmenuitem ) {
-                playmenuitem.innerHTML = this.game.level.isplaying() ? this.game.level.paused ? "RESUME" : "PAUSE" : "PLAY";
-            }
             this.backdrop.classList.add('open');
             this.menu.classList.add('open');
-        } else {
+            this.menu.scrollTop = '0px';
+            if ( this.game.level.isplaying() ) this.game.level.pause(true);
+       } else {
             this.backdrop.classList.remove('open');
             this.menu.classList.remove('open');
+            this.menu.scrollTop = '0px';
+            if ( this.game.level.ispaused() ) this.game.level.pause(false);
         }
     }
     

@@ -145,90 +145,6 @@ var localplay = (function () {
     localplay.touchsupport = function() {
         return ('ontouchstart' in document.documentElement);
     }
-    /*
-    function TouchHandler( target ) {
-        this.target = target;
-        if ( localplay.touchsupport() ) {
-            var ongoingTouches = [];
-            function copyTouch(touch) {
-                return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
-            }
-            function ongoingTouchIndexById(idToFind) {
-              for (var i = 0; i < ongoingTouches.length; i++) {
-                var id = ongoingTouches[i].identifier;
-
-                if (id == idToFind) {
-                  return i;
-                }
-              }
-              return -1;    // not found
-            }
-            //
-            //
-            //
-            target.addEventListener("touchstart", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    ongoingTouches.push(copyTouch(touches[i]));
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                _this.pointerdown(p);
-            });
-            this.container.addEventListener("touchmove", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
-                    }
-                }
-                var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                _this.pointermove(p);
-            });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY - _this.canvasoffset.y );
-                            _this.pointerup(p);
-                        }
-                        ongoingTouches.splice(idx, 1);  
-                    }
-                }
-            });
-            this.container.addEventListener("touchend", function(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                for (var i = 0; i < touches.length; i++) {
-                    var idx = ongoingTouchIndexById(touches[i].identifier);
-                    if (idx >= 0) {
-                        if ( idx === 0 ) {
-                            var p = new Point( ongoingTouches[0].pageX - _this.canvasoffset.x, ongoingTouches[0].pageY -  _this.canvasoffset.y );
-                            _this.pointerup(p);
-                        }
-                        ongoingTouches.splice(idx, 1);  
-                    }
-                }
-            });
-         } else {
-            this.boundmousedown = this.onmousedown.bind(this);
-            this.boundmouseup = this.onmouseup.bind(this);
-            this.boundmousemove = this.onmousemove.bind(this);
-            this.boundkeydown = this.onkeydown.bind(this);
-            this.boundkeyup = this.onkeyup.bind(this);
-            this.container.addEventListener("mousedown", this.boundmousedown);
-            this.container.addEventListener("mouseup", this.boundmouseup);
-            this.container.addEventListener("mousemove", this.boundmousemove);
-            window.addEventListener("keydown", this.boundkeydown);
-            window.addEventListener("keyup", this.boundkeyup);
-        }
-    }
-    */
     //
     //
     //
@@ -239,7 +155,12 @@ var localplay = (function () {
         return '/' + url;
     }
     localplay.mediaurl = function( url ) {
-        return url.substring( url.lastIndexOf('/media') );
+        var media = url.substring( url.lastIndexOf('/media') );
+        var queryOffset = media.lastIndexOf('?');
+        if ( queryOffset > 0 ) {
+            media = media.substring(0,queryOffset);
+        }
+        return media;
     }
     //
     //
@@ -341,7 +262,6 @@ var localplay = (function () {
     var tipbox = null;
     var tipstack = [];
     localplay.showtip = function (tip,target) {
-        return;
         if (tip && tip.length > 0) {
             if (!tipbox) {
                 tipbox = document.createElement("div");
@@ -351,14 +271,27 @@ var localplay = (function () {
                     localplay.showtip();
                 }
             }
-            var p = new Point(document.body.offsetWidth,0);
+            
+            var titleBar = document.querySelector('#title-bar');
+            var p = new Point(document.body.offsetWidth, titleBar ? titleBar.offsetHeight + 16: 0);
+            if (target) {
+                p = localplay.domutils.elementPosition(target);
+                p.y = Math.max( titleBar.offsetHeight + 16, p.y );
+                p.x += target.offsetWidth;
+            }
+            
+            /*
+            var p = new Point(document.body.scrollWidth, document.body.scrollHeight);
             if (target) {
                 p = localplay.domutils.elementPosition(target);
                 p.x += target.offsetWidth;
+                p.y += target.offsetHeight;
             }
+            */
             tipbox.innerHTML =  tip + '<img class="imagebutton" src="/images/icons/close-cancel-02.png" style="position: absolute; top: 2px; right: 2px;" /><br />';
-            tipbox.style.right = ( 24 + ( document.body.offsetWidth - p.x )) + "px";
-            tipbox.style.top = ( p.y + 8 ) + "px";
+            tipbox.style.top = p.y + "px";
+            tipbox.style.right = ( 8 + ( document.body.offsetWidth - p.x )) + "px";
+            //tipbox.style.bottom = Math.max( 0, ( document.body.scrollWidth - p.y ) ) + "px";
             tipbox.classList.remove("hidden");
         } else if (tipbox) {
             tipbox.classList.add("hidden");
@@ -366,7 +299,6 @@ var localplay = (function () {
         }
     }
     localplay.savetip = function () {
-        return;
         if (localplay.hastip()) {
             var tipboxstate = {
                 position : new Point( tipbox.offsetLeft + tipbox.offsetWidth, tipbox.offsetTop ),
@@ -376,7 +308,6 @@ var localplay = (function () {
         }
     }
     localplay.restoretip = function () {
-        return;
         if (tipstack.length > 0) {
             var tipboxstate = tipstack.pop();
             tipbox.innerHTML = tipboxstate.content;
@@ -388,7 +319,6 @@ var localplay = (function () {
     localplay.hastip = function () {
         return tipbox && tipbox.innerHTML != "";
     }
-
     //
     //
     //

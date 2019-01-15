@@ -161,7 +161,8 @@ img {
 */
 /* input styling */
 input[type=text], input[type=password], input[type=email], input[type=search] {
-    font-family: Arial, Helvetica, sans-serif;
+    -webkit-appearance: none;
+    /*font-family: Arial, Helvetica, sans-serif;*/
     font-size: 12px;
     background-color: white;
     color: black;
@@ -264,13 +265,15 @@ textarea {
 
 div.tipbox {
     position: absolute;
+    /*
     top: 0px;
     right: 0px;
+    */
     padding: 16px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     display: block;
-    z-index: 100;
+    z-index: 9;
 }
     div.tipbox.hidden {
         display: none;
@@ -343,6 +346,7 @@ div.backdrop {
 
 div.dialog {
     position: relative;
+    z-index: 12;
     margin: 32px auto;
     /*display: table;*/
     display: table;
@@ -750,14 +754,27 @@ div.backgroundview {
     }
 
 div.flexbackgroundview {
-    position: relative;
     flex-shrink: 1;
     align-self: stretch;
     height: 40vh;
     max-height: 40vh;
-    overflow-x: auto;
+    padding-bottom: 5vh;
     background-color: rgb(200, 200, 200);
+    /*
+        background image scroll
+   
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow-x: auto;
+    */
     white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    
 }
 
     div.flexbackgroundview.over {
@@ -768,16 +785,16 @@ div.flexbackgroundview {
     }
 
 img.backgroundview {
-    //height: 200px;
-    height: 100%;
-    width: auto;
+    display: inline-block;
     transition: all 0.25s ease-in;
     -webkit-transition: all 0.25s ease-in;
     -moz-transition: all 0.25s ease-in;
+    -ms-touch-action: none;
+    touch-action: none;
 }
 
     img.backgroundview.overleft {
-        padding-left: 64px;
+        padding-left: 25%;
         padding-right: 0px;
         transition: all 0.25s ease-in;
         -webkit-transition: all 0.25s ease-in;
@@ -786,7 +803,7 @@ img.backgroundview {
 
     img.backgroundview.overright {
         padding-left: 0px;
-        padding-right: 64px;
+        padding-right: 25%;
         transition: all 0.25s ease-in;
         -webkit-transition: all 0.25s ease-in;
         -moz-transition: all 0.25s ease-in;
@@ -795,8 +812,7 @@ img.backgroundview {
 div.backgroundviewitem {
     position: relative;
     display: inline-block;
-    height: 80%;
-    margin-top: 1%;
+    overflow: hidden;
     cursor: pointer;
 }
 
@@ -817,6 +833,101 @@ canvas.backgrounduploader {
     width: auto;
     height: auto;
     margin: 8px;
+}
+
+div.uploader-container {
+    position: absolute; 
+    top: 42px; 
+    left: 0px; 
+    bottom: 0px; 
+    right: 0px; 
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+div.uploader-toolbar {
+    /*
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    bottom: 0px; 
+    padding: 16px;
+    */
+    background-color: lightgray; 
+    overflow-x: hidden; 
+    overflow-y: auto;
+    flex-grow: 1;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+}
+div.uploader-toolbar.open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+div.uploader-toolbar-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    margin: 8px;
+}
+div.uploader-scrollpane {
+    /*
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    bottom: 0px; 
+    right: 0px; 
+    */
+    overflow: auto; 
+    background-color: darkgray;
+    flex-grow: 3;
+}
+/*
+div.uploader-scrollpane.open {
+    left: 300px;
+}
+*/
+@media only screen and (orientation:portrait){
+    div.uploader-container {
+        flex-direction: column-reverse;
+    }
+    
+    div.uploader-toolbar {
+        /*
+        position: absolute; 
+        top: unset;
+        left: 0px; 
+        bottom: 0px; 
+        right: 0px;
+        width: unset;
+        height: 0px; 
+        padding: 16px; 
+        background-color: lightgray; 
+        */
+        flex-basis: auto;
+        height: auto;
+        overflow-x: auto; 
+        overflow-y: auto;
+    }
+    div.uploader-toolbar.open {
+        /*
+        width: unset; 
+        height: 272px; 
+        */
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    div.uploader-scrollpane.open {
+        /*
+        left: 0px;
+        bottom: 300px;
+        */
+    }
 }
 
 /* avatar editor */
@@ -883,16 +994,72 @@ div.flexlayoutview {
     max-height: 40vh;
     background-color: rgb(200, 200, 200);
     border: none;
+    white-space: nowrap;
     overflow-x: scroll;
     overflow-y:hidden;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-start;
 }
     div.flexlayoutview.over {
         border: 4px dashed lightgrey;
     }
+
+
+div.flexlayoutviewitem {
+    position: relative;
+    display: inline-block;
+    height: 80%;
+    /*width: 25%;*/
+    margin-left: 4px;
+    cursor: pointer;
+}
+    /*
+    div.flexlayoutviewitem:hover:after {
+        content: url(../images/delete.png);
+        position: absolute;
+        top: 4px;
+        left: 4px;
+    }
+
+    div.flexlayoutviewitem:hover {
+    }
+    */
+
+img.flexlayoutviewitem {
+    /*
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    margin: auto;
+    */
+    /*height: 100%;*/
+    cursor: pointer;
+    background-image: url( ../images/icons/transparency.png );
+    
+    -ms-touch-action: none;
+    touch-action: none;
+}
+
+div.flexlayoutviewcount {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding: 2px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(0,0,0,.75);
+}
 
 canvas.flexlayoutview {
     position: absolute;
@@ -1234,11 +1401,15 @@ div.choice {
         }
 
 div.audiolistingcontainer {
-    width: 100%;
-    height: 200px;
+    width: calc( 100% - 32px );
+    height: 50vh;
+    min-height: 50vh;
     overflow-y: auto;
     background-color: lightgray;
-    border: 2px solid black;
+    border-radius: 16px;
+    padding: 16px;
+    flex-grow: 1;
+    /*border: 2px solid black;*/
 }
 
 div.audiolistingitem {
@@ -1443,26 +1614,20 @@ div.fullscreen {
     top: 0px;
     left: 0px;
     right: 0px;
-    /*height: 900px;
-    */
     bottom: 0px;
+    background-color: transparent;
+    transition: all 500ms;
 }
-
-@media all and (min-height : 768px) {
-    div.fullscreen {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        bottom: 0px;
-        right: 0px;
+    div.fullscreen.cover {
+        background-color: white;
     }
-}
+
 div.container {
     position: absolute;
     width: 1024px;
     height: 720px;
 }
-
+/*
 div.menubar {
     position: absolute;
     left: 0px;
@@ -1472,6 +1637,27 @@ div.menubar {
     color: white;
     font: bold 14px;
     vertical-align: middle;
+}
+*/
+div.menubar {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 42px;
+    background-color: rgb(102,102,102);
+    color: white;
+    font: bold 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+div.menubaritemgroup {
+    height: 42px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 div.menubaritem {
@@ -1574,7 +1760,7 @@ div.editorcontainer {
    left: 0px;
    bottom: 0px;
    right: 0px;
-   background-color: white;
+   /*background-color: white;*/
 }
 
 div.splashcontainer {
@@ -1609,11 +1795,12 @@ div.listview {
 
 div.flexlistview {
     position: relative;
+    min-height: 75%;
     flex-grow: 1;
     align-self: stretch;
     overflow-y: auto;
 }
-
+/*
 div.listviewheader {
     position: absolute;
     top: 0px;
@@ -1626,7 +1813,22 @@ div.listviewheader {
     vertical-align: middle;
     border-top: 2px solid white;
 }
-
+*/
+div.listviewheader {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 42px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(102,102,102);
+    color: white;
+    font: bold 14px;
+    vertical-align: middle;
+    border-top: 2px solid white;
+}
 div.listviewcontent {
     position: absolute;
     left: 0px;
@@ -1641,10 +1843,10 @@ div.listviewcontent {
 div.listitem {
     position: relative;
     display: inline-block;
-    width: calc( 25vw - 1.1vw );
-    height: calc( 25vw - 1.1vw );
+    width: calc( 25vw - ( 4px * 5 ) );
+    height: calc( 25vw - ( 4px * 5 ) );
     background: rgba(0,0,0,0.6);
-    margin: 0.125vw;
+    margin: 4px;
     overflow: hidden;
     color: white;
     font-size: 10px;
@@ -1691,28 +1893,42 @@ div.listitemheader {
 span.listitemheader {
     font-size: 12px;
     font-weight: bold;
+    
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 div.listitemfooter {
     position: absolute;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    /*height: 28px;*/
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
     padding: 4px;
     background: rgba(0,0,0,0.6);
+    
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 img.listitemimage {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    bottom: 0px;
-    right: 0px;
-    margin: auto;
+    width: calc( 100% - 8px );
+    height: calc( 100% - 8px );
+    margin: 4px;
     cursor: pointer;
+    object-fit: cover;
     background-image: url( ../images/icons/transparency.png );
+    
+    -ms-touch-action: none;
+    touch-action: none;
 }
+
 img.creatorlistitemimage {
     position: absolute;
     top: 8px;
@@ -1743,6 +1959,13 @@ a.listviewpagination {
     margin: 8px 32px 8px 32px;
 }
 
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    div.listitem {
+        width: calc( 50vw - ( 4px * 8 ) );
+        height: calc( 50vw - ( 4px * 8 ) );
+    }
+}
+
 /*css shapes*/
 .triangle-up {
     position: absolute;
@@ -1763,7 +1986,7 @@ a.listviewpagination {
 
 .triangle-down {
     position: absolute;
-     bottom: -15px;
+    bottom: -15px;
 	width: 0;
 	height: 0;
 	border-left: 15px solid transparent;
@@ -1862,21 +2085,7 @@ img.credits {
     width: auto;
 }
 
-/* device */
-@media screen and (-ms-view-state: fullscreen-landscape) {
-}
-
-@media screen and (-ms-view-state: filled) {
-}
-
-@media screen and (-ms-view-state: snapped) {
-}
-
-@media screen and (-ms-view-state: fullscreen-portrait) {
-}
-
 /* new design */
-
 #title-bar {
     position: absolute;
     top: 8px;
@@ -1888,6 +2097,8 @@ img.credits {
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
+    
+    color: rgb( 97, 95, 95 );
 }
 
 #title-logo {
@@ -1904,7 +2115,7 @@ img.credits {
     
     align-self: flex-start;
     
-    width: 33%;
+    width: 30%;
     height: 50%; 
     
     padding: 0 8px;
@@ -1918,6 +2129,18 @@ img.credits {
 #title-progress {
     flex-grow: 2;
     height: 33%;
+}
+
+#title-header {
+    align-self: center;
+}
+
+#play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
 }
 
 #play-bar {
@@ -1987,6 +2210,7 @@ progress[value]::-webkit-progress-value {
     width: 0px;
     bottom: 0px;
     right: 0px;
+    z-index: 10;
     opacity: 0.0;
     transition: all 500ms;
     background-image: linear-gradient(to left, rgba(65,174,228,1.0) , rgba(65,174,228,0.5));
@@ -1998,11 +2222,12 @@ progress[value]::-webkit-progress-value {
 
 .main-menu {
     position: absolute;
-    /*top: 8px;*/
-    top: calc( 10vh + 8px );
+    top: 8px;
+    /*top: calc( 10vh + 8px );*/
     bottom: 8px;
     right: 8px;
     width: 0px;
+    z-index: 11;
     opacity: 0.0;
     display: flex;
     flex-direction: column;
@@ -2020,16 +2245,26 @@ progress[value]::-webkit-progress-value {
 }
 
 .main-menu-item {
-    height: 10vh;
+    height: var(--item-height);
+    min-height: var(--item-height);
     flex-grow: 0;
     color: white;
     background-color: #12467B;
+    text-transform: uppercase;
     text-align: center;
-    line-height: 9vh;
-    font-size: 8vh;
+    line-height: var(--item-height);
+    font-size: calc( var(--item-height) - var(--text-padding) );
     /*padding: 8px;*/
-    
     margin-bottom: 2px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    
+    --item-height: calc( 32px + ( 64 - 32 ) * ( 100vmax - 400px ) / ( 800 - 400 ) );
+    --text-padding: calc( 16px + ( 24 - 16 ) * ( 100vmax - 400px ) / ( 800 - 400 ) );
 }
 
 /*
@@ -2046,26 +2281,35 @@ progress[value]::-webkit-progress-value {
 @media only screen and (orientation:portrait){
 
     #title-bar {
-        height: 10vh;
+        min-height: 10vh;
+        height: auto;
         flex-wrap: wrap;
     }
     #title-logo {
         height: auto;
         width: 45vw;
         align-self: center;
+        cursor: pointer;
     }
     #title-menu {
         height: auto;
         width: 45vw;
         align-self: center;
+        cursor: pointer;
     }
     #title-progress-container {
         order: 2;
-        width: 100vw;
+        width: calc( 100vw - 16px );
+        height: 4vh;
         align-self:center;
     }
+    #title-header {
+        order: 2;
+        width: 100vw;
+        text-align: center;
+    }
     .main-menu {
-        top: calc( 20vh + 8px );
+        top: calc( 10vh + 8px );
     }
     .main-menu.open {
         width: 75vw;
@@ -2124,15 +2368,20 @@ progress[value]::-webkit-progress-value {
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    background-color: white;
 }
 
 #editor-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     flex: 2 2 0;
-    overflow: hidden;
-    background-color: white;
+    overflow: auto;
+    /*background-color: white;*/
+    background-image: url(../images/icons/transparency.png );
+}
+
+canvas.editor-content {
+    width: 100%;
+    height: 100%;
 }
 
 #editor-image {
@@ -2224,6 +2473,21 @@ progress[value]::-webkit-progress-value {
 .pen {
     margin: 1vw;
     background-color: white;
+    border: none;
+}
+
+.pen.selected {
+    border: 2px solid dimgray;
+}
+
+.eraser {
+    margin: 1vw;
+    background-image: url(../images/icons/transparency.png );
+    border: none;
+}
+
+.eraser.selected {
+    border: 2px solid dimgray;
 }
 
 .editor-button {
@@ -2261,6 +2525,8 @@ input.editor[type=range] {
         background-position: center; 
         background-size: 5vw 5vw;
         background-image: url(../images/sliderthumb.png);
+        background-color: transparent;
+        -webkit-tap-highlight-color: transparent;
         -webkit-user-select: all;  /* Chrome 49+ */
         -moz-user-select: all;     /* Firefox 43+ */
         -ms-user-select: all;      /* No support yet */

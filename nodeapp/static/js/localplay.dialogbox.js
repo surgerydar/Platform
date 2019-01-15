@@ -335,42 +335,52 @@ localplay.dialogbox = (function () {
 
         var width = dialog.dialog.offsetWidth;
         var height = dialog.dialog.offsetHeight;
-        var align = new Point();
-        if (p.x - width < 0) {
-            dialog.dialog.style.left = Math.round(p.x - 15) + "px";
-            align.x = 0;
+        if ( width > dialog.backdrop.offsetWidth || height > dialog.backdrop.offsetHeight ) {
+            width = Math.min( width, dialog.backdrop.offsetWidth );
+            dialog.dialog.style.width = width + 'px';
+            height = Math.min( height, dialog.backdrop.offsetHeight );
+            dialog.dialog.style.height = height + 'px';
+            dialog.dialog.style.left = Math.min( p.x, dialog.backdrop.offsetWidth - width ) + 'px';
+            dialog.dialog.style.top = Math.min( p.y, dialog.backdrop.offsetHeight - height ) + 'px';
         } else {
-            dialog.dialog.style.right = Math.round((dialog.backdrop.offsetWidth - (p.x + 15))) + "px";
-            align.x = 1;
+            var position = new Point();
+            //
+            // calculate position
+            //
+            position.y = p.y - ( height + 15 );
+            if (position.y < 0 ) {
+                //
+                // position below
+                //
+                position.y = Math.max(0, p.y + 15) + "px";
+            }
+            position.x = Math.max(0,Math.min(p.x-width/2,dialog.backdrop.offsetWidth-width));
+            //
+            //
+            //
+            dialog.dialog.style.left = position.x + 'px';
+            dialog.dialog.style.top = position.y + 'px';
+            //
+            //
+            //
+            
+            //
+            // position arrow
+            //
+            var arrow = document.createElement("div");
+             if (position.y > p.y) {
+                arrow.className = "triangle-up";
+                arrow.style.top = "-15px";
+            } else {
+                arrow.className = "triangle-down";
+                arrow.style.bottom = "-15px";
+            }
+            arrow.style.left = Math.round( ( ( width / 2 ) + ( p.x - ( position.x + width / 2 ) ) ) - 7.5 ) + 'px';
+            //
+            // append arrow
+            //
+            dialog.dialog.appendChild(arrow);
         }
-        
-        if (p.y - height < 0) {
-            dialog.dialog.style.top = Math.round(p.y + 15) + "px";
-            align.y = 0;
-        } else {
-            dialog.dialog.style.bottom = Math.round(dialog.backdrop.offsetHeight - (p.y - 15)) + "px";
-            align.y = 1;
-        }
-        //
-        // position arrow
-        //
-        var arrow = document.createElement("div");
-         if (align.y === 0) {
-            arrow.className = "triangle-up";
-            arrow.style.top = "-15px";
-        } else {
-            arrow.className = "triangle-down";
-            arrow.style.bottom = "-15px";
-        }
-        if (align.x === 0) {
-            arrow.classList.add("left");
-        } else {
-            arrow.classList.add("right");
-        }
-        //
-        // append arrow
-        //
-        dialog.dialog.appendChild(arrow);
         //
         // show dialog
         //
@@ -378,12 +388,11 @@ localplay.dialogbox = (function () {
         //
         //
         //
-        var onclick = function (e) {
+        localplay.domutils.hookChildElementsWithPrefix(dialog.dialog, "button", "click", function (e) {
             if (callback(e)) {
                 dialog.close();
             }
-        }
-        localplay.domutils.hookChildElementsWithPrefix(dialog.dialog, "button", "click", onclick);
+        });
 
         return dialog;
     }

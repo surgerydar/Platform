@@ -462,6 +462,9 @@ localplay.creator = (function () {
         }
     }
 
-
+    creator.attach = function() {
+        
+    }
+    
     return creator;
 })();

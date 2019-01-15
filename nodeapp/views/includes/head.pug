@@ -3,6 +3,9 @@ html
     head
         meta( name='viewport' content='user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1' )
         
+        // defaul app icon
+        link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
+
         // apple standalone config
         meta( name='apple-mobile-web-app-capable' content='yes' )
         meta( name='apple-mobile-web-app-status-bar-style' content='black-translucent' )
@@ -16,7 +19,7 @@ html
 
         // android webapp config TODO: manifest
         meta( name='mobile-web-app-capable' content='yes' )
-
+        link( rel="manifest" href="/manifest.json" )
          
         if title
             title #{title}
@@ -32,7 +35,9 @@ html
         script( src='/lib/swfobject.js' )
         script( src='/lib/MD5.js' )
         script( src='/lib/hammer.js' )
-
+        script( src='https://cdn.jsdelivr.net/npm/interactjs@1.3.4/dist/interact.min.js' )
+        script( src='/lib/canvas-to-blob.min.js' )
+        
         // legacy objects 
         script( src='/js/graphicsprimitives.js' )
 
@@ -41,6 +46,7 @@ html
         script( src='/js/localplay.timer.js' )
         script( src='/js/localplay.domutils.js' )
         script( src='/js/localplay.log.js' )
+        script( src='/js/localplay.touch.js' )
         script( src='/js/localplay.datasource.js' )
         script( src='/js/localplay.imageprocessor.js' )
         script( src='/js/localplay.dialogbox.js' )
@@ -48,6 +54,7 @@ html
         script( src='/js/localplay.menu.js' )
         script( src='/js/localplay.authentication.js' )
         script( src='/js/localplay.ratingpanel.js' )
+        script( src='/js/localplay.objectcache.js' )
         script( src='/js/localplay.objecteditor.js' )
         script( src='/js/localplay.world.js' )
         script( src='/js/localplay.sprite.js' )
@@ -61,6 +68,7 @@ html
         script( src='/js/localplay.game.level.js' )
         script( src='/js/localplay.game.storyeditor.js' )
         script( src='/js/localplay.game.backgroundeditor.js' )
+        script( src='/js/localplay.game.addthingseditor.js' )
         script( src='/js/localplay.game.itemeditor.js' )
         script( src='/js/localplay.game.soundeditor.js' )
         script( src='/js/localplay.game.controller.js' )
@@ -73,10 +81,11 @@ html
         script( src='/js/localplay.game.arcade.js' )
         script( src='/js/localplay.creator.js' )
         script( src='/js/localplay.game.avatareditor.js' )
-        script( src='/js/localplay.game.layouteditor.js' )
         script( src='/js/localplay.game.thingeditor.js' )
         script( src='/js/localplay.game.leveleditor.js' )
+        script( src='/js/localplay.game.thingpropertyeditor.js' )
         script( src='/js/localplay.game.mobileleveleditor.js' )
         script( src='/js/localplay.upload.js' )
+        script( src='/js/localplay.arcade.js' )
         
     body

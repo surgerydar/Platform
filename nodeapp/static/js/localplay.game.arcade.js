@@ -39,7 +39,7 @@ localplay.game.arcade = (function () {
 
 
     arcade.load = function (arcadename, callback) {
-        localplay.datasource.get("arcades/" + arcadename, {},
+        localplay.datasource.get("/arcades/" + arcadename, {},
             {
                 datasourceonloadend: function (e) {
                     var datasource = e.target.datasource;
@@ -69,12 +69,16 @@ localplay.game.arcade = (function () {
         var listcontainer = null;
         var arcademenu = {
             items: [
+                { name: "Latest", id: "arcade.latest" },
                 { name: "Top picks", id: "arcade.toppicks" },
+                { name: "Highest rated", id: "arcade.highestrated" },
+                { name: "Most played", id: "arcade.mostplayed" }
+                /*
                 { name: "Ideas for change", id: "arcade.change" },
                 { name: "Local flavour", id: "arcade.local" },
                 { name: "Artistry", id: "arcade.artistry" },
                 { name: "Fun", id: "arcade.fun" },
-                { name: "Latest", id: "arcade.latest" }
+                */
             ],
             callback: function (id) {
                 var selector = id.split('.');
@@ -98,7 +102,7 @@ localplay.game.arcade = (function () {
                     //
                     // load arcade
                     //
-                    var arcade = "arcades/" + selector[2];
+                    var arcade = "/arcades/" + selector[2];
                     listcontainer.controller.setsource(arcade);
                 } else {
                     listcontainer.breadcrumb.innerHTML = "";
@@ -106,7 +110,7 @@ localplay.game.arcade = (function () {
             }
         };
 
-        listcontainer = localplay.listview.createlibrarydialog("Arcades", "arcades/latest",
+        listcontainer = localplay.listview.createlibrarydialog("Arcades", "/arcades/latest",
             function (item) {
                 //
                 // get level ids

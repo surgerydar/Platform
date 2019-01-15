@@ -135,7 +135,7 @@ localplay.ratingpanel = (function () {
                     this.setScore(category, response.score);
                 }
                 */
-                console.log( 'RatingPanel.datasourceonloadend : rweponse : ' + json );
+                console.log( 'RatingPanel.datasourceonloadend : reponse : ' + json );
                 var response = JSON.parse(json);
                 if ( response.status === 'OK' ) {
                     if ( response.data ) {
