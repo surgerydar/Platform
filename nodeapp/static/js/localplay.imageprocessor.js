@@ -525,7 +525,6 @@ localplay.imageprocessor = (function () {
             var factor = Math.abs(brightness / 255.0);
             for (var i = 0; i < data.data.length; i += 4) {
                 for (var j = 0; j < 3; j++) {
-                    //data.data[i + j] = Math.floor(factor * (data.data[i + j] - 128.0) + 128.0);
                     var value = data.data[i + j];
                     if (brightness > 0) {
                         value += (255.0 - value) * factor;
@@ -546,7 +545,6 @@ localplay.imageprocessor = (function () {
             var factor = Math.abs(contrast / 255.0);
             for (var i = 0; i < data.data.length; i += 4) {
                 for (var j = 0; j < 3; j++) {
-                    //data.data[i + j] = Math.floor(factor * (data.data[i + j] - 128.0) + 128.0);
                     var value = data.data[i + j];
                     if (contrast > 0) {
                         if (value < 128) {
@@ -562,7 +560,7 @@ localplay.imageprocessor = (function () {
             }
         });
     }
-
+    // TODO: move to utiity
     function interpolate( a, b, factor ) {
         return a + ( ( b - a ) * factor );
     }
@@ -644,15 +642,56 @@ localplay.imageprocessor = (function () {
         //
         // get source image data
         //
-        var context = source.getContext('2d');
-        var data = context.getImageData(0, 0, source.width, source.height);
-        //
-        // copy to target
-        //
-        context = target.getContext('2d');
-        context.putImageData(data, 0, 0);
+        var targetContext = target.getContext('2d');
+        if ( source.width !== target.width || source.height !== target.height ) {
+            //
+            // scale into target
+            //
+            targetContext.drawImage(source,0,0,target.width,target.height);
+        } else {
+            //
+            // copy to target
+            //
+            var sourceContext = source.getContext('2d');
+            var data = sourceContext.getImageData(0, 0, source.width, source.height);
+            targetContext.putImageData(data, 0, 0);
+        }
     }
 
+    imageprocessor.cropcanvas = function (source, target, crop) {
+        //
+        // get source image data
+        //
+        var targetContext = target.getContext('2d');
+        //
+        // crop into target
+        //
+        targetContext.drawImage(source,crop.x, crop.y, crop.width, crop.height, 0, 0, target.width,target.height);
+    }
+
+    imageprocessor.getAlphaBitMask = function( source ) {
+        var length  = source.width * source.height;
+        var mask    = localplay.bitbuffer( length );
+        var context = source.getContext('2d');
+        var data    = context.getImageData(0, 0, source.width, source.height);
+        for (var src = 3, dst = 0; dst < length; src += 4, dst++ ) {
+            if ( data.data[ src ] > 0 ) {
+                mask.on( dst );       
+            } else {
+                mask.off( dst );
+            }
+        }
+        return mask;
+    }
+    
+    imageprocessor.applyAlphaBitMask = function( source, target, mask ) {
+        this.processCanvas(source, target, function (data) {
+            for (var src = 0, dst = 3; dst < data.data.length; src++, dst += 4) {
+                data.data[ dst ] = mask.get(src) ? 255 : 0;    
+            }
+        });
+    }
+    
     return imageprocessor;
 
 })();

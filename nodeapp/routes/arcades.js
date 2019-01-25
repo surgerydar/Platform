@@ -35,13 +35,14 @@ module.exports = function( authentication, db ) {
                 break;
         }
         //
-        // 
+        // TODO: merge this with levels.js version
         //
-        db.find( 'levels', query, {}, order, offset, limit ).then( function(levels) {
+        db.find( 'levels', query, { thumbnail: 0 }, order, offset, limit ).then( function(levels) {
             for ( var i = 0; i < levels.length; i++ ) {
                 levels[ i ].candelete = req.user && levels[ i ].creatorid && req.user._id.toString() === levels[ i ].creatorid.toString();
                 levels[ i ].canflag = req.user && levels[ i ].creatorid && req.user._id.toString() !== levels[ i ].creatorid.toString();
                 levels[ i ].tablename = 'levels';
+                levels[ i ].thumbnail = '/levels/thumbnail/' + levels[ i ]._id;
             }
             db.count( 'levels', query ).then( function(count) {
                 res.json({ status: 'OK', data: {

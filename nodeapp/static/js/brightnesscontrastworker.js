@@ -41,8 +41,8 @@ addEventListener('message', function (e) {
     //
     //
     //
-    var cfactor = Math.abs(contrast);
-    var bfactor = Math.abs(brightness);
+    var cfactor = Math.abs(contrast/255.0);
+    var bfactor = Math.abs(brightness/255.0);
     for (var y = 0, i = 0; y < height; y++) {
         for (var x = 0; x < width; x++, i += 4) {
             var b = (0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2]);

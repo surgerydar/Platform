@@ -19,7 +19,6 @@ db.connect(
         console.log('initialising express');
         let express = require('express');
         let bodyParser = require('body-parser');
-        let jsonParser = bodyParser.json();
         let mailer = require('./mailer.js');
         //
         //
@@ -29,7 +28,7 @@ db.connect(
         //
         //
         app.use(bodyParser.json( {limit:'5mb'} ));
-        app.use(bodyParser.urlencoded({'limit': '5mb', 'extended': false }));
+        app.use(bodyParser.urlencoded({'limit': '5mb', 'extended': true }));
         //
         // configure express
         //
@@ -45,6 +44,8 @@ db.connect(
         // authentication
         //
         let passport = require('./passportauth')( app, db );
+        let local = require('./routes/local')( passport.passport, config, db );
+        app.use( '/local', local );
         let facebook = require('./routes/facebook')( passport.passport, config, db );
         app.use( '/facebook', facebook );
         let twitter = require('./routes/twitter')( passport.passport, config, db );

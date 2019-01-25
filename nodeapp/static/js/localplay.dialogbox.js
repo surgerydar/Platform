@@ -103,17 +103,7 @@ localplay.dialogbox = (function () {
             close.innerHTML = '\
                 <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close \
             ';
-            /*
-            var close = new Image();
-            close.classList.add("imagebutton");
-            close.style.position = "absolute";
-            close.style.top = "8px";
-            close.style.right = "8px";
-            close.style.width = "32px";
-            close.style.height = "32px";
-            close.src = "/images/icons/close-cancel-01.png";
-            */
-            close.onclick = function (e) {
+             close.onclick = function (e) {
                 closebuttonaction(_this);
                 _this.close();
                 return false;
@@ -130,7 +120,6 @@ localplay.dialogbox = (function () {
         }
 
         if (properties.content) { // other content
-            this.content = properties.content;
             var container = this.dialog;
             if (properties.fullscreen) {
                 container = document.createElement("div");
@@ -141,15 +130,20 @@ localplay.dialogbox = (function () {
                 container.style.bottom = "0px";
                 container.style.overflow = "auto";
             }
-            for (var i = 0; i < this.content.length; i++) {
+            if (Array.isArray(properties.content)) {
+                this.content = properties.content;
+                for (var i = 0; i < this.content.length; i++) {
 
-                if (typeof this.content[i] == "string") {
-                    var wrapper = document.createElement("div");
-                    wrapper.innerHTML = this.content[i];
-                    container.appendChild(wrapper);
-                } else {
-                    container.appendChild(this.content[i]);
+                    if (typeof this.content[i] == "string") {
+                        var wrapper = document.createElement("div");
+                        wrapper.innerHTML = this.content[i];
+                        container.appendChild(wrapper);
+                    } else {
+                        container.appendChild(this.content[i]);
+                    }
                 }
+            } else {
+                container.appendChild( properties.content );   
             }
             if (container !== this.dialog) {
                 this.dialog.appendChild(container);
@@ -292,6 +286,7 @@ localplay.dialogbox = (function () {
             }]);
             */
         var dialog = this.createdialogbox(title, message ? [message] : [], [], [], -1, -1, callback || function () { dialog.close(); });
+        dialog.backdrop.style.zIndex = '13';
         dialog.show();
     }
     //
@@ -309,6 +304,7 @@ localplay.dialogbox = (function () {
                 dialog.close();
             };
             dialog = this.createdialogbox(title, message ? [message] : [], ["Yes", "No"], [function () { action(true); }, function () { action(false) }]);
+            dialog.backdrop.style.zIndex = '13';
             dialog.show();
         }
     }

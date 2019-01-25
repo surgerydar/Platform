@@ -74,7 +74,7 @@ localplay.game.gameplay = (function () {
         //
         // get item media
         //
-        var media = localplay.domutils.urlToRelativePath(item.image);
+        var media = item.image;//localplay.domutils.urlToRelativePath(item.image);
         //
         // search
         //
@@ -94,7 +94,7 @@ localplay.game.gameplay = (function () {
         //
         // get item media
         //
-        var media = localplay.domutils.urlToRelativePath(item.image);
+        var media = item.image;//localplay.domutils.urlToRelativePath(item.image);
         //
         // search
         //

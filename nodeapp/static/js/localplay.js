@@ -45,9 +45,11 @@ var localplay = (function () {
         height: 723
     };
     localplay.colours = {
-        orange: 'rgb(255,143,33)',
-        darkgrey : 'rgb(102,102,102)',
-        lightgrey : 'rgb(157,157,157)'
+        orange:     'rgb(228,79,57)',
+        lightgrey:  'rgb(214,214,214)',
+        darkgrey:   'rgb(68,67,66)',
+        darkblue:   'rgb(0,69,124)',
+        lightblue:  'rgb(30,174,229)'
     };
     //
     // shims and polyfils
@@ -161,6 +163,10 @@ var localplay = (function () {
             media = media.substring(0,queryOffset);
         }
         return media;
+    }
+    localplay.navigateto = function( url ) {
+        window.location = url;
+        return true;
     }
     //
     //
@@ -318,6 +324,34 @@ var localplay = (function () {
     }
     localplay.hastip = function () {
         return tipbox && tipbox.innerHTML != "";
+    }
+    //
+    //
+    //
+    localplay.bitbuffer = function(length,data) {
+        class BitArray {
+            constructor(length,data) {
+                if ( data ) {
+                    this.backingArray = Uint8Array.from(data);
+                } else { 
+                    this.backingArray = Uint8Array.from({length: Math.ceil(length/8)}, ()=>0)
+                }
+                this.length = length
+            }
+            get(n) {
+                return (this.backingArray[n/8|0] & 1 << n % 8) > 0
+            }
+            on(n) {
+                this.backingArray[n/8|0] |= 1 << n % 8
+            }
+            off(n) {
+                this.backingArray[n/8|0] &= ~(1 << n % 8)
+            }
+            toggle(n) {
+                this.backingArray[n/8|0] ^= 1 << n % 8
+            }
+        }
+        return new BitArray( length, data );
     }
     //
     //

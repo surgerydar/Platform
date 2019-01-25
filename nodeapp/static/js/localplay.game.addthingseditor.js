@@ -169,10 +169,17 @@ localplay.game.addthingseditor = (function () {
         var addobjectbutton = document.getElementById(this.prefix + ".localplay.addlistitem");
         if (addobjectbutton) {
             addobjectbutton.onclick = function (e) {
+                /*
                 var objecteditor = localplay.objecteditor.createobjecteditor("Add Thing", function () {
-                    localplay.showtip("Tap object below to add it to your game", _this.layoutview);
+                    localplay.showtip("Tap object below to add it to your game", _this.container);
                     _this.medialibrary.controller.refresh();
                 });
+                */
+                localplay.objectimporter.createobjectimporterdialog('Add Object','object',function() {
+                    _this.medialibrary.controller.refresh();    
+                    localplay.showtip("Tap object below to add it to your game", _this.container);
+                });
+
             }
         }
         //

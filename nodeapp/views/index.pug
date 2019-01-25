@@ -41,6 +41,7 @@ html
         script( src="/js/localplay.dialogbox.js" )
         script( src="/js/localplay.listview.js" )
         script( src="/js/localplay.menu.js" )
+        script( src='/js/localplay.mainmenu.js' )
         script( src="/js/localplay.listview.js" )
         script( src="/js/localplay.ratingpanel.js" )
         script( src="/js/localplay.creator.js" )
@@ -49,15 +50,12 @@ html
     
     body( style="background-color: #41AEE4;" )
         #homepage-content
-            p#homepage-header( style="font-size: 48px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
-            p#homepage-body( style="font-size: 32px;" ).
-                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='/arcade/highestrated?title=Highest Rated' ) gallery of top ranked games ] or take part in our #[a( href='/challenge' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='/about' ) about ] section for more information.
+            p#homepage-header( style="font-size: 64px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
+            p#homepage-body( style="font-size: 48px;" ).
+                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='javascript:localplay.navigateto("/arcade/highestrated?title=Highest Rated")' ) gallery of top ranked games ] or take part in our #[a( href='javascript:localplay.navigateto("/challenge")' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='javascript:localplay.navigateto("/about")' ) about ] section for more information.
         #menu-backdrop
         #title-bar
-            img#title-logo( src="/images/bc-logo.png" )
-            #title-progress-container
-                span( style="vertical-align: middle;" ) TIME&nbsp;
-                progress#title-progress( value="0" )
+            img#title-logo( src="/images/bc-logo-white.png" )
             img#title-menu( src="/images/logo-menu.png" )
         .main-menu#main-menu
             .main-menu-item( id="menu.create" ) MAKE A GAME

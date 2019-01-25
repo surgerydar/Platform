@@ -232,7 +232,7 @@ localplay.game.gamestate = (function () {
         //
         //
         //
-        var media = localplay.domutils.urlToRelativePath(item.sprite.imageUrl);
+        var media = item.image;//localplay.domutils.urlToRelativePath(item.sprite.imageUrl);
         //
         // process collision
         //

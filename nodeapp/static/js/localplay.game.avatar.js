@@ -38,6 +38,13 @@ localplay.game.avatar = (function () {
 
     function Avatar(level, properties) {
         this.level = level;
+        this.type = "avatar";
+        this.options = properties.options;
+        if ( this.options ) {
+            if ( this.options.mask ) {
+                this.options.mask = localplay.bitbuffer( this.options.mask.length, this.options.mask.backingArray );
+            }
+        }
         this.homeposition = properties.position;
         this.image = localplay.mediaurl(properties.image.startsWith('/') ? properties.image : '/' + properties.image);
         this.scale = properties.scale ? parseFloat(properties.scale) : 1.0;
@@ -72,7 +79,7 @@ localplay.game.avatar = (function () {
             this.sprite.destroy();
             this.sprite = null;
         }
-        this.sprite = localplay.sprite.createsprite(this.level.world, this.homeposition, this.image, 'dynamic', true, true, this.rotation, this.scale);
+        this.sprite = localplay.sprite.createsprite(this.level.world, this.homeposition, this.image, 'dynamic', true, true, this.rotation, this.scale, false, this.options);
         this.sprite.setgravityscale(this.gravityscale);
         this.sprite.zindex = 10000;
         this.sprite.userdata = this;
@@ -90,7 +97,26 @@ localplay.game.avatar = (function () {
     }
 
     Avatar.prototype.tostring = function () {
-        return '"avatar" : { "image" : "' + this.image + '", "position" : "' + this.homeposition.tostring() + '", "scale" : "' + this.scale + '", "rotation" : "' + this.rotation + '", "gravityscale" : "' + this.gravityscale + '", "canjump" : "' + this.canjump + '" }';
+        //
+        //
+        //
+        var options = '';
+        if ( this.options ) {
+            var _options = {
+                brightness: this.options.brightness,
+                contrast: this.options.contrast,
+                saturation: this.options.saturation,
+                crop: this.options.crop,
+                mask: this.options.mask ? {
+                    length: this.options.mask.length,
+                    backingArray: Array.apply([], this.options.mask.backingArray )
+                } : undefined
+            }
+            options = JSON.stringify(_options);
+            options = ', "options" : ' + options;
+        }
+        
+        return '"avatar" : { "image" : "' + this.image + '", "position" : "' + this.homeposition.tostring() + '", "scale" : "' + this.scale + '", "rotation" : "' + this.rotation + '", "gravityscale" : "' + this.gravityscale + '", "canjump" : "' + this.canjump + '"' + options + '}';
     }
 
     Avatar.prototype.beginCollision = function (other) {
@@ -339,10 +365,15 @@ localplay.game.avatar = (function () {
                 image.src = localplay.mediaurl(item.data.url);
             }, 20, "",
             function (controller) {
+                /*
                 var objecteditor = localplay.objecteditor.createobjecteditor("Add Avatar", function () {
                     controller.refresh();
                 });
-            }, "Upload drawings of avatars");
+                */
+                localplay.objectimporter.createobjectimporterdialog('Add Avatar','object',function() {
+                    controller.refresh();  
+                });
+            }, "New");
         }
         image.src = this.image;
         image.onclick = change;
@@ -399,7 +430,7 @@ localplay.game.avatar = (function () {
     }
 
     Avatar.prototype.replacesprite = function (src) {
-        var media = localplay.domutils.urlToRelativePath(src);
+        var media = src;//localplay.domutils.urlToRelativePath(src);
         if (media !== this.image) {
             this.image = media;
             this.creatsprite();

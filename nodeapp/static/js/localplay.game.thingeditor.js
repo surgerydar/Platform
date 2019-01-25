@@ -49,7 +49,7 @@ localplay.game.thingeditor = (function () {
     var selectiontools = [
         {
             id: mousetrackingmode.move,
-            source: "/images/icons/move-03.png",
+            source: "/images/selection/move.png",
             image: new Image(),
             offset: {
                 x: 0, y: 0
@@ -57,7 +57,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: "properties",
-            source: "/images/icons/edit-big-02.png",
+            source: "/images/selection/properties.png",
             image: new Image(),
             offset: {
                 x: -1, y: -1
@@ -65,7 +65,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: "delete",
-            source: "/images/icons/delete-03.png",
+            source: "/images/selection/delete.png",
             image: new Image(),
             offset: {
                 x: 1, y: -1
@@ -73,7 +73,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: mousetrackingmode.rotatescale,
-            source: "/images/icons/rotate-03.png",
+            source: "/images/selection/rotatescale.png",
             image: new Image(),
             offset: {
                 x: 1, y: 1
@@ -81,7 +81,7 @@ localplay.game.thingeditor = (function () {
         },
         {
             id: mousetrackingmode.duplicate,
-            source: "/images/icons/duplicate-01.png",
+            source: "/images/selection/duplicate.png",
             image: new Image(),
             offset: {
                 x: -1, y: 1
@@ -166,10 +166,10 @@ localplay.game.thingeditor = (function () {
             //this.aabb.scalefromcenter(scale);
             var cp = this.aabb.getcenter();
             for (var i = 0; i < selectiontools.length; i++) {
-                this.toolbounds[i].width = selectiontools[i].image.naturalWidth;
-                this.toolbounds[i].height = selectiontools[i].image.naturalHeight;
-                this.toolbounds[i].x = cp.x - (this.toolbounds[i].width - 11);
-                this.toolbounds[i].y = cp.y - (this.toolbounds[i].height - 11);
+                this.toolbounds[i].width = Math.max( 24, Math.min( 48, selectiontools[i].image.naturalWidth ) );
+                this.toolbounds[i].height = Math.max( 24, Math.min( 48, selectiontools[i].image.naturalHeight ) );
+                this.toolbounds[i].x = cp.x - (this.toolbounds[i].width / 2);
+                this.toolbounds[i].y = cp.y - (this.toolbounds[i].height / 2);
                 this.toolbounds[i].x += (this.aabb.width / 2.0) * selectiontools[i].offset.x;
                 this.toolbounds[i].y += (this.aabb.height / 2.0) * selectiontools[i].offset.y;
             }
@@ -200,7 +200,11 @@ localplay.game.thingeditor = (function () {
                 } else {
                     context.globalAlpha = 1.0;
                 }
-                context.drawImage(selectiontools[i].image, bounds.x, bounds.y, bounds.width, bounds.height);
+                if ( selectiontools[i].image.complete ) {
+                    context.drawImage(selectiontools[i].image, bounds.x, bounds.y, bounds.width, bounds.height);
+                } else {
+                    context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                }
             }
             context.restore();
         }
@@ -332,6 +336,7 @@ localplay.game.thingeditor = (function () {
         //
         this.level.reset();
         this.level.trackavatar = false;
+        this.thingpropertyeditor = null;
     }
     //
     // required editor methods
@@ -342,6 +347,10 @@ localplay.game.thingeditor = (function () {
     }
 
     ThingEditor.prototype.dealloc = function () {
+        if ( this.thingpropertyeditor ) {
+            this.thingpropertyeditor.close();
+            this.thingpropertyeditor = null;
+        }
         localplay.showtip();
         if (this.container) {
             localplay.domutils.purgeDOMElement(this.container);
@@ -653,11 +662,13 @@ localplay.game.thingeditor = (function () {
             var item = this.selectedsprite.userdata;           
             if (item) {
                 var _this = this;
-                var editor = localplay.game.thingpropertyeditor.createthingpropertyeditor(item, function() {
-                    
+                localplay.showtip();
+                this.thingpropertyeditor = localplay.game.thingpropertyeditor.createthingpropertyeditor(item, function() {
+                    item.options = _this.thingpropertyeditor.options;
+                    _this.level.reserialise();
                 });
-                this.container.parentElement.appendChild(editor.container);
-                editor.initialise();
+                this.container.parentElement.appendChild(this.thingpropertyeditor.container);
+                this.thingpropertyeditor.initialise();
                 /*
                 var propertyeditor = item.geteditor();
                 if (propertyeditor) {

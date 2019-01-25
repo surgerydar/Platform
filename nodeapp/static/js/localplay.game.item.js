@@ -62,6 +62,12 @@ localplay.game.item = (function () {
         var _this = this;
         this.level = level;
         this.type = type;
+        this.options = properties.options;
+        if ( this.options ) {
+            if ( this.options.mask ) {
+                this.options.mask = localplay.bitbuffer( this.options.mask.length, this.options.mask.backingArray );
+            }
+        }
         this.homeposition = properties.position;
         this.currentposition = new Point(this.homeposition.x,this.homeposition.y);
         this.image = localplay.mediaurl( localplay.normaliseurl(properties.image) );
@@ -184,7 +190,8 @@ localplay.game.item = (function () {
             scale: this.scale,
             zindex: this.zindex,
             behaviours: _behaviours,
-            audio: this.audio
+            audio: this.audio,
+            options: this.options
         };
         return new GameItem(this.level, this.type, properties, false);
     }
@@ -195,7 +202,7 @@ localplay.game.item = (function () {
 
     GameItem.prototype.createsprite = function () {
         if (this.sprite) this.sprite.destroy();
-        this.sprite = localplay.sprite.createsprite(this.level.world, this.homeposition, this.image, 'static', false, this.type !== 'prop', this.rotation, this.scale);
+        this.sprite = localplay.sprite.createsprite(this.level.world, this.homeposition, this.image, 'static', false, this.type !== 'prop', this.rotation, this.scale, false, this.options);
         this.sprite.userdata = this;
         if ( this.zindex <= 0 ) this.zindex = this.level.world.sprites.length + 1;
         this.sprite.zIndex = this.zindex;
@@ -257,7 +264,28 @@ localplay.game.item = (function () {
             audio = JSON.stringify(this.audio);
             audio = ', "audio" : ' + audio;
         }
-        return '{ "' + this.type + '" : { "image" : "' + this.image + '", "position" : "' + p.tostring() + '", "scale" : "' + this.scale + '", "rotation" : "' + this.rotation + '", "zindex" : "' + this.zindex + '", "behaviours" : ' + behaviours + audio + ' } }';
+        //
+        //
+        //
+        var options = '';
+        if ( this.options ) {
+            var _options = {
+                brightness: this.options.brightness,
+                contrast: this.options.contrast,
+                saturation: this.options.saturation,
+                crop: this.options.crop,
+                mask: this.options.mask ? {
+                    length: this.options.mask.length,
+                    backingArray: Array.apply([], this.options.mask.backingArray )
+                } : undefined
+            };
+            options = JSON.stringify(_options);
+            options = ', "options" : ' + options;
+        }
+        //
+        //
+        //
+        return '{ "' + this.type + '" : { "image" : "' + this.image + '", "position" : "' + p.tostring() + '", "scale" : "' + this.scale + '", "rotation" : "' + this.rotation + '", "zindex" : "' + this.zindex + '", "behaviours" : ' + behaviours + audio + options + ' } }';
     }
 
     GameItem.prototype.shadowcolour = function () {
@@ -276,7 +304,7 @@ localplay.game.item = (function () {
     }
 
     GameItem.prototype.replacesprite = function (src) {
-        var media = localplay.domutils.urlToRelativePath(src);
+        var media = src;//localplay.domutils.urlToRelativePath(src);
         if (media !== this.image) {
             if (!this.level.autogenerate && this.level.gameplay.containsItem(this) ) {
                 if (this.level.countInstancesOfMediaForObjectOfType(this.type, this.image) <= 1) {

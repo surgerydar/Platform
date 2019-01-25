@@ -1204,7 +1204,7 @@ localplay.game.level = (function () {
         var source = this.containerfromitemtype(type);
         if (source) {
             for (var i = 0; i < source.length; i++) {
-                var url = localplay.domutils.urlToRelativePath(source[i].image);
+                var url = source[i].image;//localplay.domutils.urlToRelativePath(source[i].image);
                 if (url != null && media.indexOf(url) == -1) {
                     media.push(url);
                 }
@@ -1218,10 +1218,9 @@ localplay.game.level = (function () {
         var count = 0;
         var source = this.containerfromitemtype(type);
         if (source) {
-            for (var i = 0; i < source.length; i++) {
-                var url = localplay.domutils.urlToRelativePath(source[i].image);
-                if (url === mediaUrl) count++;
-            }
+            source.forEach( function(item) {
+                if ( item.image === mediaUrl ) count++;   
+            });
         }
         return count;
     }
@@ -1230,10 +1229,11 @@ localplay.game.level = (function () {
         var instances = [];
         var source = this.containerfromitemtype(type);
         if (source) {
-            for (var i = 0; i < source.length; i++) {
-                var url = localplay.domutils.urlToRelativePath(source[i].image);
-                if (url === mediaUrl) instances.push(source[i]);
-            }
+            source.forEach( function(item) {
+                if ( item.image === mediaUrl ) {
+                    instances.push(item);   
+                }
+            });
         }
         return instances;
     }

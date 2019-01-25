@@ -48,8 +48,8 @@ module.exports = function( passport, config, db ) {
                function (req, res) {
                     var redirectTo = '/'; // Set default redirect value
                     if (req.session.reqUrl) {
-                        redirectTo = req.session.reqUrl; // If our redirect value exists in the session, use that.
-                        delete req.session.reqUrl; // Once we've used it, dump the value to null before the redirect.
+                        redirectTo = req.session.reqUrl; // if our redirect value exists in the session, use that.
+                        delete req.session.reqUrl; // once we've used it, dump the value to null before the redirect.
                     }
                     console.log( 'twitter callback : redirecting to : ' + redirectTo );
                     res.redirect(redirectTo);

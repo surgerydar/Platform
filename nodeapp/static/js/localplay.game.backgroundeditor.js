@@ -114,7 +114,7 @@ localplay.game.backgroundeditor = (function () {
         this.medialibrary.className = "flexlistview";
         //this.medialibrary.style.top = "260px";
         this.medialibrary.style.flexGrow = "1";
-        this.medialibrary.innerHTML = Mustache.render( localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "Add" });
+        this.medialibrary.innerHTML = Mustache.render( localplay.listview.editablecontainer, { prefix: this.prefix, addlabel: "New" });
         //
         //
         //
@@ -146,10 +146,20 @@ localplay.game.backgroundeditor = (function () {
         var addobjectbutton = document.getElementById(this.prefix + ".localplay.addlistitem");
         if (addobjectbutton) {
             addobjectbutton.onclick = function (e) {
+                /*
                 var backgrounduploader = new BackgroundUploader(function (update) {
                     if (update) {
                         _this.medialibrary.controller.refresh();
                     }
+                    if (_this.level.background.images.length > 1) {
+                        localplay.showtip("Tap image to add background<br />Drag to reorder your backgrounds", _this.backgroundview);
+                    } else {
+                        localplay.showtip("Tap image to add background", _this.backgroundview);
+                    }
+                });
+                */
+                localplay.objectimporter.createobjectimporterdialog('Add Background','background',function() {
+                    _this.medialibrary.controller.refresh();    
                     if (_this.level.background.images.length > 1) {
                         localplay.showtip("Tap image to add background<br />Drag to reorder your backgrounds", _this.backgroundview);
                     } else {
@@ -407,16 +417,12 @@ localplay.game.backgroundeditor = (function () {
                 <!-- toolbar --> \
                 <div id="backgrounduploader.toolbar" class="uploader-toolbar"> \
                     <div id="backgrounduploader.meta" class="uploader-toolbar-group"> \
-                        <h3>name</h3>\
-                        <input id="backgrounduploader.name" type="text" placeholder="name" /> \
-                        <h3>tags</h3>\
-                        <input id="backgrounduploader.tags" type="text" placeholder="tags" /> \
+                        <input id="backgrounduploader.name" type="text" placeholder="name" style="height: 5vw; border-radius: 2.5vw; margin: 8px 0 0 8px;"/> \
+                        <input id="backgrounduploader.tags" type="text" placeholder="tags" style="height: 5vw; border-radius: 2.5vw; margin: 8px 0 0 8px;"/> \
                     </div>\
                     <div id="backgrounduploader.adjust" class="uploader-toolbar-group"> \
-                        <h3>brightness</h3>\
-                        <input id="backgrounduploader.slider.brightness" type="range" min="-255" max="255" value="0" /> \
-                        <h3>contrast</h3>\
-                        <input id="backgrounduploader.slider.contrast" type="range" min="-255" max="255" value="0" /> \
+                        <input id="backgrounduploader.slider.brightness" type="range" class="editor brightness" min="0.0" max="1.0" step="0.01" value="0.5" /> \
+                        <input id="backgrounduploader.slider.contrast" type="range" class="editor contrast" min="0.0" max="1.0" step="0.01" value="0.5" /> \
                     </div>\
                     <!--\
                     <h3>brushes</h3> \
@@ -497,8 +503,12 @@ localplay.game.backgroundeditor = (function () {
         this.brightnessslider = document.getElementById("backgrounduploader.slider.brightness");
         if ( this.brightnessslider ) {
             this.brightnessslider.onchange = function(e) {
+                _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
                 _this.adjustImage();
             }
+            this.brightnessslider.addEventListener('input', function(e) {
+                _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
+            });
             if (this.brightnessslider.type == "text") {
                 localplay.domutils.createSlider(this.brightnessslider);
             }
@@ -506,8 +516,12 @@ localplay.game.backgroundeditor = (function () {
         this.contrastslider = document.getElementById("backgrounduploader.slider.contrast");
         if (this.contrastslider) {
             this.contrastslider.onchange = function (e) {
+                _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
                 _this.adjustImage();
             }
+            this.contrastslider.addEventListener('input', function(e) {
+                _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
+            });
             if (this.contrastslider.type == "text") {
                 localplay.domutils.createSlider(this.contrastslider);
             }
@@ -570,22 +584,22 @@ localplay.game.backgroundeditor = (function () {
             } );
         } );
     }
-
-
     //
     // image processing worker
     //
     BackgroundUploader.prototype.adjustImage = function () {
         this.spawnWorker();
         if (this.worker) {
-            var c = this.contrastslider.value / 255.0;
-            var b = this.brightnessslider.value / 255.0;
+            var c = -255.0 + (this.contrastslider.value *512.0);
+            var b = -255.0 + (this.brightnessslider.value*512.0);
+            var s = 0.0;
             var blockwidth = this.originalcanvas.width >> 2;
             var blockheight = this.originalcanvas.height >> 2;
             var data = {
                 'command': 'block',
                 'brightness': b,
                 'contrast': c,
+                'saturation': s,
                 'x': 0,
                 'y': 0,
                 'width': blockwidth > 0 ? blockwidth : this.originalcanvas.width,
@@ -602,7 +616,7 @@ localplay.game.backgroundeditor = (function () {
     BackgroundUploader.prototype.spawnWorker = function () {
         var _this = this;
         this.terminateWorker();
-        this.worker = new Worker('js/brightnesscontrastworker.js');
+        this.worker = new Worker('/js/brightnesscontrastsaturationworker.js');
         this.worker.addEventListener('message', function (e) {
             localplay.log("worker command: " + e.data.command);
             if (e.data.command == 'block') {
@@ -656,8 +670,8 @@ localplay.game.backgroundeditor = (function () {
                 this.scrollpane.classList.remove("open");
                 this.name.value = "";
                 this.tags.value = "";
-                this.brightnessslider.value = 0;
-                this.contrastslider.value = 0;
+                this.brightnessslider.value = 0.5;
+                this.contrastslider.value = 0.5;
             }
         }
     }

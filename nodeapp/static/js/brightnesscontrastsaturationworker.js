@@ -26,7 +26,6 @@
  * for the JavaScript code in this page.
  *
  */
-
 //
 // web worker interface
 //
@@ -42,35 +41,66 @@ addEventListener('message', function (e) {
     //
     //
     //
-    var cfactor = Math.abs(contrast);
-    var bfactor = Math.abs(brightness);
-    for (var y = 0, i = 0; y < height; y++) {
-        for (var x = 0; x < width; x++, i += 4) {
-            var b = (0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2]);
+    var interpolate = function( a, b, factor ) {
+        return a + ( ( b - a ) * factor );
+    }
+    //
+    //
+    //
+    var fBrightness = Math.abs(brightness / 255.0);
+    var fContrast = Math.abs(contrast / 255.0);
+    var fSaturation = Math.abs(saturation / 255.0);
+    for (var i = 0; i < data.length; i += 4) {
+        for (var j = 0; j < 3; j++) {
+            //
+            //
+            //
+            var value = data[i + j];
+            //
+            // brightness
+            //
             if (brightness > 0) {
-                b += (255.0 - b) * bfactor;
-            } else if (brightness < 0) {
-                b *= 1.0 - bfactor;
+                value = interpolate( value, 255, fBrightness );
+            } else if ( brightness < 0 ) {
+                value = interpolate( value, 0, fBrightness );
             }
-            for (var j = 0; j < 3; j++) {
-                var value = data[i + j];
-                if (brightness > 0) {
-                    value += (255.0 - value) * bfactor;
-                } else if (brightness < 0) {
-                    value *= 1.0 - bfactor;
+            //
+            // contrast
+            //
+            if (contrast > 0) {
+                if (value < 128) {
+                    value = interpolate(value,0,fContrast);
+                } else {
+                    value = interpolate(value,255,fContrast);
                 }
-                if (contrast > 0) {
-                    if (b < 128) {
-                        value -= value * cfactor;
-                    } else {
-                        value += (255.0 - value) * cfactor;
-                    }
-                } else if (contrast < 0) {
-                    value = Math.round(value + (128.0 - value) * cfactor);
-                }
-                data[i + j] = value;
-            }        
+            } else if ( contrast < 0 ) {
+                value = interpolate( value, 128, fContrast);
+            }
+            //
+            // clamp value
+            //
+            data[i + j] = Math.max( 0, Math.min( 255, Math.round( value ) ) );
+        }
+        //
+        // saturation
+        //
+        var cMax = Math.max( data[i], Math.max(data[i+1], data[i+2]));
+        var sMax = [ data[i] / cMax, data[i+1] / cMax, data[i+2] / cMax ];
+        var sMin = Math.min(255, Math.round(0.2126 * data[i] + 0.7152 * data[i+1] + 0.0722 * data[i+2]));
+        for ( j = 0; j < 3; j++ ) {
+            value = data[i + j];
+            if ( saturation > 0 ) {
+                // iterpolate towards max saturation
+                value = interpolate( value, 255 * sMax[j], fSaturation );
+            } else if ( saturation < 0 ) {
+                // interpolate towards grayscale
+                value = interpolate( value, sMin, fSaturation );
+            }
+            data[i + j] = Math.max( 0, Math.min( 255, Math.round( value ) ) );
         }
     }
+    //
+    //
+    //
     postMessage(e.data);
 });

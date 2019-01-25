@@ -35,7 +35,7 @@ localplay.sprite = (function () {
     //
     var sprite = {};
 
-    function Sprite(world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape) {
+    function Sprite(world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape, options) {
         this.world = world;
         this.image = null;
         this.body = null;
@@ -44,6 +44,7 @@ localplay.sprite = (function () {
         this.userdata = null;
         this.imageUrl = imageUrl;
         this.edgeshape = edgeshape;
+        this.options = options;
         //
         // initialise transformation
         //
@@ -101,7 +102,7 @@ localplay.sprite = (function () {
                 if ( !_this.destroyed ) {
                     _this.setup();    
                 }
-            });
+            },{ once: true, passive: true });
         }
     }
 
@@ -156,56 +157,121 @@ localplay.sprite = (function () {
 
     Sprite.prototype.setup = function () {
         var _this = this;
-        /*
-        if (this.body) {
-            this.world.removeSprite(this);
-        }
-        */
+        //
+        //
+        //
         this.world.removeSprite(this);
-        if( this.scale > 1.0 || this.scale < 1.0 ) {
-            localplay.imageprocessor.resizeImage(this.image, this.scale, function (scaledimage) {
-                if ( !_this.destroyed ) {
-                    //
-                    // build collision shape
-                    //
-                    if (_this.edgeshape) {
-                        _this.points = localplay.imageprocessor.findContours(scaledimage, false);
-                    } else {
-                        _this.triangles = localplay.imageprocessor.findContours(scaledimage, true);
-                    }
-                    //
-                    // create body
-                    //
-                    _this.world.addSprite(_this);
-                    if (_this.body) {
-                        _this.body.SetFixedRotation(_this.fixedrottation);
-                        _this.body.SetActive(_this.active);
-                        _this.body.SetUserData(_this);
-                        _this.body.SetAngle(_this.rotation);
-                        _this.getAABB(true);
-                    }
-                }
-            });
-        } else {
+        //
+        //
+        //
+        var mask = function( source, next ) {
+            if ( _this.options && _this.options.mask ) {
+                var target = document.createElement('canvas');
+                target.width = source.width;
+                target.height = source.height;
+                localplay.imageprocessor.applyAlphaBitMask( source, target, _this.options.mask );
+                next( target );
+            } else {
+                next( source );
+            }
+        }
+        
+        var crop = function( source, next ) {
+            if ( _this.options && _this.options.crop && ( _this.options.crop.width < source.width || _this.options.crop.height < source.height )  ) {
+                var target = document.createElement('canvas');
+                target.width = _this.options.crop.width;
+                target.height = _this.options.crop.height;
+                localplay.imageprocessor.cropcanvas( source, target, _this.options.crop );
+                next( target );
+            } else {
+                next( source );
+            }
+        }
+        
+        var adjust = function( source, next ) {
+            if ( _this.options && ( _this.options.brightness > 0 || _this.options.contrast > 0 || _this.options.saturation > 0 )  ) {
+                var target = document.createElement('canvas');
+                target.width = source.width;
+                target.height = source.height;
+                localplay.imageprocessor.adjust( source, target, _this.options.brightness, _this.options.contrast, _this.options.saturation );
+                next( target );
+            } else {
+                next( source );
+            }
+
+        }
+        
+        var scale = function( source, next ) {
+            if( _this.scale > 1.0 || _this.scale < 1.0 ) {
+                var target = document.createElement('canvas');
+                target.width = Math.round(source.width*_this.scale);
+                target.height = Math.round(source.height*_this.scale);
+                localplay.imageprocessor.copycanvas(source,target);
+                next(target);
+            } else {
+                next(source);
+            }
+        }
+        
+        var createBody = function(image) {
+            if ( _this.destroyed ) return;
             //
             // build collision shape
             //
-            if (this.edgeshape) {
-                this.points = localplay.imageprocessor.findContours(this.image, false);
+            if (_this.edgeshape) {
+                _this.points = localplay.imageprocessor.findContours(image, false);
             } else {
-                this.triangles = localplay.imageprocessor.findContours(this.image, true);
+                _this.triangles = localplay.imageprocessor.findContours(image, true);
             }
             //
             // create body
             //
-            this.world.addSprite(this);
-            if (this.body) {
-                this.body.SetFixedRotation(this.fixedrottation);
-                this.body.SetActive(this.active);
-                this.body.SetUserData(this);
-                this.body.SetAngle(this.rotation);
-                this.getAABB(true);
+            _this.world.addSprite(_this);
+            if (_this.body) {
+                _this.body.SetFixedRotation(_this.fixedrottation);
+                _this.body.SetActive(_this.active);
+                _this.body.SetUserData(_this);
+                _this.body.SetAngle(_this.rotation);
+                _this.getAABB(true);
             }
+        }
+        //
+        //
+        //
+        
+        //
+        //
+        //
+        if( this.scale > 1.0 || this.scale < 1.0 || this.options ) {
+            /*
+            localplay.imageprocessor.resizeImage(this.image, this.scale, function (scaledimage) {
+                if ( !_this.destroyed ) {
+                    createBody(scaledimage);
+                }
+            });
+            */
+            var imageCanvas = document.createElement("canvas");
+            imageCanvas.width = this.image.naturalWidth;
+            imageCanvas.height = this.image.naturalHeight;
+            var imageContext = imageCanvas.getContext("2d");
+            imageContext.drawImage(this.image,0,0);
+            mask( imageCanvas, function( masked ) {
+                crop( masked, function( cropped ) {
+                    adjust( cropped, function( adjusted ) {
+                        scale( adjusted, function( scaled ) {
+                            var scaledImage = new Image();
+                            scaledImage.onload = function() {
+                                createBody(scaledImage);
+                                //_this.image.src = adjusted.toDataURL("image/png");  
+                                _this.processed = adjusted;
+                            };
+                            scaledImage.src = scaled.toDataURL("image/png");
+                        });
+                    });
+                });
+            });
+        } else {
+            createBody(this.image);
         }
     }
 
@@ -265,7 +331,12 @@ localplay.sprite = (function () {
         // TODO: support for realtime scale
         //
         //var size = new this.world.b2Vec2(this.image.naturalWidth, this.image.naturalHeight);
-        var size = new this.world.b2Vec2(this.image.naturalWidth*this.scale, this.image.naturalHeight*this.scale);
+        var size;
+        if ( this.processed ) {
+            size = new this.world.b2Vec2(this.processed.width*this.scale, this.processed.height*this.scale);
+        } else {
+            size = new this.world.b2Vec2(this.image.naturalWidth*this.scale, this.image.naturalHeight*this.scale);
+        }
         var rotation = this.rotation;
         var position = this.position;
         if (this.editing) {
@@ -293,7 +364,7 @@ localplay.sprite = (function () {
         context.shadowOffsetY = 5;
         context.shadowBlur = 4 + Math.abs(this.shadow.x);
 
-        context.drawImage(this.image, 0, 0, size.x, size.y);
+        context.drawImage(this.processed||this.image, 0, 0, size.x, size.y);
         context.restore();
     }
 
@@ -426,12 +497,15 @@ localplay.sprite = (function () {
     Sprite.prototype.getAABB = function (update) {
         if (this.body != null && update) {
             if (!this.body.IsActive()) {
-                /* TODO: realtime scale
-                var halfwidth = (this.image.naturalWidth / 2);
-                var halfheight = (this.image.naturalHeight / 2);
-                */
-                var halfwidth = ((this.image.naturalWidth*this.scale) / 2);
-                var halfheight = ((this.image.naturalHeight*this.scale) / 2);
+                var halfwidth;
+                var halfheight;
+                if ( this.processed ) {
+                    halfwidth = ((this.processed.width*this.scale) / 2);
+                    halfheight = ((this.processed.height*this.scale) / 2);
+                } else {
+                    halfwidth = ((this.image.naturalWidth*this.scale) / 2);
+                    halfheight = ((this.image.naturalHeight*this.scale) / 2);
+                }
                 var corners = [];
                 corners.push(new Point(-halfwidth, -halfheight)); // top left
                 corners.push(new Point(halfwidth, -halfheight)); // top right
@@ -499,8 +573,8 @@ localplay.sprite = (function () {
     //
     //
     //
-    sprite.createsprite = function (world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape) {
-        return new Sprite(world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape);
+    sprite.createsprite = function (world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape, options) {
+        return new Sprite(world, position, imageUrl, type, fixedrotation, active, rotation, scale, edgeshape, options);
     }
     //
     //

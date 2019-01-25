@@ -51,15 +51,22 @@ localplay.touch = (function () {
                 target.addEventListener("touchmove", function (e) {
                     e.preventDefault();
                     var touches = e.changedTouches;
+                    var offset = localplay.domutils.elementPosition(target);
+                    var p0 = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
                     for (var i = 0; i < touches.length; i++) {
                         var idx = ongoingTouchIndexById(touches[i].identifier);
                         if (idx >= 0) {
                           ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  
                         }
                     }
-                    var offset = localplay.domutils.elementPosition(target);
+                    
                     var p = new Point( ongoingTouches[0].pageX - offset.x, ongoingTouches[0].pageY - offset.y );
-                    return delegate.pointermove(p);
+                    if ( ongoingTouches.length === 2 && delegate.pointerscroll ) {
+                        var d = p.subtract(p0);
+                        delegate.pointerscroll(d);   
+                    } else {
+                        return delegate.pointermove(p);
+                    }
                 });
             }
             if ( delegate.pointerup ) {

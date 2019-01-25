@@ -74,6 +74,7 @@ localplay.listview = (function () {
                 <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
             </div> \
             <input type="search" class="listviewsearch" placeholder="creator, name or tags" value="{{filter}}"/> \
+            <div style="flex-grow:1; flex-shrink:1; width: 16px;"></div>\
         </div> \
         <div class="listviewcontent"></div>\
     ';

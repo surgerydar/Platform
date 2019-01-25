@@ -66,29 +66,25 @@ localplay.objecteditor = (function () {
                     <!-- toolbar --> \
                     <div id="objecteditor.toolbar" class="uploader-toolbar open"> \
                         <div id="objectuploader.meta" class="uploader-toolbar-group"> \
-                            <h3>name</h3>\
-                            <input id="objecteditor.name" type="text" style="width: 256px;" placeholder="name" /> \
-                            <h3>tags</h3>\
-                            <input id="objecteditor.tags" type="text" style="width: 256px;" placeholder="tags" /> \
+                            <input id="objecteditor.name" type="text" style="height: 5vw; border-radius: 2.5vw; margin: 8px 0 0 8px;" placeholder="name" /> \
+                            <input id="objecteditor.tags" type="text" style="height: 5vw; border-radius: 2.5vw; margin: 8px 0 0 8px;" placeholder="tags" /> \
                         </div>\
                         <div id="objectuploader.adjust" class="uploader-toolbar-group"> \
-                            <h3>brightness</h3>\
-                            <input id="objecteditor.slider.brightness" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
-                            <h3>contrast</h3>\
-                            <input id="objecteditor.slider.contrast" type="range" min="-255" max="255" value="0" style="width: 256px;"/> \
+                            <input id="objecteditor.slider.brightness" type="range" class="editor brightness" min="0" max="1.0" step= "0.01" value="0.5" style="margin: 8px 0 0 8px;"/> \
+                            <input id="objecteditor.slider.contrast" type="range" class="editor contrast" min="0" max="1.0" step= "0.01" value="0.5" style="margin: 8px 0 0 8px;"/> \
                         </div>\
                         <div id="objectuploader.edit" class="uploader-toolbar-group"> \
-                            <h3>erasers</h3> \
-                            <div id="objecteditor.brushes" style="width: 256px; height: 42px"> \
+                            <div id="objecteditor.brushes" class="horizontal-option-container"> \
                                 <img id="objecteditor.button.brush.1" src="/images/icons/brush-04.png" style="margin: 4px; padding: 2px;"/> \
                                 <img id="objecteditor.button.brush.2" src="/images/icons/brush-03.png" style="margin: 4px; padding: 2px;"/> \
                                 <img id="objecteditor.button.brush.3" src="/images/icons/brush-02.png" style="margin: 4px; padding: 2px;"/> \
                                 <img id="objecteditor.button.brush.4" src="/images/icons/brush-01.png" style="margin: 4px; padding: 2px;"/> \
                             </div> \
-                            <h3>zoom</h3> \
-                            <div id="objecteditor.zoom" style="width: 256px; height: 42px"> \
-                                <img id="objecteditor.button.zoomin" src="/images/icons/zoom-in.png" style="width: 48px; margin: 4px;"/> \
-                                <img id="objecteditor.button.zoomout" src="/images/icons/zoom-out.png" style="width: 48px; margin: 4px;"/> \
+                        </div> \
+                        <div id="objectuploader.zoom" class="uploader-toolbar-group"> \
+                            <div id="objecteditor.zoom" class="horizontal-option-container"> \
+                                <img id="objecteditor.button.zoomin" src="/images/icons/zoom-in.png" style="width: 5vw; margin: 4px;"/> \
+                                <img id="objecteditor.button.zoomout" src="/images/icons/zoom-out.png" style="width: 5vw; margin: 4px;"/> \
                             </div> \
                         </div>\
                     </div> \
@@ -107,6 +103,7 @@ localplay.objecteditor = (function () {
         // create container
         //
         var container = document.createElement("div");
+        this.container = container;
         container.className = "fullscreen";
         container.innerHTML = uploadertemplate;
         document.body.appendChild(container);
@@ -157,8 +154,12 @@ localplay.objecteditor = (function () {
         this.brightnessslider = document.getElementById("objecteditor.slider.brightness");
         if (this.brightnessslider) {
             this.brightnessslider.onchange = function (e) {
+                _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
                 _this.adjustImage();
             }
+            this.brightnessslider.addEventListener('input', function(e) {
+                _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
+            });
             if (this.brightnessslider.type == "text") {
                 localplay.domutils.createSlider(this.brightnessslider);
             }
@@ -166,8 +167,12 @@ localplay.objecteditor = (function () {
         this.contrastslider = document.getElementById("objecteditor.slider.contrast");
         if (this.contrastslider) {
             this.contrastslider.onchange = function (e) {
+                _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
                 _this.adjustImage();
             }
+            this.contrastslider.addEventListener('input', function(e) {
+                _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
+            });
             if (this.contrastslider.type == "text") {
                 localplay.domutils.createSlider(this.contrastslider);
             }
@@ -347,8 +352,8 @@ localplay.objecteditor = (function () {
             this.savepanel.style.visibility = "hidden";
             this.name.value = "";
             this.tags.value = "";
-            this.brightnessslider.value = 0;
-            this.contrastslider.value = 0;
+            this.brightnessslider.value = 0.5;
+            this.contrastslider.value = 0.5;
         }
     }
 
@@ -377,8 +382,8 @@ localplay.objecteditor = (function () {
 
     ObjectEditor.prototype.adjustImage = function () {
         var _this = this;
-        var brightness = this.brightnessslider.value;
-        var contrast = this.contrastslider.value;
+        var brightness = -255.0 + (this.brightnessslider.value*512.0);
+        var contrast = -255.0 + (this.contrastslider.value*512.0);
         localplay.imageprocessor.adjustBrightnessAndContrast(this.originalcropcanvas, this.cropcanvas, brightness, contrast);
         localplay.imageprocessor.processCanvas(this.cropcanvas, this.cropcanvas, function (data) { _this.createMask(data); });
     }

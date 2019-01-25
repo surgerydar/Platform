@@ -6,6 +6,32 @@ module.exports = function( authentication, db ) {
     // levels routes
     //
     console.log( 'setting levels routes' );
+    router.get( '/thumbnail/:id', function(req, res) {
+        try {
+            let _id = db.ObjectId(req.params.id);
+            db.findOne( 'levels', {_id:_id}, {thumbnail:1} ).then( function(level) {
+                if ( level.thumbnail && level.thumbnail.length > 0 ) {
+                    var base64 = level.thumbnail.replace(/^data:image\/png;base64,/, '');
+                    var image = Buffer.from( base64, 'base64' );
+                    res.writeHead(200, {
+                         'Content-Type': 'image/png',
+                         'Content-Length': image.length
+                    });
+                    res.end(image);
+                } else {
+                    res.redirect('/images/deleted.png');
+                }
+            }).catch( function( error ) {
+                res.redirect('/images/deleted.png');
+            });
+        } catch( error ) {
+            console.log('/levels/thumbnal/' + req.params.id + ' : error : ' + error );
+            res.redirect('/images/deleted.png');
+        }
+    });
+    //
+    //
+    //
     router.get( '/', function (req, res) {
         var listview    = req.query.listview || false;
         var creator     = req.query.creator;
@@ -51,11 +77,12 @@ module.exports = function( authentication, db ) {
         //
         //
         //
-        db.find( 'levels', query, projection, {created: -1}, offset, limit ).then( function(levels) {
+        db.find( 'levels', query, projection, {thumbnail: 0}, offset, limit ).then( function(levels) {
             for ( var i = 0; i < levels.length; i++ ) {
                 levels[ i ].candelete = req.user && levels[ i ].creatorid && req.user._id.toString() === levels[ i ].creatorid.toString();
                 levels[ i ].canflag = req.user && levels[ i ].creatorid && req.user._id.toString() !== levels[ i ].creatorid.toString();
                 levels[ i ].tablename = 'levels';
+                levels[ i ].thumbnail = '/levels/thumbnail/' + levels[ i ]._id;
             }
             if ( listview ) {
                 db.count( 'levels', query ).then(function(count) {

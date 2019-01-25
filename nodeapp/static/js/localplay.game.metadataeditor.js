@@ -1,6 +1,6 @@
 /**
  *
- * @source: https://github.com/LocalPlay/PlayYourPlace/tree/master/htdocs/js/localplay.game.soundeditor.js
+ * @source: https://github.com/LocalPlay/PlayYourPlace/tree/master/htdocs/js/localplay.game.metadataeditor.js
  *
  * @licstart  The following is the entire license notice for the 
  *  JavaScript code in this page.
@@ -28,8 +28,8 @@
  */
 
 ;
-localplay.game.soundeditor = (function () {
-    var soundeditor = {};
+localplay.game.metadataeditor = (function () {
+    var metadataeditor = {};
     //
     //
     //
@@ -397,24 +397,24 @@ localplay.game.soundeditor = (function () {
     AudioListDataSource.prototype.onerror = function (evt) {
 
     }
-    var soundeditortemplate = '\
-            <p><audio controls id="soundeditor.music.player" src="{{music}}"></audio> \
-            <div id="button.soundeditor.music" class="menubaritem"> \
+    var metadataeditortemplate = '\
+            <p><audio controls id="metadataeditor.music.player" src="{{music}}"></audio> \
+            <div id="button.metadataeditor.music" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Background music \
             </div></p>\
-            <p><audio controls id="soundeditor.winsound.player" src="{{winsound}}"></audio> \
-            <div id="button.soundeditor.winsound" class="menubaritem"> \
+            <p><audio controls id="metadataeditor.winsound.player" src="{{winsound}}"></audio> \
+            <div id="button.metadataeditor.winsound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for winners \
             </div></p>\
-            <p><audio controls id="soundeditor.losesound.player" src="{{loosesound}}"></audio> \
-            <div id="button.soundeditor.losesound" class="menubaritem"> \
+            <p><audio controls id="metadataeditor.losesound.player" src="{{loosesound}}"></audio> \
+            <div id="button.metadataeditor.losesound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for losers \
             </div></p>\
     ';
     //
     //
     //
-    function LevelSoundEditor(level) {
+    function LevelMetadataEditor(level) {
         var _this = this;
         this.level = level;
         //
@@ -442,14 +442,14 @@ localplay.game.soundeditor = (function () {
             winsound: level.winsound[localplay.domutils.getTypeForAudio()],
             loosesound: level.loosesound[localplay.domutils.getTypeForAudio()]
         };
-        this.container.innerHTML = Mustache.render(soundeditortemplate, data);
+        this.container.innerHTML = Mustache.render(metadataeditortemplate, data);
      }
     //
     // required editor methods
     //
-    LevelSoundEditor.prototype.initialise = function () {
+    LevelMetadataEditor.prototype.initialise = function () {
         var _this = this;
-        localplay.domutils.hookChildElementsWithPrefix(this.container, "button.soundeditor", "click", function (e) {
+        localplay.domutils.hookChildElementsWithPrefix(this.container, "button.metadataeditor", "click", function (e) {
             var selector = localplay.domutils.getButtonSelector(e);
             if (selector.length >= 3) {
                 var command = selector[2];
@@ -460,17 +460,17 @@ localplay.game.soundeditor = (function () {
                     case "music":
                         title = "Background Music";
                         audio = _this.level.music;
-                        player = document.getElementById("soundeditor.music.player");
+                        player = document.getElementById("metadataeditor.music.player");
                         break;
                     case "winsound":
                         title = "Sound for Winners";
                         audio = _this.level.winsound;
-                        player = document.getElementById("soundeditor.winsound.player");
+                        player = document.getElementById("metadataeditor.winsound.player");
                         break;
                     case "losesound":
                         title = "Sound for Losers";
                         audio = _this.level.loosesound;
-                        player = document.getElementById("soundeditor.losesound.player");
+                        player = document.getElementById("metadataeditor.losesound.player");
                         break;
                 }
                 if (audio && player) {
@@ -492,13 +492,13 @@ localplay.game.soundeditor = (function () {
         });
     }
 
-    LevelSoundEditor.prototype.dealloc = function () {
+    LevelMetadataEditor.prototype.dealloc = function () {
         if (this.container) {
             localplay.domutils.purgeDOMElement(this.container);
         }
     }
 
-    LevelSoundEditor.createAudioElement = function (title, audio) {
+    LevelMetadataEditor.createAudioElement = function (title, audio) {
         var container = document.createElement("div");
         container.style.padding = "8px";
         container.innerHTML = "<h4>" + title + "</h4>";
@@ -511,7 +511,7 @@ localplay.game.soundeditor = (function () {
         button.audio = audio;
         button.onclick = function (e) {
             var pin = localplay.domutils.elementPosition(e.target);
-            var dialog = soundeditor.createaudiodialog("Select " + title, button.audio.type, button.audio);//, pin);
+            var dialog = metadataeditor.createaudiodialog("Select " + title, button.audio.type, button.audio);//, pin);
             dialog.addEventListener("save", function () {
                 audio.id = dialog.selection.id;
                 audio.type = dialog.selection.type;
@@ -535,14 +535,14 @@ localplay.game.soundeditor = (function () {
     //
     //
     //
-    soundeditor.createlevelsoundeditor = function(level) {
-        return new LevelSoundEditor(level);
+    metadataeditor.createlevelmetadataeditor = function(level) {
+        return new LevelMetadataEditor(level);
     }
-    soundeditor.createaudiodialog = function(prompt, type, selection,pin) {
+    metadataeditor.createaudiodialog = function(prompt, type, selection,pin) {
         return new AudioDialog(prompt, type, selection || {},pin);
     }
     //
     //
     //
-    return soundeditor;
+    return metadataeditor;
 })();

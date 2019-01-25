@@ -320,14 +320,6 @@ localplay.game.mobileleveleditor = (function () {
     
     function cleanup() {
         //
-        // remove mainmenu
-        //
-        /*
-        if (createlevelmainmenu) {
-            localplay.menu.dettachmenu(createlevelmainmenu);
-        }
-        */
-        //
         //
         //
         localplay.domutils.purgeDOMElement(createlevelcontainer);
@@ -534,9 +526,12 @@ localplay.game.mobileleveleditor = (function () {
         // force the story editor to save it's state
         // TODO: this should be automated
         //
+        /*
         if (createleveleditorcontainer.localplay.storyeditor) {
             createleveleditorcontainer.localplay.storyeditor.save();
         }
+        */
+        rendercreatelevelphase();
         //
         // get dialog position
         //
@@ -593,10 +588,9 @@ localplay.game.mobileleveleditor = (function () {
                             level.losemessage = losemessage;
                             level.reserialise();
                             level.reset();
-                            /*
-                            level.game.setcanvas(canvas);
-                            level.draw();
-                            */
+                            //
+                            // save
+                            //
                             level.game.savelevel(function (success) {
                                 if (success) {
                                     level.resetdirty();

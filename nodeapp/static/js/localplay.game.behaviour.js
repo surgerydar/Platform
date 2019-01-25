@@ -51,7 +51,6 @@ localplay.game.behaviour = (function () {
         },
         duration: {
             min: 0,
-            //max: 4000
             max: 16000
         },
         extent: {
@@ -167,10 +166,10 @@ localplay.game.behaviour = (function () {
     BehaviourPreviewAnimator.prototype.destroy = function () {
         this.stop();
         this.canvas = this.context = this.item = this.timer = null;
+        delete this;
 
     }
     BehaviourPreviewAnimator.prototype.start = function () {
-
         this.stop();
         this.animate();
         this.timer.start();
@@ -208,17 +207,19 @@ localplay.game.behaviour = (function () {
         //
         if (this.item.sprite && this.item.sprite.isloaded()) {
             var image = this.item.sprite.image;
+            var processed = this.item.sprite.processed;
             var rotation = this.item.rotation;
-            var size = new Point(image.naturalWidth, image.naturalHeight);
+            var naturalSize = processed ? new Point(processed.width, processed.height) : new Point(image.naturalWidth, image.naturalHeight);
+            var size = naturalSize.duplicate();
             size.scale(this.item.scale * this.scale);
             if (size.length() < 30) {
                 size.scale(30 / size.length())
                 if (size.x > size.y) {
                     size.x = 20;
-                    size.y = image.naturalWidth * (size.x / image.naturalWidth);
+                    size.y = naturalSize.y * (size.x / naturalSize.x);
                 } else {
                     size.y = 20;
-                    size.x = image.naturalWidth * (size.y / image.naturalHeight);
+                    size.x = naturalSize.x * (size.y / naturalSize.y);
                 }
             } else if (size.length() > this.canvas.height) {
                 size.scale(this.canvas.height / size.length());
@@ -227,7 +228,7 @@ localplay.game.behaviour = (function () {
             this.context.translate(p.x, p.y);
             this.context.rotate(rotation);
             this.context.translate(-(size.x / 2), -(size.y / 2));
-            this.context.drawImage(this.item.sprite.image, 0, 0, size.x, size.y);
+            this.context.drawImage(processed || image, 0, 0, size.x, size.y);
             this.context.restore();
         } else {
             this.context.strokeStyle = "rgb(255,143,33)";
