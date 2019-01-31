@@ -59,7 +59,7 @@ localplay.game.avatar = (function () {
         //
         this.aabb = new Rectangle();
         this.sprite = null;
-        this.creatsprite();
+        this.createsprite();
         //
         //
         //
@@ -74,7 +74,7 @@ localplay.game.avatar = (function () {
         this.currentcollisions = [];
         this.currentcollisionscount = [];
     }
-    Avatar.prototype.creatsprite = function () {
+    Avatar.prototype.createsprite = function () {
         if (this.sprite) {
             this.sprite.destroy();
             this.sprite = null;
@@ -433,7 +433,7 @@ localplay.game.avatar = (function () {
         var media = src;//localplay.domutils.urlToRelativePath(src);
         if (media !== this.image) {
             this.image = media;
-            this.creatsprite();
+            this.createsprite();
             this.level.reserialise();
         }
     }

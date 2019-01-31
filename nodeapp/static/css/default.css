@@ -99,6 +99,10 @@ src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.eot?#iefix") form
     --dark-grey: rgb(68,67,66);
     --dark-blue: rgb(0,69,124);
     --light-blue: rgb(30,174,229);
+    /*
+        control colours
+    */
+    --control-colour: white;
 }
 
 body {
@@ -253,6 +257,7 @@ input[type="checkbox"]:checked + label {
     background:url(../images/icons/check-radio-01.png) -19px top no-repeat;
 }
 
+/*
 input[type="radio"] {
     display:none;
 }
@@ -270,6 +275,7 @@ input[type="radio"] + label {
 input[type="radio"]:checked + label {
     background:url(../images/icons/check-radio-01.png) -57px top no-repeat;
 }
+*/
 
 textarea {
     font-family: Arial, Helvetica, sans-serif;
@@ -2445,7 +2451,7 @@ canvas.editor-content {
 #editor-tools {
     padding: 1vw;
     flex: 1 1 0;    
-    background-color: dimgray;
+    background-color: var( --dark-grey );
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -2453,9 +2459,14 @@ canvas.editor-content {
 }
 
 #editor-tools-titlebar {
-    height: 64;
+    height: 6vw;
     flex: none;
     text-transform: uppercase;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 #editor-tools-grid {
@@ -2473,12 +2484,12 @@ canvas.editor-content {
     width: 5vw;
     height: 5vw;
     margin: 1vw;
-    border: 1px solid white;
+    background-color: transparent;
     background-size: cover;
 }
 
 .editor-tool.selected {
-    border-color: red;
+    background-color: black;
 }
 
 #editor-tool-options {
@@ -2487,7 +2498,9 @@ canvas.editor-content {
     padding: 1vw;
     flex: 1 1 0; 
     min-height: 50%;
-    background-color: lightgray;
+    color: var( --dark-grey );
+    background-color: var( --light-grey );
+    --control-colour: var( --dark-grey );
 }
 
 .horizontal-option-container {
@@ -2584,22 +2597,37 @@ input.editor[type=text] {
 
 input.editor[type=range] {
     -webkit-appearance: none;
+    position: relative;
     height: 5vw;
     
-    border-radius: 2.5vw;
-    background-color: white;
+    background-color: transparent;
     
     flex: none;
     align-self: stretch;
     
     --adjustment: 0.5;
+    
+    --track-proportion: 8.0;
+    --track-height: calc( 5vw / var( --track-proportion ) );
+    --track-top: 0; /*calc( ( 5vw - var( --track-height ) ) / 2.0 );*/
+    --track-radius: calc( var( --track-height ) / 2.0 );
+    
+    --thumb-top: calc( ( -5vw / 2.0 ) + ( var( --track-height ) / 2.0 ) );
+        
 }
 
+    input.editor[type=range]::-webkit-slider-runnable-track {
+        height: var( --track-height );
+        margin-top: var( --track-top );
+        border-radius: var( --track-radius );
+        background-color: white;        
+    }
 
     input.editor[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 5vw;
         width: 5vw;
+        margin-top: var( --thumb-top );
         border: none;
         background-repeat: no-repeat;
         background-position: center; 
@@ -2615,17 +2643,17 @@ input.editor[type=range] {
 
     input.editor.brightness[type=range]::-webkit-slider-thumb {
         filter: brightness(var(--adjustment));
-        background-image: url(../images/tools/BrightnessIcon.svg);
+        background-image: url(../images/tools/brightness-thumb.svg);
     }
 
     input.editor.contrast[type=range]::-webkit-slider-thumb {
         filter: contrast(var(--adjustment));
-        background-image: url(../images/tools/ContrastIcon.svg);
+        background-image: url(../images/tools/contrast-thumb.svg);
     }
 
     input.editor.saturation[type=range]::-webkit-slider-thumb {
         filter: saturate(var(--adjustment));
-        background-image: url(../images/tools/SaturationIcon.svg);
+        background-image: url(../images/tools/saturation-thumb.svg);
     }
 
     input.editor.rotation[type=range]::-webkit-slider-thumb {
@@ -2661,39 +2689,46 @@ input.editor[type=range] {
     }
 
     input.editor[type=range]::-moz-range-thumb {
-        -webkit-appearance: none;
+        -moz-appearance: none;
         height: 5vw;
         width: 5vw;
+        margin-top: var( --thumb-top );
         background-repeat: no-repeat;
         background-position: center; 
         background-size: 5vw 5vw;
-        background-image: url(../images/sliderthumb.png);
+        background-image: url(../images/tools/RangeThumb.svg);
         border: none;
     }
 
     input.editor.brightness[type=range]::-moz-range-thumb {
         filter: brightness(var(--adjustment));
-        background-image: url(../images/tools/BrightnessIcon.svg);
+        background-image: url(../images/tools/brightness-thumb.svg);
     }
 
     input.editor.contrast[type=range]::-moz-range-thumb {
         filter: contrast(var(--adjustment));
-        background-image: url(../images/tools/ContrastIcon.svg);
+        background-image: url(../images/tools/contrast-thumb.svg);
     }
 
     input.editor.saturation[type=range]::-moz-range-thumb {
         filter: saturate(var(--adjustment));
-        background-image: url(../images/tools/ContrastIcon.svg);
+        background-image: url(../images/tools/saturation-thumb.svg);
     }
 
-    input.editor.rotation[type=range]::-moz-range-thumb {
-        transform: rotate(calc(var(--adjustment) * 1deg));
-        background-image: url(../images/tools/RotateIcon.svg);
+    input.editor.time[type=range]::-moz-range-thumb {
+        background-image: url(../images/tools/TimeIcon.svg);
     }
 
-    input.editor.scale[type=range]::-moz-range-thumb {
-        transform: scale(calc(var(--adjustment) / 100.0));
-        background-image: url(../images/tools/ScaleIcon.svg);
+    input.editor.vertical-movement[type=range]::-moz-range-thumb {
+        background-image: url(../images/tools/VerticalMovementIcon.svg);
+    }
+
+    input.editor.horizontal-movement[type=range]::-moz-range-thumb {
+        background-image: url(../images/tools/HorizontalMovementIcon.svg);
+    }
+
+    input.editor.weight[type=range]::-moz-range-thumb {
+        background-image: url(../images/tools/WeightIcon.svg);
     }
 
 audio.editor {
@@ -2784,7 +2819,7 @@ div.form-item {
     flex-direction: column;
     align-items: flex-start;
     margin-bottom: 16px;
-    border-bottom: 2px solid white
+    border-bottom: 2px solid var( --control-colour );
 }
 
 label.form-item {
@@ -2793,7 +2828,7 @@ label.form-item {
 }
 
 input.form-item::placeholder { 
-    color: white; 
+    color: var( --control-colour ); 
     font-style: italic; 
     font-weight: lighter;
 }
@@ -2805,14 +2840,39 @@ input[type=text].form-item, input[type=password].form-item, input[type=email].fo
     font-size: 3vw;
     border: none;
     background-color: transparent;
-    color: white;
+    color: var( --control-colour );
+}
+
+input[type=radio].form-item {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display:inline-block;
+    position: relative;
+    width: 2.5vw;
+    height: 2.5vw;
+    border-radius: 1.25vw;
+    border: solid 2px var(--control-colour);
+    background-color: transparent;
+    vertical-align: middle;
+}
+
+input[type=radio].form-item:checked::before {
+    position: absolute;
+    content: '';
+    top: 4px;
+    left: 4px;
+    bottom: 4px;
+    right: 4px;
+    border-radius: 50%;
+    background-color: var(--control-colour);
 }
 
 input[type=submit].form-item, input[type=button].form-item {
     -webkit-appearance: none;
     height: 5vw;
     font-size: 3vw;    
-    color: white;
+    color: var(--control-colour);
     background-color: rgb( 9, 66, 125 );
     border: none;
     border-radius: 4px;

@@ -197,16 +197,34 @@ Rectangle.prototype.top = function () {
     return this.y;
 }
 
+Rectangle.prototype.setTop = function(top) {
+    this.height = this.bottom() - top;
+    this.y = top;
+}
+
 Rectangle.prototype.bottom = function () {
     return this.y + this.height;
+}
+
+Rectangle.prototype.setBottom = function(bottom) {
+    this.height = bottom - this.y;
 }
 
 Rectangle.prototype.left = function () {
     return this.x;
 }
 
+Rectangle.prototype.setLeft = function(left) {
+    this.width = this.right() - left;
+    this.x = left;
+}
+
 Rectangle.prototype.right = function () {
     return this.x + this.width;
+}
+
+Rectangle.prototype.setRight = function(right) {
+    this.width = right - this.x;
 }
 
 Rectangle.prototype.topleft = function() {

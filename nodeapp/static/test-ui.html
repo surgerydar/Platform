@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>Platform UI Test</title>
+        <link href="css/default.css" rel="stylesheet" />
+    </head>
+<body>
+    <div id="editor-container">
+        <div id="editor-content">
+            <canvas id="editor-content-canvas" class="editor-content" width="822" height="667" style="width: 950px; height: 418px;"></canvas>
+            <canvas id="editor-ui-canvas" class="editor-content" width="950" height="418" style="width: 950px; height: 418px;"></canvas>
+        </div>
+        <div id="editor-toolbox">
+            <div id="editor-tools">
+                <div id="editor-tools-titlebar">
+                    <h1 id="editor.title" style="font-size: 3vw;">edit obstacle</h1>
+                    <img id="editor-tools-close" src="/images/close.png" style="height: 4vw;">
+                </div>
+                <div id="editor-tools-grid">
+                    <div id="editor.crop" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/crop.png); visibility: visible;"></div>
+                    <div id="editor.adjust" class="editor-tool selected" style="background-image: url(https://platformgame.net/images/tools/adjust.png); visibility: visible;"></div>
+                    <div id="editor.erase" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/erase.png); visibility: visible;"></div>
+                    <div id="editor.restore" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/unerase.png); visibility: visible;"></div>
+                    <div id="editor.behaviour" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/movement.png); visibility: visible;"></div>
+                    <div id="editor.audio" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/sound.png); visibility: visible;"></div>
+                    <div id="editor.properties" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/properties.png); visibility: visible;"></div>
+                    <div id="editor.avatar" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/properties.png); visibility: hidden;"></div>
+                </div>
+            </div>
+            <div id="editor-tool-options" content="">
+                <h1 style="font-size: 2vw;">ADJUST COLOUR</h1>
+                <div class="vertical-option-container">
+                    <input class="editor brightness" id="brightness" type="range" min="0" max="1.0" step="0.01" value=".5">
+                    <input class="editor contrast" id="contrast" type="range" min="0" max="1.0" step="0.01" value=".5">
+                    <input class="editor saturation" id="saturation" type="range" min="0" max="1.0" step="0.01" value=".5">
+                </div>
+            </div>
+        </div>
+        <div id="editor-zoom-control">
+            <div id="zoomin" class="editor-tool" style="background-image: url('/images/icons/zoom-in.png');"></div>
+            <div id="zoomout" class="editor-tool" style="background-image: url('/images/icons/zoom-out.png');"></div>
+        </div>     
+    </div>
+    </body>
+</html>

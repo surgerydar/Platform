@@ -99,6 +99,6 @@ localplay.mainmenu = (function () {
         }
     }
 
-    return menu;
+    return mainmenu;
 
 })();

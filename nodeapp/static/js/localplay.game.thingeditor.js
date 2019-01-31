@@ -336,14 +336,27 @@ localplay.game.thingeditor = (function () {
         //
         this.level.reset();
         this.level.trackavatar = false;
+        this.level.game.paused = true;
+        this.level.paused = true;
         this.thingpropertyeditor = null;
+        //
+        // ensure level update is called until loaded 
+        //
+        var monitor = function() {
+            _this.level.update();
+            _this.redraw();
+            if ( !_this.level.loaded ) {
+                setTimeout( monitor, 10 );
+            }
+        };
+        monitor();
     }
     //
     // required editor methods
     //
     ThingEditor.prototype.initialise = function () {
         this.onresize();
-        localplay.showtip("Click things to change and move them<br />Click and drag the background to scroll the level", this.container);
+        localplay.showtip("Click things to change and move them<br />Click and drag the background to scroll the game", this.container);
     }
 
     ThingEditor.prototype.dealloc = function () {
@@ -359,6 +372,10 @@ localplay.game.thingeditor = (function () {
     //
     // required controller methods
     //
+    ThingEditor.prototype.redraw = function() {
+        this.level.draw();
+        this.draw();
+    }
     ThingEditor.prototype.draw = function () {
         var context = this.level.world.context;
         var scale = localplay.defaultsize.height / this.canvas.offsetHeight;
@@ -451,7 +468,7 @@ localplay.game.thingeditor = (function () {
             case localplay.game.level.states.done:
                 break;
         }
-
+        this.redraw();
     }
 
     ThingEditor.prototype.adjustscrollbar = function () {
@@ -565,7 +582,7 @@ localplay.game.thingeditor = (function () {
             }
             this.selectedsprite.beginedit();
         }
-        
+        this.redraw();
     }
 
     ThingEditor.prototype.endtrackingmouse = function () {
@@ -577,8 +594,9 @@ localplay.game.thingeditor = (function () {
         }
         this.mousetrackingmode = mousetrackingmode.none;
         //this.showtip();
-        
+        this.redraw();
     }
+    
     ThingEditor.prototype.canceltrackingmouse = function () {
         
         this.mousetrackingmode = mousetrackingmode.none;
@@ -590,8 +608,9 @@ localplay.game.thingeditor = (function () {
         }
         this.selection.update();
         //this.showtip();
-        
+        this.redraw();
     }
+    
     ThingEditor.prototype.updatemousetracking = function (p) {
         
         this.mousetrackingposition.set(p.x, p.y);
@@ -663,12 +682,21 @@ localplay.game.thingeditor = (function () {
             if (item) {
                 var _this = this;
                 localplay.showtip();
+                /*
                 this.thingpropertyeditor = localplay.game.thingpropertyeditor.createthingpropertyeditor(item, function() {
                     item.options = _this.thingpropertyeditor.options;
                     _this.level.reserialise();
                 });
                 this.container.parentElement.appendChild(this.thingpropertyeditor.container);
                 this.thingpropertyeditor.initialise();
+                */
+                this.thingpropertyeditor = localplay.game.thingpropertyeditor.createthingpropertyeditordialog(item, function() {
+                    item.options = _this.thingpropertyeditor.options;
+                    _this.level.reserialise();
+                    item.createsprite();
+                    _this.selectedsprite = item.sprite;
+                    _this.selection.setsprite(item.sprite);
+                });
                 /*
                 var propertyeditor = item.geteditor();
                 if (propertyeditor) {
@@ -783,7 +811,7 @@ localplay.game.thingeditor = (function () {
                 this.selectedsprite = sprite;
                 this.selection.setsprite(sprite, scale);
                 if (this.selectedsprite && !this.level.isAvatar(this.selectedsprite.body)) {
-                    localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
+                    localplay.showtip();//"Press the alt key whilst moving, rotating or scaling to duplicate", this.container);
                 } else {
                     localplay.showtip();
                 }
@@ -795,6 +823,7 @@ localplay.game.thingeditor = (function () {
                 localplay.showtip("Drag to scroll the background", this.container);
             }
         }
+        this.redraw();
     }
     
     ThingEditor.prototype.onmouseup = function (e) {
@@ -826,6 +855,7 @@ localplay.game.thingeditor = (function () {
         if (this.istrackingmouse()) {
             p.scale(scale);
             this.updatemousetracking(p);
+            this.redraw();
         } else {
             if (this.scrollbar) {
                 //
@@ -845,19 +875,30 @@ localplay.game.thingeditor = (function () {
             //
             // update rollover
             //
+            var redraw = false;
             var sprite = this.level.game.spriteatpoint(p);
             if (sprite && sprite !== this.selectedsprite) {
-                this.rolloversprite = sprite;
-            } else {
+                if ( this.rolloversprite !== sprite ) {
+                    redraw = true;
+                    this.rolloversprite = sprite;
+                }
+            } else if ( this.rolloversprite ) {
+                redraw = true;
                 this.rolloversprite = null;
             }
             //
             //
             //
             if (this.selectedsprite) {
+                redraw = true;
                 this.selection.mousemove(p, scale);
             }
-
+            //
+            //
+            //
+            if ( redraw ) {
+                this.redraw();
+            }
         }
     }
     
@@ -899,6 +940,7 @@ localplay.game.thingeditor = (function () {
             this.level.adjustviewport();
         }
         this.adjustscrollbar();
+        this.redraw();
         return false;
     }
 
