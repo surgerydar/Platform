@@ -1,0 +1,42 @@
+- var filter        = pagination.filter ? '&filter=' + pagination.filter : '';
+- var previousurl   = '/admin/group/' + group._id + '/users?offset=' + pagination.previousoffset + filter;
+- var nexturl       = '/admin/group/' + group._id + '/users?offset=' + pagination.nextoffset + filter;
+.listviewheader( id= 'admin-listview-header')
+    .listviewheadergroup
+        img.imagebutton( id= 'button-back' data-action= 'get' data-url= '/admin/group/' + group._id src= '/images/icons/arrow-previous-02.png' )
+    .listviewheadergroup
+        h3 #{group.name} : users
+    if pagination.pagecount > 1
+        - var pagenumber = pagination.pagenumber + 1;
+        .listviewheadergroup
+            if pagenumber > 1
+                img.listviewpagination( id= 'button-previouspage' data-action= 'get' data-url= previousurl src= '/images/icons/arrow-previous-02.png' )
+            .listviewpagination( id= 'admin-pagecount') #{pagenumber} of #{pagination.pagecount}
+            if pagenumber < pagination.pagecount
+                img.listviewpagination( id= 'button-nextpage' data-action= 'get' data-url= nexturl src='/images/icons/arrow-next-02.png' )
+    .listviewheadergroup
+        label( for='search' class='listviewheader' ) Search
+        input( type='search' class='listviewheader' name='search' placeholder='name' )
+    div( style= 'flex-grow:1; flex-shrink:1; width: 16px;' )
+    .listviewheadergroup
+        img.listviewheader#button-add( src='/images/add.png' data-action= 'get' data-url = '/admin/group/' + group._id + '/user/add' )
+.listviewcontent( id= 'admin.listviewcontent' )
+    each user in users
+        .admin-list-item
+            if user._id != currentuser
+                h2= user.username
+                .admin-list-buttons
+                    - var query         = 'offset=' + pagination.offset + '&limit=' + pagination.limit + filter;
+                    - var userurl       = '/admin/group/' + group._id + '/user/' + user._id + '?' + query;
+                    - var flagopacity   = user.flagged ? 1. : .5;
+                    - var flagpayload   = '{ "flagged": ' + !user.flagged + '}';
+                    - var messageurl    = '/admin/message/' + user._id;
+                    .admin-list-buttons
+                        each role in ['creator','moderator','admin']
+                            - var currentrole = role === user.role;
+                            - var payload = '{ "role" : "' + role + '"}';
+                            input( id= role type= 'radio' name= 'role-' + user._id value= role checked= currentrole data-action= 'put' data-url= userurl data-payload= payload )
+                            label( for= role style= 'margin-right: .5vw;' )= role
+                    div( id= 'button-delete-' + user._id class= 'deletebutton white' data-action= 'delete' data-confirm= 'true' data-url= userurl)
+                    div( id= 'button-flag-' + user._id class= 'flagbutton white' style= 'opacity:' + flagopacity data-action= 'put' data-url= userurl data-payload= flagpayload)            
+                    div( id= 'button-message-' + user._id class= 'messagebutton white' data-action= 'get' data-url= messageurl )            

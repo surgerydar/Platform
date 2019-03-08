@@ -1,7 +1,7 @@
 doctype html
 html
     head
-        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1" )
+        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1, viewport-fit=cover" )
         
         // default app icon
         link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
@@ -24,7 +24,7 @@ html
         title Platform
 
         // styles
-        link( href="/css/default.css" rel="stylesheet" )
+        link( href="/css/platform.css" rel="stylesheet" )
 
         // supporting libraries
         script( src="/lib/mustache.js" )
@@ -41,18 +41,23 @@ html
         script( src="/js/localplay.dialogbox.js" )
         script( src="/js/localplay.listview.js" )
         script( src="/js/localplay.menu.js" )
-        script( src='/js/localplay.mainmenu.js' )
         script( src="/js/localplay.listview.js" )
         script( src="/js/localplay.ratingpanel.js" )
         script( src="/js/localplay.creator.js" )
         script( src="/js/localplay.homepage.js" )
-        script( src="/js/localplay.game.arcade.js" )
     
-    body( style="background-color: #41AEE4;" )
-        #homepage-content
-            p#homepage-header( style="font-size: 64px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
-            p#homepage-body( style="font-size: 48px;" ).
-                Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='javascript:localplay.navigateto("/arcade/highestrated?title=Highest Rated")' ) gallery of top ranked games ] or take part in our #[a( href='javascript:localplay.navigateto("/challenge")' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='javascript:localplay.navigateto("/about")' ) about ] section for more information.
+    body( style="background-color: var(--light-blue);" )
+        #homepage-container
+            #homepage-content
+                p#homepage-header( style="font-size: 64px;" ) Welcome to the British Council's<br/>game building app, 'Platform'
+                p#homepage-body( style="font-size: 48px;" ).
+                    Play, then create your own games and share them with friends to play on smartphones. Checkout our #[a( href='javascript:localplay.navigateto("/arcade/highestrated?title=Highest Rated")' ) gallery of top ranked games ] or take part in our #[a( href='javascript:localplay.navigateto("/challenge")' ) latest challenge ] around creating games that change people's minds about gender roles. The menu at the top right leads you around the app and links to the #[a( href='javascript:localplay.navigateto("/about")' ) about ] section for more information.
+            if links
+                #homepage-links
+                    each link in links
+                        - var navigation = "javascript:localplay.navigateto('" + link.url + "')";
+                        a( href= navigation )
+                            img.homepage-link( src= link.thumbnail )
         #menu-backdrop
         #title-bar
             img#title-logo( src="/images/bc-logo-white.png" )
@@ -62,6 +67,8 @@ html
             .main-menu-item( id="menu.gallery" ) GALLERY
             .main-menu-item( id="menu.help" ) HELP
             .main-menu-item( id="menu.about" ) ABOUT
+            if admin
+                .main-menu-item( id="menu.admin" ) ADMIN
             if authorised
                 .main-menu-item( id="menu.logout" ) LOGOUT
             else

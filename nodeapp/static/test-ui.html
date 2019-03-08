@@ -1,7 +1,12 @@
 <html>
     <head>
         <title>Platform UI Test</title>
-        <link href="css/default.css" rel="stylesheet" />
+        <link href="css/platform.css" rel="stylesheet" />
+        <script>
+            localplay = {};
+        </script>
+        <script src="lib/mustache.js"></script>
+        <script src="js/localplay.audioplayer.js"></script>
     </head>
 <body>
     <div id="editor-container">
@@ -29,9 +34,7 @@
             <div id="editor-tool-options" content="">
                 <h1 style="font-size: 2vw;">ADJUST COLOUR</h1>
                 <div class="vertical-option-container">
-                    <input class="editor brightness" id="brightness" type="range" min="0" max="1.0" step="0.01" value=".5">
-                    <input class="editor contrast" id="contrast" type="range" min="0" max="1.0" step="0.01" value=".5">
-                    <input class="editor saturation" id="saturation" type="range" min="0" max="1.0" step="0.01" value=".5">
+                    <audio src="/audio/ExitReached.mp3"></audio>
                 </div>
             </div>
         </div>
@@ -40,5 +43,8 @@
             <div id="zoomout" class="editor-tool" style="background-image: url('/images/icons/zoom-out.png');"></div>
         </div>     
     </div>
+    <script>
+        localplay.audioplayer.attachAll(document);
+    </script>
     </body>
 </html>

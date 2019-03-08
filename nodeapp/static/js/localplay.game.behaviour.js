@@ -30,7 +30,8 @@
 //
 // Item behaviour
 //
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.game.behaviour = (function () {
     if (localplay.game.behaviour) return localplay.game.behaviour;
 
@@ -152,6 +153,7 @@ localplay.game.behaviour = (function () {
         this.canvas = canvas;
         this.context = canvas.getContext("2d");
         this.item = item;
+        this.background = item.level.background;
         this.worlddim = new Point(item.level.background.width, item.level.background.height);
         if (this.worlddim.x > localplay.defaultsize.width) {
             this.scale = canvas.width / this.worlddim.x;
@@ -182,6 +184,7 @@ localplay.game.behaviour = (function () {
         this.timer.stop();
     }
     BehaviourPreviewAnimator.prototype.animate = function () {
+        var _this = this;
         //
         // apply behaviour to point
         //
@@ -198,12 +201,37 @@ localplay.game.behaviour = (function () {
         //
         // clear
         //
+        var height = this.worlddim.y * this.scale;
+        var width = this.worlddim.x * this.scale;
         this.context.fillStyle = "white";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.context.strokeStyle = "lightgray";
-        this.context.strokeRect(this.offset.x, this.offset.y, this.worlddim.x * this.scale, this.worlddim.y * this.scale);
+        this.context.strokeRect(this.offset.x, this.offset.y, width, height);
         //
-        // draw
+        // draw background
+        //
+        /*
+        var x = this.offset.x;
+        var y = this.offset.y;
+        this.background.images.forEach( function( image ) {
+            var scale = height / image.naturalHeight; 
+            var imageWidth = Math.round( image.naturalWidth * scale );
+            var imageHeight = Math.round( image.naturalHeight * scale );
+            this.context.drawImage(image,x,y,imageWidth,imageHeight);
+            x += imageWidth;
+        });
+        */
+        for ( var i = 0, x = this.offset.x; i < this.background.images.length; i++ ) {
+            var backgroundImage = this.background.images[ i ];
+            var scale = height / backgroundImage.naturalHeight; 
+            var imageWidth = Math.round( backgroundImage.naturalWidth * scale );
+            var imageHeight = Math.round( backgroundImage.naturalHeight * scale );
+            this.context.drawImage(backgroundImage,x,this.offset.y,imageWidth,imageHeight);
+            x += imageWidth;
+        }
+        //
+        // draw sprite
         //
         if (this.item.sprite && this.item.sprite.isloaded()) {
             var image = this.item.sprite.image;

@@ -1,6 +1,8 @@
 //
 // passport authentication 
 //
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var passport = require('passport');
 
 module.exports = function( app, db ) {
@@ -8,17 +10,27 @@ module.exports = function( app, db ) {
     //
     //
     passport.serializeUser(function(user, callback) {
-        console.log( 'serialising user');
+        //console.log( 'serialising user');
         callback(null, user._id);
     });
 
     passport.deserializeUser(function(id, callback) {
-         console.log( 'deserialising user');
-         db.findOne('users', { _id:db.ObjectId(id) }, { username: 1 } ).then( function(user) {
-              callback(null, user);
-         }).catch( function( error ) {
-              callback( error );
-         });
+        //console.log( 'deserialising user');
+        db.findOne('users', { _id:db.ObjectId(id) }, { username: 1, role: 1, groups: 1 } ).then( function(user) {
+            /*
+                user appended to req
+                user : {
+                    username: "username",
+                    role: "admin|moderator|creator",
+                    groups: [ "system" | "group1", "group2" ... "groupN" ]
+                }
+            
+            */
+            //console.log( 'deserialised user : ' + JSON.stringify(user) );
+            callback(null, user);
+        }).catch( function( error ) {
+            callback( error );
+        });
     });
     //
     //
@@ -33,6 +45,7 @@ module.exports = function( app, db ) {
     });
     app.get('/logout', function(req, res){
         console.log( 'logout user : ' + JSON.stringify(req.user) + ' : xhr : ' + req.xhr );
+        delete req.session.group;
         req.logout();
         if( req.xhr ) {
             res.json( { status: 'OK' } );
@@ -65,7 +78,9 @@ module.exports = function( app, db ) {
                 } else {
                     // all others are redirected to login
                     console.log( 'redirecting to login' );
+                    // store original url for redirection after successful authentication
                     req.session.reqUrl = req.originalUrl;
+                    //
                     res.redirect('/login');
                 }
             }

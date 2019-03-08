@@ -26,7 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.game.thingpropertyeditor = (function () {
     var thingpropertyeditor = {};
     //
@@ -57,8 +58,8 @@ localplay.game.thingpropertyeditor = (function () {
             <div id="editor-tool-options" content= ""></div> \
         </div> \
         <div id="editor-zoom-control"> \
-            <div id="zoomin" class="editor-tool" style="background-image: url(\'/images/icons/zoom-in.png\');"></div> \
-            <div id="zoomout" class="editor-tool" style="background-image: url(\'/images/icons/zoom-out.png\');"></div> \
+            <div id="zoomin" class="editor-tool" style="background-image: url(\'/images/tools/zoom-in.png\');"></div> \
+            <div id="zoomout" class="editor-tool" style="background-image: url(\'/images/tools/zoom-out.png\');"></div> \
         </div> \
     ';
     //
@@ -99,49 +100,38 @@ localplay.game.thingpropertyeditor = (function () {
         ';
     var behaviourtemplate = ' \
             <h1 style="font-size: 2vw;">MOVEMENT</h1> \
-            <div class="vertical-option-container">  \
-                <span><b>Left / Right</b></span> \
+            <div class="vertical-option-container" style="padding-right: 5vw">  \
+                <h1 style="font-size: 1vw;">LEFT/RIGHT</h1> \
                 <div> \
-                    <input id="leftright.onedirection" type="checkbox" name="item.property.behaviour.leftright.onedirection"/> \
+                    <input id="leftright.onedirection" class="editor" type="checkbox" name="item.property.behaviour.leftright.onedirection"/> \
                     <label for="leftright.onedirection"></label>&nbsp;one direction<p/> \
                 </div> \
-                <span>starttime</span>\
-                <input id="leftright.starttime" type="range" class="editor time" min= "0" max= "1.0" step= "0.01" value="0"/> \
-                <span>duration</span>\
-                <input id="leftright.duration" type="range" class="editor time" min= "0" max= "1.0" step= "0.01" value="0"/> \
-                <span>extent</span>\
                 <input id="leftright.extent" type="range" class="editor horizontal-movement" min= "0" max= "1.0" step= "0.01" value="0"/> \
-                <span>Up / Down</span> \
+                <input id="leftright.duration" type="range" class="editor duration" min= "0" max= "1.0" step= "0.01" value="0"/> \
+                <input id="leftright.starttime" type="range" class="editor starttime" min= "0" max= "1.0" step= "0.01" value="0"/> \
+                <h1 style="font-size: 1vw;">UP/DOWN</h1> \
                 <div> \
-                    <input id="updown.onedirection" type="checkbox" name="item.property.behaviour.updown.onedirection"/> \
+                    <input id="updown.onedirection" class="editor" type="checkbox" name="item.property.behaviour.updown.onedirection"/> \
                     <label for="onedirection"></label>&nbsp;one direction<p/> \
                 </div> \
-                <span>starttime</span> \
-                <input id="updown.starttime" type="range" class="editor time" min= "0" max= "1.0" step= "0.01" value="0" /> \
-                <span>duration</span>\
-                <input id="updown.duration" type="range"  class="editor time" min= "0" max= "1.0" step= "0.01" value="0" /> \
-                <span>extent</span> \
                 <input id="updown.extent" type="range"  class="editor vertical-movement" min= "0" max= "1.0" step= "0.01" value="0" /> \
+                <input id="updown.duration" type="range"  class="editor duration" min= "0" max= "1.0" step= "0.01" value="0" /> \
+                <input id="updown.starttime" type="range" class="editor starttime" min= "0" max= "1.0" step= "0.01" value="0" /> \
             </div> \
     ';
     var audiotemplate = ' \
             <h1 style="font-size: 2vw;">COLLISION SOUND</h1> \
-            <div class="vertical-option-container">  \
-                <audio id="collision-audio" class="editor" controls="true"></audio> \
-                <div id="audio.change" class="menubaritem" style="margin-left: 0px; align-self: stretch;"> \
-                    <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change collision sound \
-                </div> \
-            </div> \
+            <audio id="collision-audio" editable="true"></audio> \
     ';
     var avatartemplate = ' \
             <h1 style="font-size: 2vw;">PROPERTIES</h1> \
             <div class="vertical-option-container">  \
-                <div id="avatar.image" class="menubaritem" style="margin-left: 0px; align-self: stretch;"> \
-                    <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Change image \
+                <div id="avatar.image" class="horizontal-option-container" style="margin-left: 0px; align-self: stretch;"> \
+                    <img class="editor-button" src="/images/tools/change-image.png" />&nbsp;Change image \
                 </div> \
                 <input id="avatar.weight" type="range" class="editor weight" min= "0" max= "1.0" step= "0.01" value="0.5"/> \
-                <div id="image.resetweight" class="menubaritem" style="margin-left: 0px; align-self: stretch;"> \
-                    <img class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Reset weight \
+                <div id="image.resetweight" class="horizontal-option-container" style="margin-left: 0px; align-self: stretch;"> \
+                    <img class="editor-button" src="/images/tools/reset-weight.png" />&nbsp;Reset weight \
                 </div> \
            </div> \
     ';
@@ -149,19 +139,19 @@ localplay.game.thingpropertyeditor = (function () {
             <h1 style="font-size: 2vw;">TYPE</h1> \
             <div class="vertical-option-container">  \
                 <div> \
-                    <input type="radio" id="layout.goal" class="form-item" name="layout.type" value="goal"><label for="layout.goal"></label>Goal<br/> \
+                    <input type="radio" id="layout.goal" class="editor" name="layout.type" value="goal"><label for="layout.goal"></label>Goal<br/> \
                 </div> \
                 <div> \
-                    <input type="radio" id="layout.obstacle" class="form-item" name="layout.type" value="obstacle"><label for="layout.obstacle"></label>Obstacle<br/> \
+                    <input type="radio" id="layout.obstacle" class="editor" name="layout.type" value="obstacle"><label for="layout.obstacle"></label>Obstacle<br/> \
                 </div> \
                 <div> \
-                    <input type="radio" id="layout.pickup" class="form-item" name="layout.type" value="pickup"><label for="layout.pickup"></label>Pickup<br/> \
+                    <input type="radio" id="layout.pickup" class="editor" name="layout.type" value="pickup"><label for="layout.pickup"></label>Pickup<br/> \
                 </div> \
                 <div> \
-                    <input type="radio" id="layout.platform" class="form-item" name="layout.type"  value="platform" checked="true"><label for="layout.platform"></label>Platform<br/> \
+                    <input type="radio" id="layout.platform" class="editor" name="layout.type"  value="platform" checked="true"><label for="layout.platform"></label>Platform<br/> \
                 </div> \
                 <div> \
-                    <input type="radio" id="layout.prop" class="form-item" value="prop" name="layout.type"><label for="layout.prop"></label>Prop<br/> \
+                    <input type="radio" id="layout.prop" class="editor" value="prop" name="layout.type"><label for="layout.prop"></label>Prop<br/> \
                 </div> \
             </div> \
     ';
@@ -227,6 +217,7 @@ localplay.game.thingpropertyeditor = (function () {
             if ( _this.uicanvas ) {
                 _this.uicanvas.width    = _this.uicanvas.offsetWidth;
                 _this.uicanvas.height   = _this.uicanvas.offsetHeight;
+                _this.sizeCanvas();
                 _this.setZoom( _this.zoom );
             }
         }, { passive: true });
@@ -282,7 +273,7 @@ localplay.game.thingpropertyeditor = (function () {
                 return false;
             },
             pointerscroll : function(d) {
-                console.log( 'pointerscroll : ' + d.tostring() );
+                //console.log( 'pointerscroll : ' + d.tostring() );
                 if ( _this.canvas.offsetWidth > _this.content.offsetWidth ) {
                     _this.content.scrollLeft -= d.x;
                 }
@@ -671,7 +662,7 @@ localplay.game.thingpropertyeditor = (function () {
                 //var pixelAspect = new Point( _this.canvas.offsetWidth / _this.canvas.width, _this.canvas.offsetHeight / _this.canvas.height );
                 //console.log( 'pixel aspect : ' + pixelAspect.tostring() );
                 var imageBounds = _this.imageEditor.imageBounds();
-                console.log( 'p.x= ' + p.x + ' imageBounds.width=' + imageBounds.width );
+                //console.log( 'p.x= ' + p.x + ' imageBounds.width=' + imageBounds.width );
                 p.x -= imageBounds.x;
                 p.y -= imageBounds.y;
                 if ( hTrack === "none" && vTrack === "none" && _this.options.crop.contains(p) ) {
@@ -763,6 +754,8 @@ localplay.game.thingpropertyeditor = (function () {
         if ( this.behaviourPreview ) {
             this.behaviourPreview.destroy();
             this.behaviourPreview = null;
+            this.canvas.style.visibility = 'visible';
+            this.drawOverlay();
         }
         //
         //
@@ -774,14 +767,14 @@ localplay.game.thingpropertyeditor = (function () {
                 this.drawOverlay();
                 break;
             case 'adjust' :
-                console.log( 'hooking sliders');
+                //console.log( 'hooking sliders');
                 var adjustments = tooloptions.querySelectorAll('input[type=range]');
                 adjustments.forEach( function( adjustment ) {
                     var value = ( _this.options[ adjustment.id ] + 255.0 ) / 512.0;
                     adjustment.value = value;
-                    console.log( 'hooking slider : ' + adjustment.id);
+                    //console.log( 'hooking slider : ' + adjustment.id);
                     function updateIndicator(e) {
-                        console.log( 'setting slider adjustment : ' + adjustment.id + '=' + adjustment.value);
+                        //console.log( 'setting slider adjustment : ' + adjustment.id + '=' + adjustment.value);
                         adjustment.style.setProperty('--adjustment',adjustment.value);
                         //
                         // apply to edit target item
@@ -799,7 +792,7 @@ localplay.game.thingpropertyeditor = (function () {
                 });
                 break;
             case 'restore' :
-                console.log( 'hooking pens');
+                //console.log( 'hooking pens');
                 var pens = tooloptions.querySelectorAll('.pen');
                 pens.forEach( function(pen) {
                     if ( parseFloat( pen.getAttribute('data-size') ) === _this.penSize ) {
@@ -824,7 +817,7 @@ localplay.game.thingpropertyeditor = (function () {
                 });
                 break
             case 'erase' :
-                console.log( 'hooking erasers');
+                //console.log( 'hooking erasers');
                 var erasers = tooloptions.querySelectorAll('.eraser');
                 erasers.forEach( function(eraser) {
                     if ( parseFloat( eraser.getAttribute('data-size') ) === _this.eraserSize ) {
@@ -856,7 +849,7 @@ localplay.game.thingpropertyeditor = (function () {
                         var context = _this.maskCanvas.getContext('2d');
                         context.fillRect(0,0,_this.maskCanvas.width,_this.maskCanvas.height);
                         if ( autoThreshold.value > 0 ) {
-                            console.log( 'autoThreshold=' + autoThreshold.value);
+                            //console.log( 'autoThreshold=' + autoThreshold.value);
                             _this.imageEditor.autoMask(parseInt(autoThreshold.value));
                         } else {
                             _this.imageEditor.compositeRect(0,0,_this.maskCanvas.width,_this.maskCanvas.height)
@@ -865,7 +858,7 @@ localplay.game.thingpropertyeditor = (function () {
                 }
                 break;
             case 'behaviour' :
-                console.log( 'hooking behaviours' ) ;
+                //console.log( 'hooking behaviours' ) ;
                 //
                 // hook parameter sliders
                 //
@@ -880,7 +873,7 @@ localplay.game.thingpropertyeditor = (function () {
                         behaviourVaue.addEventListener('change', function(e){
                                 var value = localplay.game.behaviour.ranges[ parameter ].min + ( localplay.game.behaviour.ranges[ parameter ].max - localplay.game.behaviour.ranges[ parameter ].min ) * e.target.value;
                                 _this.item.behaviour[ behaviourIndex ][ parameter ] = value; 
-                                console.log( 'item.behaviour[' + behaviourIndex + '][' + parameter + '] = ' + value );
+                                //console.log( 'item.behaviour[' + behaviourIndex + '][' + parameter + '] = ' + value );
                         });
                     }
                 });
@@ -908,10 +901,11 @@ localplay.game.thingpropertyeditor = (function () {
                 //
                 // create preview
                 //
-                this.behaviourPreview = localplay.game.behaviour.creatbehaviourpreviewanimator(this.canvas, this.item);
-                this.behaviourPreview.start();   
                 this.setZoom(1.0);
                 this.drawOverlay();
+                this.canvas.style.visibility = 'hidden';
+                this.behaviourPreview = localplay.game.behaviour.creatbehaviourpreviewanimator(this.uicanvas, this.item);
+                this.behaviourPreview.start();   
                 break;
             case 'audio' :
                 //
@@ -919,24 +913,34 @@ localplay.game.thingpropertyeditor = (function () {
                 //
                 var player = tooloptions.querySelector('audio');
                 if ( player ) {
-                   player.src = _this.item.audio ? _this.item.audio[localplay.domutils.getTypeForAudio()] : "";
-                }
-                var changeaudio = tooloptions.querySelector('#audio\\.change');
-                if (changeaudio) {
-                    changeaudio.onclick = function (e) {
-                        var pin = localplay.domutils.elementPosition(changeaudio);
-                        var dialog = localplay.game.soundeditor.createaudiodialog("Select collison sound", "effect", _this.item.audio, pin);
-                        dialog.addEventListener("save", function () {
-                            if (!_this.item.audio) _this.item.audio = {};
-                            _this.item.audio.id = dialog.selection.id;
-                            _this.item.audio.type = dialog.selection.type;
-                            _this.item.audio.name = dialog.selection.name;
-                            _this.item.audio.mp3 = dialog.selection.mp3;
-                            _this.item.audio.ogg = dialog.selection.ogg;
-                            player.src = _this.item.audio[localplay.domutils.getTypeForAudio()];
-                        });
-                        dialog.show();
-                    }
+                    //player.src = _this.item.audio ? _this.item.audio[localplay.domutils.getTypeForAudio()] : "";
+                    player.setAttribute('data-audio', JSON.stringify(_this.item.audio ? _this.item.audio : {
+                        name: '',
+                        duration: '0',
+                        mp3: '',
+                        ogg: ''
+                    }));
+                    localplay.audioplayer.attach(player,function(selector,control) {
+                        var edit = tooloptions.querySelector('#' + selector + '\\.edit');
+                        player = tooloptions.querySelector('#' + selector + '\\.audio');
+                        if ( control === 'volume' ) {
+                            _this.item.audio.volume = player.volume;
+                        } else {
+                            var dialog = localplay.game.soundeditor.createaudiodialog("Select collison sound", "effect", _this.item.audio);
+                            dialog.addEventListener("save", function () {
+                                if (!_this.item.audio) _this.item.audio = {};
+                                _this.item.audio.id = dialog.selection.id;
+                                _this.item.audio.type = dialog.selection.type;
+                                _this.item.audio.duration = dialog.selection.duration;
+                                _this.item.audio.name = dialog.selection.name;
+                                _this.item.audio.mp3 = dialog.selection.mp3;
+                                _this.item.audio.ogg = dialog.selection.ogg;
+                                _this.item.audio.volume = 1.0;
+                                player.setAttribute('data-audio', JSON.stringify(_this.item.audio));
+                            });
+                            dialog.show();
+                        }
+                    });
                 }
                 break;
             case 'properties' :

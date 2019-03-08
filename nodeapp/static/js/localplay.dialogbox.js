@@ -27,8 +27,8 @@
  *
  */
 
-;
-localplay = window.localplay ? window.localplay : {};
+/*eslint-env browser*/
+/*global localplay*/
 localplay.dialogbox = (function () {
     var dialogbox = {};
     //
@@ -97,13 +97,18 @@ localplay.dialogbox = (function () {
                 
             }
             var closebuttonaction = properties.closebuttonaction;
+            /*/
             var close = document.createElement("div");
             close.classList.add("menubaritem");
             close.classList.add("right");
             close.innerHTML = '\
-                <img class="menubaritem" src="/images/icons/close-cancel-01.png" />&nbsp;Close \
+                <img class="listviewheader" src="/images/close.png" /> \
             ';
-             close.onclick = function (e) {
+            */
+            var close = new Image();
+            close.classList.add('listviewheader');
+            close.src = '/images/close.png';
+            close.onclick = function () {
                 closebuttonaction(_this);
                 _this.close();
                 return false;
@@ -114,7 +119,7 @@ localplay.dialogbox = (function () {
             this.dialog.appendChild(this.menubar);
             var spacer = document.createElement("div");
             spacer.style.width = "100%";
-            spacer.style.height = "42px";
+            spacer.style.height = "5vw";
             spacer.style.marginBottom = "16px";
             this.dialog.appendChild(spacer);
         }
@@ -125,7 +130,7 @@ localplay.dialogbox = (function () {
                 container = document.createElement("div");
                 container.style.position = "absolute";
                 container.style.left = "0px";
-                container.style.top = this.menubar ? "42px" : "0px";
+                container.style.top = this.menubar ? "5vw" : "0px";
                 container.style.right = "0px";
                 container.style.bottom = "0px";
                 container.style.overflow = "auto";
@@ -153,8 +158,8 @@ localplay.dialogbox = (function () {
         if (properties.buttons && properties.buttons.length > 0) { // buttons
             this.toolbar = document.createElement("div");
             this.toolbar.className = "toolbar";
-            this.toolbar.style.height = "42px";
-            this.toolbar.style.marginTop = "16px";
+            //this.toolbar.style.height = "42px";
+            //this.toolbar.style.marginTop = "16px";
             for (var i = 0; i < properties.buttons.length; i++) {
                 if (typeof properties.buttons[i].content == "string") {
                     var button = document.createElement("div");

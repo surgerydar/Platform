@@ -26,30 +26,28 @@
  * for the JavaScript code in this page.
  *
  */
+/* eslint-env worker, es6 */
 //
 // web worker interface
 //
-addEventListener('message', function (e) {
-    var command = e.data.command;
-    var brightness = e.data.brightness;
-    var contrast = e.data.contrast;
-    var saturation = e.data.saturation;
-    var imageData = e.data.imagedata;
-    var data = imageData.data;
-    var width   = e.data.width;
-    var height = e.data.height;
+self.addEventListener('message', function (e) {
+    let brightness = e.data.brightness;
+    let contrast = e.data.contrast;
+    let saturation = e.data.saturation;
+    let imageData = e.data.imagedata;
+    let data = imageData.data;
     //
     //
     //
-    var interpolate = function( a, b, factor ) {
+    let interpolate = function( a, b, factor ) {
         return a + ( ( b - a ) * factor );
     }
     //
     //
     //
-    var fBrightness = Math.abs(brightness / 255.0);
-    var fContrast = Math.abs(contrast / 255.0);
-    var fSaturation = Math.abs(saturation / 255.0);
+    let fBrightness = Math.abs(brightness / 255.0);
+    let fContrast = Math.abs(contrast / 255.0);
+    let fSaturation = Math.abs(saturation / 255.0);
     for (var i = 0; i < data.length; i += 4) {
         for (var j = 0; j < 3; j++) {
             //
@@ -84,9 +82,9 @@ addEventListener('message', function (e) {
         //
         // saturation
         //
-        var cMax = Math.max( data[i], Math.max(data[i+1], data[i+2]));
-        var sMax = [ data[i] / cMax, data[i+1] / cMax, data[i+2] / cMax ];
-        var sMin = Math.min(255, Math.round(0.2126 * data[i] + 0.7152 * data[i+1] + 0.0722 * data[i+2]));
+        let cMax = Math.max( data[i], Math.max(data[i+1], data[i+2]));
+        let sMax = [ data[i] / cMax, data[i+1] / cMax, data[i+2] / cMax ];
+        let sMin = Math.min(255, Math.round(0.2126 * data[i] + 0.7152 * data[i+1] + 0.0722 * data[i+2]));
         for ( j = 0; j < 3; j++ ) {
             value = data[i + j];
             if ( saturation > 0 ) {

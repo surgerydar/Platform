@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 
@@ -11,31 +13,52 @@ module.exports = function( authentication, db ) {
         var filter  = req.query.filter;
         var offset  = req.query.offset ? parseInt(req.query.offset) : undefined;
         var limit   = req.query.limit ? parseInt(req.query.limit) : undefined;
-        var pagecount = 0;
-        var pagenumber = 0;
         //
-        // build query
+        // TODO: merge this with levels.js version
         //
-        var query = {};
-        var order = { modified: -1 };
+        let conditions = []
+        let order = { modified: -1 };
+        //
+        // group
+        //
+        conditions.push( { group: req.session.group || 'public' } );
+        //
+        // filter
+        //
         if ( filter ) {
             var test = new RegExp(filter,'i');
-            query = { $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] };
+            conditions.push( { $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] } );
         }
+        //
+        // arcade specifics
+        //
         switch ( name ) {
             case 'toppicks' :
-                query = Object.keys(query).length > 0 ? { $and: [ { toppick: true }, query ] } : { toppick: true };  
+                conditions.push( { toppick: true } );  
                 break;
             case 'mostplayed' :
                 order = { played: -1, modified: -1 };
                 break;
             case 'highestrated' : // special case 
-                query = Object.keys(query).length > 0 ? { $and: [ { rating: {$gt:0} }, query ] } : { rating: {$gt:0} }; 
+                conditions.push( { rating: {$gt:0} } ); 
                 order = { rating: -1, modified: -1 };
                 break;
         }
         //
-        // TODO: merge this with levels.js version
+        //
+        //
+        console.log( 'arcades / finding levels : ' + JSON.stringify(conditions) );
+        //
+        // build query
+        //
+        var query = {};
+        if ( conditions.length === 1 ) {
+            query = conditions[ 0 ];
+        } else if ( conditions.length > 1 ) {
+            query = { $and: conditions };
+        }
+        //
+        //
         //
         db.find( 'levels', query, { thumbnail: 0 }, order, offset, limit ).then( function(levels) {
             for ( var i = 0; i < levels.length; i++ ) {

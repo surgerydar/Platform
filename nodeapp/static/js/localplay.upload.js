@@ -15,7 +15,7 @@ localplay.upload = (function () {
         //
         // start upload worker
         //
-        uploadWorker = new Worker('/js/upload.js');
+        uploadWorker = new Worker('/js/uploadworker.js');
         //
         // hook messages
         //
@@ -32,11 +32,11 @@ localplay.upload = (function () {
                     var percent = Math.round( 100. * evt.data.progress );
                     if ( progress ) {
                         if ( isNaN( percent ) ) {
-                            console.log( 'invalid progress : ' + evt.data.progress );
+                            console.error( 'invalid progress : ' + evt.data.progress );
                         }
                         progress.innerHTML = "<h1>" + percent + "%</h1>";
                     } else {
-                        console.log( 'upload : progress : ' + percent + '%' );
+                        //console.log( 'upload : progress : ' + percent + '%' );
                     }
                     break;
                 case "uploaddone" :
@@ -56,7 +56,7 @@ localplay.upload = (function () {
             }
         }
         uploadWorker.onerror = function(evt) { 
-            console.log('upload worker : ERROR : line ', evt.lineno, ' in ', evt.filename, ': ', evt.message); 
+            console.error('upload worker : ERROR : line ', evt.lineno, ' in ', evt.filename, ': ', evt.message); 
             if ( callback ) {
                 callback('ERROR'); // TODO: return error message
             }

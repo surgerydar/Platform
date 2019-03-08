@@ -1,4 +1,5 @@
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.arcade = (function () {
     if (localplay.arcade) return localplay.arcade;
     //

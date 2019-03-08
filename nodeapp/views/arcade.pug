@@ -2,10 +2,13 @@ include includes/head.pug
 
 .listview#arcade-container
     .listviewheader( id= arcade + '.listview.header')
-        img.listviewpagination( id= arcade + '.prev.medialibrarypage' src= '/images/icons/arrow-previous-02.png' )
-        .listviewpagination( id= arcade + '.pagenumbers.medialibrary')
-        img.listviewpagination( id= arcade + '.next.medialibrarypage' src='/images/icons/arrow-next-02.png' )
-        input( type='search' class='listviewsearch' placeholder='creator, name or tags' )
+        .listviewheadergroup
+            img.listviewpagination( id= arcade + '.prev.medialibrarypage' src= '/images/icons/arrow-previous-02.png' )
+            .listviewpagination( id= arcade + '.pagenumbers.medialibrary')
+            img.listviewpagination( id= arcade + '.next.medialibrarypage' src='/images/icons/arrow-next-02.png' )
+        .listviewheadergroup
+            label( for='search' class='listviewheader' ) Search
+            input( type='search' class='listviewheader' name='search' placeholder='creator, name or tags' )
     .listviewcontent( id= arcade + '.listviewcontent' )
 #menu-backdrop
 #title-bar

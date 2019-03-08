@@ -26,8 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
+/*eslint-env browser*/
+/*global localplay, Mustache, Point*/
 //
 // mobileplayer module
 //
@@ -82,8 +82,8 @@ localplay.game.controller.mobile = (function () {
         //
         this.logo = document.querySelector('#title-logo');
         if ( this.logo ) {
-            this.logo.addEventListener('click', function(e) {
-                location = '/';
+            this.logo.addEventListener('click', function() {
+                window.location = '/';
             });
         }
         //
@@ -144,10 +144,16 @@ localplay.game.controller.mobile = (function () {
                             break;
                         case 'gallery':
                             //localplay.game.arcade.showarcadedialog();
-                            location = '/arcade/latest?title=Latest';
+                            window.location = '/arcade/latest?title=Latest';
                             break;
-                        case 'people':
-                            localplay.creator.showpeopledialog();
+                        case 'about':
+                            window.location = '/about';
+                            break;
+                        case 'help':
+                            window.location = '/help';
+                            break;
+                        case 'terms':
+                            window.location = '/terms';
                             break;
                         case 'login':
                             window.location = '/login';
@@ -407,7 +413,7 @@ localplay.game.controller.mobile = (function () {
         }
     }
 
-    MobileController.prototype.onstatechange = function (e) {
+    MobileController.prototype.onstatechange = function () {
         try {
             switch (this.game.level.state) {
                 case localplay.game.level.states.clear:
@@ -446,7 +452,7 @@ localplay.game.controller.mobile = (function () {
     
     MobileController.prototype.showmenu = function (show) {
         if( show ) {
-            var playmenuitem = document.getElementById('menu.play');
+            //var playmenuitem = document.getElementById('menu.play');
             this.backdrop.classList.add('open');
             this.menu.classList.add('open');
             this.menu.scrollTop = '0px';
@@ -473,8 +479,6 @@ localplay.game.controller.mobile = (function () {
     }
 
     MobileController.prototype.onclick = function (e) {
-        var _this = this;
-
         var selector = e.target.id.split(".");
         if (selector.length === 2) {
             switch (selector[1]) {
@@ -528,7 +532,7 @@ localplay.game.controller.mobile = (function () {
         return false;
     }
 
-    MobileController.prototype.onresize = function (e) {
+    MobileController.prototype.onresize = function () {
         //this.game.fittocontainer();
         console.log( 'MobileController.prototype.onresize : before : canvas.width=' + this.game.canvas.width + ' canvas.height=' + this.game.canvas.height );
         var aspect = this.game.canvas.offsetWidth / this.game.canvas.offsetHeight;

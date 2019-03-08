@@ -1,318 +1,420 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 
 
-module.exports = function( authentication, db ) {
+module.exports = function( authentication, db, mailer ) {
     //
     // utility functions
     //
-    function capitalise( word ) {
-        return word && word.charAt(0).toUpperCase() + word.slice(1);
+    function requireRole(role) {
+        return function(req, res, next) {
+            if (req.user && req.user.role === role) {
+                next();
+            } else {
+                res.send(403, 'Unauthorized');
+            }
+        };
     }
-    function formatResponse( data, status, message ) {
-        var response = {};
-        if ( message ) response[ 'message' ] = message;
-        if ( status ) response[ 'status' ] = status;
-        if ( data ) response[ 'data' ] = data;
-        return response;
+    //
+    //
+    //
+    function findContent( collection, group, req ) {
+        var filter      = req.query.filter;
+        var offset      = req.query.offset ? parseInt(req.query.offset) : 0;
+        var limit       = req.query.limit ? parseInt(req.query.limit) : 24;
+        //
+        // build conditions
+        //
+        var conditions = [];
+        //
+        // group
+        //
+        if ( collection === 'users' ) { // users can belong to multiple groups
+            conditions.push( { groups: group || 'public' } );
+        } else {
+            conditions.push( { group: group || 'public' } );
+        }
+        //
+        // text filter
+        //
+        if ( filter ) {
+            var test = new RegExp(filter,'i');
+            conditions.push({ $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] });
+        } else {
+            filter = '';
+        }
+        //
+        // build query
+        //
+        var query = {};
+        if ( conditions.length === 1 ) {
+            query = conditions[ 0 ];
+        } else if ( conditions.length > 1 ) {
+            query = { $and: conditions };
+        }
+        //
+        //
+        //
+        console.log( 'searching collection ' + collection + ' for ' + JSON.stringify(query))
+        //
+        //
+        //
+        return new Promise( function( resolve, reject ) {
+            db.count( collection, query ).then( function(count) {
+                db.find( collection, query, {}, {created: -1}, offset, limit ).then( function( result ) {
+                    var resolution = {
+                        pagination: {
+                            pagecount: Math.ceil( count / limit ),
+                            pagenumber: Math.floor( offset / limit ),
+                            offset: offset,
+                            limit: limit,
+                            previousoffset: offset - limit,
+                            nextoffset: offset + limit,
+                            filter: filter
+                        }
+                    };
+                    resolution[ collection ] = result;
+                    resolve( resolution );
+                });
+            }).catch( function(error) {
+                reject( error );
+            });
+        });
     }
-	/*
     //
     // routes
     //
-    console.log( 'setting content routes' );
-    router.get('/contents', function (req, res) { // return all documents
-         db.find('document', {} ).then( function( documents ) {
-             res.json({ status: 'OK', response: documents});
-        }).catch( function( error ) {
-             res.json({ status: 'ERROR', error: error});
-        });
-    });
-    router.get('/documents/:date/:format', function (req, res) {
-        let date = req.params.date > 0 ? req.params.date : Date.now();
-        let format = req.params.format;
-        let query = { date: { $lt: date } };
-        db.find('document', query ).then( function( documents ) {
-            if ( format === 'html' ) {
-                res.render('documents', {documents:documents}); 
-            } else {
-                res.json({ status: 'OK', response: documents});
-            }
-        }).catch( function( error ) {
-            if ( format === 'html' ) {
-                res.render('error', {title:'AfterTrauma Admin', error: error}); 
-            } else {
-                res.json({ status: 'ERROR', error: error});
-            }
-        });
-    });
-    router.get('/manifest/:date', function (req, res) {
-        delta.getManifest( parseInt(req.params.date) ).then( function( response ) {
-            res.json({ status: 'OK', response: response});
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    //
-    //
-    //
     console.log( 'setting admin routes' );
-    router.get('/', authentication, function (req, res) {
-        res.render('admin', {title:'AfterTrauma Admin'});
-    });
-    router.get('/users', authentication, function (req, res) {
-        db.find( 'users', {}, { username: 1 } ).then( function( response ) {
-            res.render( 'users', { users: response } );
-        }).catch( function( error ) {
-            res.render('error', {title:'AfterTrauma Admin', error: error});
-        });
+    router.get('/', authentication, requireRole('admin'), function (req, res) {
+        res.render('admin');
     });
     //
-    // categories
     //
-    router.get('/:section', authentication, function (req, res) { // get section categories
-        var section = req.params.section;
-        db.find( 'category', { section: section }, { title: 1 } ).then( function( response ) {
-            res.render('section', {title:'AfterTrauma > ' + capitalise( section ), section: section, categories: response });
-        }).catch( function( error ) {
-            //
-            // TODO: error
-            //
-            res.render('error', {title:'AfterTrauma Admin', error: error});
-        });
-
-    });
-    router.post('/:section', authentication, function (req, res) { // new category
-        var section         = req.params.section;
-        var category        = req.body;
-        category.date       = Date.now();
-        category.section    = section;
-        db.insert( 'category',  category ).then( function( response ) {
-            res.json({ status: 'OK', response: response, category: category });
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    router.put('/:section/:category', authentication, function (req, res) { // update category
-        var category    = req.body;
-        item.date       = Date.now();
-        var _id         = db.ObjectId(req.params.category);
-        db.updateOne( 'category',  { _id: _id }, category ).then( function( response ) {
-            res.json({ status: 'OK', response: response});
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    router.delete('/:section/:category', authentication, function (req, res) {
-        var _id = db.ObjectId(req.params.category);
-        db.remove( 'category', { _id: _id } ).then( function( response ) {
-            res.json({ status: 'OK', response: response});
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
-
-    });
     //
-    // category documents
-    //
-    router.get('/:section/:category', authentication, function (req, res) {
-        var section = req.params.section;
-        var _id = db.ObjectId(req.params.category);
-        db.findOne( 'category', { _id: _id } ).then( function( category ) {
-            db.find( 'document', { category: req.params.category } ).then( function( documents ) {
-                res.render('category', {title:'AfterTrauma > ' + capitalise( section ) + ' > ' + category.title, section: category.section, category: category._id, documents: documents });
-            }).catch( function( error ) {
-                //
-                // TODO: error
-                //
-                res.render('error', {title:'AfterTrauma Admin', error: error});
-            });
-        }).catch( function( error ) {
-            res.render('error', {title:'AfterTrauma Admin', error: error});
-        });
-
-    });
-    router.post('/:section/:category', authentication, function (req, res) { // new document
-        var section         = req.params.section;
-        var category        = req.params.category;
-        var document        = req.body;
-        document.date       = Date.now();
-        document.category   = category;
-        document.blocks     = [];
-        db.insert( 'document',  document ).then( function( response ) {
-            //
-            // record delta
-            //
-            console.log( 'inserted document : ' + document._id );
-            //let idType = typeof document._id;
-            //let idValueOf = document._id.valueOf();
-            //let idToString = document._id.toString();
-            //let idStr = document._id.str;
-            //console.log( 'idType=' + idType + ' idValueOf:' + idValueOf + ' idToString:' + idToString + ' idStr:' + idStr );
-            delta.addDocument( section, category, document._id.toString(), document.title ).then( function( response ) {
-            }).catch( function( error ) {
-                console.log( 'delta.addDocument : error : ' + error );
-            });
-            //
-            //
-            //
-            res.json({ status: 'OK', response: response, document: document });
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    
-    router.put('/:section/:category/:document', authentication, function (req, res) { // update document
-        var _id = db.ObjectId(req.params.document);
-        var document        = req.body;
-        document.date       = Date.now();
-        db.updateOne( 'document',  { _id:_id }, document ).then( function( response ) {
-            //
-            // record delta
-            //
-            console.log( 'updated document : ' + req.params.document );
-            delta.updateDocument( req.params.section, req.params.category, req.params.document, document.title ).then( function( response ) {
-            }).catch( function( error ) {
-                console.log( 'delta.updateDocument : error : ' + error );
-            });
-            //
-            //
-            //
-            res.json({ status: 'OK', response: response, document: document });
-        }).catch( function( error ) {
-            console.log( 'update document : error : ' + error );
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    router.delete('/:section/:category/:document', authentication, function (req, res) { // delete document
-        var _id = db.ObjectId(req.params.document);
-        db.remove( 'document',  { _id:_id } ).then( function( response ) {
-            //
-            // record delta
-            //
-            console.log( 'delted document : ' + req.params.document );
-            delta.removeDocument( req.params.section, req.params.category, req.params.document ).then( function( response ) {
-            }).catch( function( error ) {
-                console.log( 'delta.removeDocument : error : ' + error );
-            });
-            //
-            //
-            //
-            res.json({ status: 'OK', response: response });
-        }).catch( function( error ) {
-            console.log( 'delete document : error : ' + error );
-            res.json({ status: 'ERROR', error: error});
-        });
-    });
-    //
-    // doument blocks
-    //
-    router.get('/:section/:category/:document', authentication, function (req, res) {
-        var section     = req.params.section;
-        var categoryId  = db.ObjectId(req.params.category);
-        var documentId  = db.ObjectId(req.params.document);
-        db.findOne('category', { _id: categoryId } ).then( function( category ) {
-            db.findOne('document', { _id: documentId } ).then( function( document ) {
-                res.render('document', {title:'AfterTrauma > ' + capitalise( section ) + ' > ' + category.title + ' > ' + document.title, section: category.section, document: document } );
-            }).catch( function( error ) {
-                //
-                // TODO: error
-                //
-                res.render('error', {title:'AfterTrauma Admin', error: error});
-            });
-        }).catch( function( error ) {
-            res.render('error', {title:'AfterTrauma Admin', error: error});
-        });
-    });
-    router.get('/:section/:category/:document/:block', authentication, function (req, res) { // get block
-        var section     = req.params.section;
-        var categoryId  = req.params.category;
-        var documentId  = req.params.document;
-        var blockIndex  = parseInt(req.params.block);
-        var type        = req.query.type;
-        db.findOne('category', { _id: db.ObjectId(categoryId) } ).then( function( category ) {
-            db.findOne('document', { _id: db.ObjectId(documentId) } ).then( function( document ) {
-                var block = blockIndex >= 0 && blockIndex < document.blocks.length ? document.blocks[ blockIndex ] : {type: type, title:"", content:"", tags:[]};
-                res.render('block', {title:'AfterTrauma > ' + capitalise( section ) + ' > ' + category.title + ' > ' + document.title + ' > block ' + blockIndex, section: section, document: document, index: blockIndex, block: block} );
-            }).catch( function( error ) {
-                //
-                // TODO: error
-                //
-                res.render('error', {title:'AfterTrauma Admin', error: error});
-            });
-        }).catch( function( error ) {
-            res.render('error', {title:'AfterTrauma Admin', error: error});
-        });
-    });
-    
-    router.put('/:section/:category/:document/:block', authentication, function (req, res) { // update block
-        var section     = req.params.section;
-        var category    = req.params.category;
-        var document    = db.ObjectId(req.params.document);
-        var blockIndex  = parseInt(req.params.block);
-        var block       = req.body; 
-        var operation;
-        if ( blockIndex < 0 ) {
-            operation = {
-                $push: {
-                    blocks : block
-                },
-                $set: {
-                    date : Date.now()
-                }
-            };
-        } else {
-            operation = { 
-                $set: {
-                    date : Date.now()
-                } 
-            };
-            operation[ '$set' ][ 'blocks.' + blockIndex ] = block;
+    router.get('/groups', authentication, requireRole('admin'), function (req, res) {
+        //
+        // build group list
+        //
+        var query = {};
+        if ( req.user.groups.indexOf('system') < 0 ) {
+            query = { name: { $in: req.user.groups } };  
         }
-        db.updateOne( 'document',  { _id: document }, operation ).then( function( response ) {
-            //
-            // record delta
-            //
-            delta.updateDocument( section, category, req.params.document, undefined ).then( function( response ) {
-            }).catch( function( error ) {
-                console.log( 'delta.updateDocument : error : ' + error );
-            });
-            //
-            //
-            //
-            res.json({ status: 'OK', response: response});
+        db.find( 'groups', query ).then(function(groups) {
+            res.render('admin-groups', {groups:groups});
         }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
+            res.render('admin-error', {error:'error : ' + error });
         });
     });
-    router.delete('/:section/:category/:document/:block', authentication, function (req, res) { // delete block
-        var section     = req.params.section;
-        var category    = req.params.category;
-        var document    = db.ObjectId(req.params.document);
-        var blockIndex  = parseInt(req.params.block);
-        var operation   = { $unset: { } };
-        operation['$unset'][ 'blocks.' + blockIndex ] = null;
-        db.updateOne( 'document',  { _id: document }, operation ).then( function( response ) {
-            db.updateOne( 'document',  { _id: document }, { $pull: { blocks: null }, $set: { date: Date.now() } } ).then( function( response ) {
+    //
+    //
+    //
+    router.get('/group/:id', authentication, requireRole('admin'), function (req, res) {
+        if ( req.params.id === 'add' ) {
+            res.render('admin-group-add');    
+        } else {
+            //
+            // find group
+            //
+            let id = db.ObjectId(req.params.id);
+            db.findOne( 'groups', {_id: id} ).then(function(group) {
+                res.render('admin-group', {group:group});
+            }).catch( function( error ) {
+                res.render('admin-error', {error:'error : ' + error });
+            });
+        }
+    });
+    router.delete('/group/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // delete group
+            //
+            db.remove( 'groups', {_id: id} ).then( function() {
                 //
-                // record delta
+                // delete levels
                 //
-                delta.updateDocument( section, category, req.params.document, undefined ).then( function( response ) {
+                db.remove( 'levels', {group:group.name} ).then( function() {
+                    //
+                    // delete media
+                    //
+                    db.remove( 'media', {group:group.name} ).then( function() {
+                        //
+                        //
+                        //
+                        res.redirect('/admin/groups');
+                    });
+                });
+            });
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.post('/group', authentication, requireRole('admin'), function (req, res) {
+        //
+        // insert group
+        //
+        db.findOne( 'groups', {name: req.body.name} ).then(function(group) {
+            if ( !group ) {
+                db.insert( 'groups', req.body ).then(function(result) {
+                    res.redirect('/admin/group/' + result.insertedId );
+                    /*
+                    let insertedGroup = {
+                        _id:result.insertedId,
+                        name:req.body.name,
+                        description:req.body.description
+                    };
+                    res.render('admin-group', {group:insertedGroup});
+                    */
                 }).catch( function( error ) {
-                    console.log( 'delta.updateDocument : error : ' + error );
+                    res.render('admin-group-add', {error:'error : ' + error, name: req.body.name });
+                });
+            } else {
+                res.render('admin-group-add', {error:'group with name \'' + req.body.name + '\' already exists', name: req.body.name });
+            }
+        });
+    });
+    //
+    //
+    //
+    router.get('/group/:groupid/users', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // find group users
+            //
+            findContent('users', group.name, req).then( function(resolution) {
+                res.render('admin-group-users', {group: group, users:resolution.users, pagination: resolution.pagination, currentuser: req.user._id});
+            });
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.get('/group/:groupid/user/:id', authentication, requireRole('admin'), function (req, res) {
+        
+        let groupid = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+            if ( group ) {
+                if ( req.params.id === 'add' ) {
+                    res.render('admin-group-user-add', {group:group});    
+                } else {
+                    let query = {
+                        $and : [
+                            { _id: db.ObjectId(req.params.id) },
+                            { groups: group.name }
+                        ]  
+                    };
+                    db.findOne('users', query ).then( function(user) {
+                        if ( user ) {
+                            res.render('admin-user', {group: group, user: user});    
+                        } else {
+                            throw 'unknown user';
+                        } 
+                    });
+                }
+            } else {
+                throw 'unknown group';
+            }    
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+   router.delete('/group/:groupid/user/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.remove( 'users', {_id:id} ).then( function() {
+            let groupid = db.ObjectId(req.params.groupid);
+            db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+                //
+                // find group users
+                //
+                findContent('users', group.name, req).then( function(resolution) {
+                    res.render('admin-group-users', {group: group, users:resolution.users, pagination: resolution.pagination});
+                });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
+    router.post('/group/:groupid/inviteusers', authentication, requireRole('admin'), function (req, res) {
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // store pending invites 
+            //
+            console.log( 'inviting users: ' + JSON.stringify(req.body) );
+            let invites = [];
+            let emails = [];
+            for ( var key in req.body ) {
+                if ( key.indexOf( 'email' ) === 0 ) {
+                    emails.push( req.body[key] );
+                    invites.push( { group: group.name, email: req.body[key], accepted: false} );
+                }
+            }
+            db.insertMany('invites', invites).then( function(result) {
+                //
+                // send mail invite
+                //
+                mailer.send( emails.join(','), 'Invite to platform game', 'Hi, you have been invited to join platform').then( function() {
+                    res.redirect('/admin/group/' + req.params.groupid + '/users');
+                }).catch( function( error ) {
+                    res.render('admin-error', {error:'error : ' + error });    
                 });
                 //
                 //
                 //
-                res.json({ status: 'OK', response: response});
             }).catch( function( error ) {
-                res.json({ status: 'ERROR', error: error});
+                res.render('admin-error', {error:'error : ' + error });    
             });
-        }).catch( function( error ) {
-            res.json({ status: 'ERROR', error: error});
+            //
+            //
+            //
+        });
+            
+    });
+    router.put('/group/:groupid/user/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // update user
+        //
+        let id = db.ObjectId(req.params.id);
+        db.updateOne( 'users', {_id:id}, {$set:req.body} ).then( function() {
+            //
+            // redirect back to user list
+            //
+            res.redirect('/admin/group/' + req.params.groupid + '/users');
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
         });
     });
-	*/
+    //
+    //
+    //
+    router.get('/group/:groupid/media', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // find group media
+            //
+            findContent('media', group.name, req).then( function(resolution) {
+                var imageTemplate = '/media/{_id}?thumbnail=true';
+                res.render('admin-group-imagelist', {group: group, collection: 'media', items:resolution.media, imagetemplate: imageTemplate, pagination: resolution.pagination});
+            });
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.delete('/group/:groupid/media/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.remove( 'media', {_id:id} ).then( function() {
+            let groupid = db.ObjectId(req.params.groupid);
+            db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+                //
+                // find group media
+                //
+                findContent('media', group.name, req).then( function(resolution) {
+                    var imageTemplate = '/media/{_id}?thumbnail=true';
+                    res.render('admin-group-imagelist', {group: group, collection: 'media', items:resolution.media, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
+    router.put('/group/:groupid/media/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.updateOne( 'media', {_id:id}, {$set:req.body} ).then( function() {
+            let groupid = db.ObjectId(req.params.groupid);
+            db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+                //
+                // find group media
+                //
+                findContent('media', group.name, req).then( function(resolution) {
+                    var imageTemplate = '/media/{_id}?thumbnail=true';
+                    res.render('admin-group-imagelist', {group: group, collection: 'media', items:resolution.media, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
+    //
+    //
+    //
+    router.get('/group/:groupid/levels', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // find group levels
+            //
+            findContent('levels', group.name, req).then( function(resolution) {
+                const imageTemplate = '/levels/thumbnail/{_id}';          
+                res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, pagination: resolution.pagination});
+            });
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.delete('/group/:groupid/levels/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.remove( 'levels', {_id:id} ).then( function() {
+            let groupid = db.ObjectId(req.params.groupid);
+            db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+                //
+                // find group media
+                //
+                findContent('levels', group.name, req).then( function(resolution) {
+                    const imageTemplate = '/levels/thumbnail/{_id}';          
+                    res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
+    router.put('/group/:groupid/levels/:id', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.id);
+        db.updateOne( 'levels', {_id:id}, {$set:req.body} ).then( function() {
+            let groupid = db.ObjectId(req.params.groupid);
+            db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+                //
+                // find group media
+                //
+                findContent('levels', group.name, req).then( function(resolution) {
+                    const imageTemplate = '/levels/thumbnail/{_id}';          
+                    res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
     //
     //
     //

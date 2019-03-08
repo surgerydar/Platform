@@ -1,4 +1,5 @@
-;
+/*eslint-env browser,es6*/
+/*global localplay*/
 class ImageEditor {
     constructor(sourceCanvas,processedCanvas,maskCanvas,drawCanvas) {
         //
@@ -56,7 +57,7 @@ class ImageEditor {
     // drawing methods
     //
     compositeRect(x,y,width,height) {
-        console.log( 'ImageEditor.compositeRect( ' + x + ',' + y + ',' + width + ',' + height + ')' );
+        //console.log( 'ImageEditor.compositeRect( ' + x + ',' + y + ',' + width + ',' + height + ')' );
         //
         //
         //

@@ -26,87 +26,83 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
 //
 // storyeditor module
 //
-localplay.game.storyeditor = (function () {
+/*eslint-env browser*/
+/*global localplay, Mustache*/
+localplay.game.storyeditor = localplay.game.storyeditor || (function () {
     var storyeditor = {};
     //
     //
     //
+    var storyeditortemplate = ' \
+        <div class="listviewheader"> \
+            <div style="flex-grow:1; flex-shrink:1; width: 16px;"></div>\
+            <div id="add-sentence" class="listviewheadergroup"> \
+               <img class="listviewheader" src="/images/add.png" />&nbspNew \
+            </div> \
+        </div> \
+        <div id="story" class="scrollpane header"> \
+        </div> \
+    ';
+    //
+    //
+    //
     function StoryEditor(level) {
-        var _this = this;
         this.level = level;
-        //
-        //
-        //
-        var titleBar = document.querySelector('#title-bar');
-        var vOffset = 0;
-        if ( titleBar ) {
-            vOffset = titleBar.offsetHeight + 16;
-            window.addEventListener('resize', function(e) {
-                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
-            });
-        }
         //
         // container
         //
         this.container = document.createElement("div");
-        this.container.style.position = "absolute";
-        this.container.style.top = vOffset + 'px';//"0px";
-        this.container.style.left = "8px";
-        this.container.style.bottom = "0px";
-        this.container.style.right = "8px";
+        this.container.classList.add('fullscreen');
+        this.container.classList.add('cover');
+        this.container.style.top = '2px';
+        //
+        //
+        //
         if (this.level.getUniqueMediaForObjectOfType("pickup").length === 0 &&
             this.level.getUniqueMediaForObjectOfType("obstacle").length === 0 &&
             this.level.getUniqueMediaForObjectOfType("goal").length === 0) {
             this.container.style.background = "lightgray";
             this.container.innerHTML = '<div style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; margin: auto;"><h2>Before your create your game story you need to add obstacles, pickups and/or goals to your Game Level</h2></div>';
-            return;
-        }
-        this.container.style.background = "white";
-        //
-        // header 
-        //
-        this.addbutton = document.createElement("div");
-        this.addbutton.classList.add("darkgrey");
-        this.addbutton.classList.add("addbutton");
-        this.addbutton.classList.add("bottom");
-        this.addbutton.classList.add("left");
-        this.addbutton.onclick = function (e) {
-            _this.addSentence();
-        }
-        this.container.appendChild(this.addbutton);
-        //
-        // create scroll pane
-        //
-        this.scrollpane = document.createElement("div");
-        this.scrollpane.classList.add("scrollpane");
-        this.scrollpane.classList.add("footer");
-        //
-        // process gameplay
-        //
-        if (level.gameplay !== undefined) {
-            this.gameplay = level.gameplay;
         } else {
-            level.gameplay = this.gameplay = localplay.game.gameplay.creategameplay();
+            //
+            // content
+            //
+            this.container.innerHTML = Mustache.render(storyeditortemplate);
         }
-        if (level.autogenerate || level.gameplay.countSentences() == 0) {
-            level.buildGameplayFromLevel();
-        }
-        this.jsonin = JSON.stringify(this.gameplay);
-        this.buildStoryFromGameplay();
-        //
-        //
-        //
-        this.container.appendChild(this.scrollpane);
     }
     //
     // required editor methods
     //
     StoryEditor.prototype.initialise = function () {
+        var _this = this;
+        this.addbutton = this.container.querySelector('#add-sentence');
+        if ( this.addbutton ) {
+            this.addbutton.addEventListener('click', function (e) {
+                e.stopPropagation();
+                _this.addSentence();
+                return true;
+            } );
+        }
+        //
+        //
+        //
+        this.content = this.container.querySelector('#story');
+        //
+        // process gameplay
+        //
+        if (this.level.gameplay !== undefined) {
+            this.gameplay = this.level.gameplay;
+        } else {
+            this.level.gameplay = this.gameplay = localplay.game.gameplay.creategameplay();
+        }
+        if (this.level.autogenerate || this.level.gameplay.countSentences() == 0) {
+            this.level.buildGameplayFromLevel();
+        }
+        this.jsonin = JSON.stringify(this.gameplay);
+        this.buildStoryFromGameplay();
     }
 
     StoryEditor.prototype.dealloc = function () {
@@ -135,8 +131,8 @@ localplay.game.storyeditor = (function () {
         var goals = this.level.getUniqueMediaForObjectOfType("goal");
         var menu = document.createElement("div");
         menu.classList.add("contextmenu");
-        menu.style.bottom = (this.container.offsetHeight - (this.addbutton.offsetTop + this.addbutton.offsetHeight)) + "px";
-        menu.style.left = (this.addbutton.offsetLeft + 4) + "px";
+        menu.style.top = this.content.offsetTop + "px";
+        menu.style.right = "8px";
 
 
         var menuitems = [];
@@ -144,7 +140,7 @@ localplay.game.storyeditor = (function () {
             menuitems.push(
                 {
                     title: "Game Level Story ...",
-                    action: function (e) {
+                    action: function () {
                         _this.addStory();
                     }
                 });
@@ -153,7 +149,7 @@ localplay.game.storyeditor = (function () {
             menuitems.push(
             {
                 title: "Win Game Level by ...",
-                action: function (e) {
+                action: function () {
                     _this.addNewWin();
                 }
             });
@@ -161,11 +157,11 @@ localplay.game.storyeditor = (function () {
         menuitems.push(
         {
             title: "Lose Game Level by ...",
-            action: function (e) {
+            action: function () {
                 _this.addNewLose();
             }
         });
-        var close = function (e) {
+        var close = function () {
             window.removeEventListener("click", close, true);
             _this.container.removeChild(menu);
         };
@@ -177,7 +173,7 @@ localplay.game.storyeditor = (function () {
             //item.addEventListener("click", close);
             menu.appendChild(item);
         }
-        window.addEventListener("click", close, true);
+        window.addEventListener("click", close, { once: true });
 
         this.container.appendChild(menu);
     }
@@ -207,7 +203,7 @@ localplay.game.storyeditor = (function () {
         var index = clause ? pickups.indexOf(clause.subject) : 0;
         var pickup = StoryEditor.createVariableImage(index, pickups);
         pickup.clause = clause ? clause : container.sentence.addClause("collect", pickups[index]);
-        pickup.addEventListener("change", function (e) {
+        pickup.addEventListener("change", function () {
             pickup.clause.subject = this.options[this.value];
         });
         container.appendChild(pickup);
@@ -218,10 +214,10 @@ localplay.game.storyeditor = (function () {
         var choice = null;
         var action = null;
         if (obstacles.length > 0) {
-            var choice = [
+            choice = [
                 {
                     title: "for every",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove all children after this one
                         //
@@ -250,7 +246,7 @@ localplay.game.storyeditor = (function () {
                         }
                         if (options.length > 1) {
                             var forevery = StoryEditor.createVariableSpan(value, options);
-                            forevery.addEventListener("change", function (e) {
+                            forevery.addEventListener("change", function () {
                                 choice.clause.subject = this.options[this.value];
                             });
                             container.appendChild(forevery);
@@ -265,7 +261,7 @@ localplay.game.storyeditor = (function () {
                             [
                                 {
                                     title: "replace",
-                                    action: function (e) {
+                                    action: function () {
                                         StoryEditor.trimStoryFrom(this.parentElement);
                                         if (!rebuild) {
                                             concequence.clause.predicate = "replace";
@@ -273,14 +269,14 @@ localplay.game.storyeditor = (function () {
                                         }
                                         container.appendChild(StoryEditor.createTextSpan("&nbsp;a&nbsp;"));
                                         var target = StoryEditor.createVariableImage(obstacles.indexOf(concequence.clause.subject), obstacles);
-                                        target.addEventListener("change", function (e) {
+                                        target.addEventListener("change", function () {
                                             concequence.clause.subject = this.options[this.value];
                                         });
                                         container.appendChild(target);
                                         container.appendChild(StoryEditor.createTextSpan("&nbsp;with a&nbsp;"));
                                         clause = rebuild ? sentence.findClauseWithPredicate("with a") : null;
                                         var substitute = StoryEditor.createVariableImage(clause ? pickups.indexOf(clause.subject) : 0, pickups);
-                                        substitute.addEventListener("change", function (e) {
+                                        substitute.addEventListener("change", function () {
                                             substitute.clause.subject = this.options[this.value];
                                             });
                                         substitute.clause = clause ? clause : container.sentence.addClause("with a", pickups[0]);
@@ -290,7 +286,7 @@ localplay.game.storyeditor = (function () {
                                 },
                                 {
                                     title: "remove",
-                                    action: function (e) {
+                                    action: function () {
                                         StoryEditor.trimStoryFrom(this.parentElement);
                                         if (!rebuild) {
                                             concequence.clause.predicate = "remove";
@@ -298,7 +294,7 @@ localplay.game.storyeditor = (function () {
                                         }
                                         container.appendChild(StoryEditor.createTextSpan("&nbsp;a&nbsp;"));
                                         var target = StoryEditor.createVariableImage(obstacles.indexOf(concequence.clause.subject), obstacles);
-                                        target.addEventListener("change", function (e) {
+                                        target.addEventListener("change", function () {
                                             concequence.clause.subject = this.options[this.value];
                                         });
                                         container.appendChild(target);
@@ -321,7 +317,7 @@ localplay.game.storyeditor = (function () {
                 },
                 {
                     title: "end",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove all children after this one
                         //
@@ -335,7 +331,7 @@ localplay.game.storyeditor = (function () {
             container.appendChild(StoryEditor.createChoice([
                 {
                     title: "end",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove all children after this one
                         //
@@ -346,8 +342,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -401,7 +397,7 @@ localplay.game.storyeditor = (function () {
         var index = clause.subject;
         var number = StoryEditor.createVariableSpan(0, [1]); // need type and media clauses to find number so do this later
         number.clause = clause;
-        number.addEventListener("change", function (e) {
+        number.addEventListener("change", function () {
             number.clause.subject = this.options[this.value];
         });
         container.appendChild(number);
@@ -411,7 +407,7 @@ localplay.game.storyeditor = (function () {
         var concequence = null;
         var choice = null;
         var action = null;
-        var clause = rebuild ? sentence.findClauseWithPredicate("type") : container.sentence.addClause("type", 0);
+        clause = rebuild ? sentence.findClauseWithPredicate("type") : container.sentence.addClause("type", 0);
         var type = StoryEditor.createChoice([
             {
                 title: "pickup",
@@ -474,7 +470,7 @@ localplay.game.storyeditor = (function () {
                         [
                             {
                                 title: "replace",
-                                action: function (e) {
+                                action: function () {
                                     StoryEditor.trimStoryFrom(this.parentElement);
                                     if (!rebuild) {
                                         concequence.clause.predicate = "replace";
@@ -482,7 +478,7 @@ localplay.game.storyeditor = (function () {
                                     }
                                     container.appendChild(StoryEditor.createTextSpan("&nbsp;a&nbsp;"));
                                     var target = StoryEditor.createVariableImage(obstacles.indexOf(concequence.clause.subject), obstacles);
-                                    target.addEventListener("change", function (e) {
+                                    target.addEventListener("change", function () {
                                         concequence.clause.subject = this.options[this.value];
                                     });
                                     container.appendChild(target);
@@ -514,31 +510,31 @@ localplay.game.storyeditor = (function () {
                                             var asachoice = [
                                                     {
                                                         title: "prop",
-                                                        action: function (e) {
+                                                        action: function () {
                                                             asa.clause.subject = "prop";
                                                         }
                                                     },
                                                     {
                                                         title: "platform",
-                                                        action: function (e) {
+                                                        action: function () {
                                                             asa.clause.subject = "platform";
                                                         }
                                                     },
                                                     {
                                                         title: "pickup",
-                                                        action: function (e) {
+                                                        action: function () {
                                                             asa.clause.subject = "pickup";
                                                         }
                                                     },
                                                     {
                                                         title: "obstacle",
-                                                        action: function (e) {
+                                                        action: function () {
                                                             asa.clause.subject = "obstacle";
                                                         }
                                                     },
                                                     {
                                                         title: "goal",
-                                                        action: function (e) {
+                                                        action: function () {
                                                             asa.clause.subject = "goal";
                                                         }
                                                     }
@@ -552,7 +548,7 @@ localplay.game.storyeditor = (function () {
                                                     }
                                                 }
                                             }
-                                            var asa = StoryEditor.createChoice(asachoice, asavalue);
+                                            asa = StoryEditor.createChoice(asachoice, asavalue);
                                             container.appendChild(StoryEditor.createTextSpan("&nbsp;as a&nbsp;"));
                                         }
                                         asa.clause = asaclause;
@@ -563,7 +559,7 @@ localplay.game.storyeditor = (function () {
                             },
                             {
                                 title: "remove",
-                                action: function (e) {
+                                action: function () {
                                     StoryEditor.trimStoryFrom(this.parentElement);
                                     if (!rebuild) {
                                         concequence.clause.predicate = "remove";
@@ -571,7 +567,7 @@ localplay.game.storyeditor = (function () {
                                     }
                                     container.appendChild(StoryEditor.createTextSpan("&nbsp;a&nbsp;"));
                                     var target = StoryEditor.createVariableImage(obstacles.indexOf(concequence.clause.subject), obstacles);
-                                    target.addEventListener("change", function (e) {
+                                    target.addEventListener("change", function () {
                                         concequence.clause.subject = this.options[this.value];
                                     });
                                     container.appendChild(target);
@@ -591,7 +587,7 @@ localplay.game.storyeditor = (function () {
             },
             {
                 title: "obstacle",
-                action: function (e) {
+                action: function () {
                     //
                     // remove previous
                     //
@@ -611,7 +607,7 @@ localplay.game.storyeditor = (function () {
                     var count = 0;
                     var obstacle = StoryEditor.createVariableImage(index, obstacles);
                     obstacle.clause = clause ? clause : container.sentence.addClause("obstacle", obstacles[index]);
-                    obstacle.addEventListener("change", function (e) {
+                    obstacle.addEventListener("change", function () {
                         //
                         // update target pickup
                         //
@@ -648,7 +644,7 @@ localplay.game.storyeditor = (function () {
                     clause = rebuild ? sentence.findClauseWithPredicate("drop") : null;
                     var drop = StoryEditor.createVariableImage(clause ? pickups.indexOf(clause.subject) : 0, pickups);
                     drop.clause = clause ? clause : container.sentence.addClause("drop", pickups[0]);
-                    drop.addEventListener("change", function (e) {
+                    drop.addEventListener("change", function () {
                         drop.clause.subject = this.options[this.value];
                     });
                     container.appendChild(drop);
@@ -660,8 +656,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -713,7 +709,7 @@ localplay.game.storyeditor = (function () {
         var index = clause ? obstacles.indexOf(clause.subject) : 0;
         var obstacle = StoryEditor.createVariableImage(index, obstacles);
         obstacle.clause = clause ? clause : container.sentence.addClause("avoid", obstacles[0]);
-        obstacle.addEventListener("change", function (e) {
+        obstacle.addEventListener("change", function () {
             obstacle.clause.subject = this.options[this.value];
         });
         container.appendChild(obstacle);
@@ -725,7 +721,7 @@ localplay.game.storyeditor = (function () {
             var choice = [
                 {
                     title: "for every",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove all children after this one
                         //
@@ -754,21 +750,21 @@ localplay.game.storyeditor = (function () {
                         if (options.length > 1) {
                             var forevery = StoryEditor.createVariableSpan(value, options);
                             forevery.clause = clause ? clause : container.sentence.addClause("for every", options[value]);
-                            forevery.addEventListener("change", function (e) {
+                            forevery.addEventListener("change", function () {
                                 forevery.clause.subject = this.options[this.value];
                                 _this.dirty = (!rebuild);
                             });
                             container.appendChild(forevery);
                             container.appendChild(StoryEditor.createTextSpan("&nbsp;objects you hit, you will lose a&nbsp;"));
                         } else {
-                            var forevery = StoryEditor.createTextSpan("&nbsp;object you hit, you will lose a&nbsp;");
+                            forevery = StoryEditor.createTextSpan("&nbsp;object you hit, you will lose a&nbsp;");
                             forevery.clause = clause ? clause : container.sentence.addClause("for every", 1);
                             container.appendChild(forevery);
                         }
                         clause = rebuild ? sentence.findClauseWithPredicate("drop") : null;
                         var drop = StoryEditor.createVariableImage(clause ? pickups.indexOf(clause.subject) : 0, pickups);
                         drop.clause = clause ? clause : container.sentence.addClause("drop", pickups[0]);
-                        drop.addEventListener("change", function (e) {
+                        drop.addEventListener("change", function () {
                             drop.clause.subject = this.options[this.value];
                         });
                         container.appendChild(drop);
@@ -776,7 +772,7 @@ localplay.game.storyeditor = (function () {
                 },
                 {
                     title: "end",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove all children after this one
                         //
@@ -791,7 +787,7 @@ localplay.game.storyeditor = (function () {
             action = StoryEditor.createChoice([
                             {
                                 title: "end",
-                                action: function (e) {
+                                action: function () {
                                     //
                                     // remove all children after this one
                                     //
@@ -804,8 +800,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -858,7 +854,7 @@ localplay.game.storyeditor = (function () {
         var choice = [
             {
                 title: "for every",
-                action: function (e) {
+                action: function () {
                     //
                     //
                     //
@@ -888,13 +884,13 @@ localplay.game.storyeditor = (function () {
                         [
                             {
                                 title: "replaced by a",
-                                action: function (e) {
+                                action: function () {
                                     container.appendChild(StoryEditor.createVariableImage(0, pickups));
                                 }
                             },
                             {
                                 title: "removed",
-                                action: function (e) {
+                                action: function () {
                                     StoryEditor.trimStoryFrom(this.parentElement);
                                 }
                             }
@@ -903,7 +899,7 @@ localplay.game.storyeditor = (function () {
             },
             {
                 title: "end",
-                action: function (e) {
+                action: function () {
                     //
                     // remove all children after this one
                     //
@@ -915,8 +911,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -953,7 +949,7 @@ localplay.game.storyeditor = (function () {
             var choice = [
                 {
                     title: "collecting",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove previous
                         //
@@ -970,13 +966,13 @@ localplay.game.storyeditor = (function () {
                         }
                         var value = 0;
                         var options = [];
-                        for (var i = 1; i <= count; i++) {
+                        for ( i = 1; i <= count; i++) {
                             options.push(i);
                             if (clause && clause.subject == i) value = i - 1;
                         }
                         var collecting = StoryEditor.createVariableSpan(value, options);
                         collecting.clause = clause ? clause : container.sentence.addClause("collecting", options[0]);
-                        collecting.addEventListener("change", function (e) {
+                        collecting.addEventListener("change", function () {
                             collecting.clause.subject = this.options[this.value];
                         });
                         container.appendChild(collecting);
@@ -1018,7 +1014,7 @@ localplay.game.storyeditor = (function () {
                 */
                 {
                     title: "reaching",
-                    action: function (e) {
+                    action: function () {
                         //
                         // remove previous
                         //
@@ -1030,7 +1026,7 @@ localplay.game.storyeditor = (function () {
                         container.appendChild(StoryEditor.createTextSpan("&nbsp;a&nbsp;"));
                         var reaching = StoryEditor.createVariableImage(clause ? goals.indexOf(clause.subject) : 0, goals);
                         reaching.clause = clause ? clause : container.sentence.addClause("reaching", goals[0]);
-                        reaching.addEventListener("change", function (e) {
+                        reaching.addEventListener("change", function () {
                             reaching.clause.subject = this.options[this.value];
                         });
                         container.appendChild(reaching);
@@ -1058,13 +1054,13 @@ localplay.game.storyeditor = (function () {
             }
             var value = 0;
             var options = [];
-            for (var i = 1; i <= count; i++) {
+            for (i = 1; i <= count; i++) {
                 options.push(i);
                 if (clause && clause.subject == i) value = i - 1;
             }
             var collecting = StoryEditor.createVariableSpan(value, options);
             collecting.clause = clause ? clause : container.sentence.addClause("collecting", options[0]);
-            collecting.addEventListener("change", function (e) {
+            collecting.addEventListener("change", function () {
                 collecting.clause.subject = this.options[this.value];
             });
             container.appendChild(collecting);
@@ -1081,8 +1077,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -1125,7 +1121,7 @@ localplay.game.storyeditor = (function () {
         //
         // create functions
         //
-        function collecting(e) {
+        function collecting() {
             //
             // remove previous
             //
@@ -1142,7 +1138,7 @@ localplay.game.storyeditor = (function () {
             var count = 0;
             var pickup = StoryEditor.createVariableImage(index, pickups);
             pickup.clause = clause ? clause : container.sentence.addClause("collecting", pickups[index]);
-            pickup.addEventListener("change", function (e) {
+            pickup.addEventListener("change", function () {
                 //
                 // update target pickup
                 //
@@ -1168,9 +1164,9 @@ localplay.game.storyeditor = (function () {
                 options.push(i);
                 if (clause && clause.subject == i) value = i - 1;
             }
-            var number = StoryEditor.createVariableSpan(value, options);
+            number = StoryEditor.createVariableSpan(value, options);
             number.clause = clause ? clause : container.sentence.addClause("count", options[0]);
-            number.addEventListener("change", function (e) {
+            number.addEventListener("change", function () {
                 number.clause.subject = this.options[this.value];
             });
             container.appendChild(number);
@@ -1185,7 +1181,7 @@ localplay.game.storyeditor = (function () {
             container.appendChild(level);
         }
 
-        function reaching(e) {
+        function reaching() {
             //
             // remove previous
             //
@@ -1200,7 +1196,7 @@ localplay.game.storyeditor = (function () {
             //container.appendChild(StoryEditor.createTextSpan(( this.parentElement ? "&nbsp;a&nbsp;" : "&nbsp;reaching a&nbsp;")));
             var reaching = StoryEditor.createVariableImage(clause ? goals.indexOf(clause.subject) : 0, goals);
             reaching.clause = clause ? clause : container.sentence.addClause("reaching", goals[0]);
-            reaching.addEventListener("change", function (e) {
+            reaching.addEventListener("change", function () {
                 reaching.clause.subject = this.options[this.value];
             });
             container.appendChild(reaching);
@@ -1236,8 +1232,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -1283,7 +1279,7 @@ localplay.game.storyeditor = (function () {
         var choice = [
             {
                 title: "colliding with",
-                action: function (e) {
+                action: function () {
                     //
                     // remove previous
                     //
@@ -1299,13 +1295,13 @@ localplay.game.storyeditor = (function () {
                     }
                     var value = 0;
                     var options = [];
-                    for (var i = 1; i <= count; i++) {
+                    for (i = 1; i <= count; i++) {
                         options.push(i);
                         if (clause && clause.subject == i) value = i - 1;
                     }
                     var collecting = StoryEditor.createVariableSpan(value, options);
                     collecting.clause = clause ? clause : container.sentence.addClause("colliding", options[0]);
-                    collecting.addEventListener("change", function (e) {
+                    collecting.addEventListener("change", function () {
                         collecting.clause.subject = this.options[this.value];
                     });
                     container.appendChild(collecting);
@@ -1322,7 +1318,7 @@ localplay.game.storyeditor = (function () {
             },
             {
                 title: "taking longer than",
-                action: function (e) {
+                action: function () {
                     //
                     // remove previous
                     //
@@ -1340,7 +1336,7 @@ localplay.game.storyeditor = (function () {
                     }
                     var longerthan = StoryEditor.createVariableSpan(clause ? times.indexOf(clause.subject) : times.length - 1, times);
                     longerthan.clause = clause ? clause : container.sentence.addClause("longer than", times[times.length - 1]);
-                    longerthan.addEventListener("change", function (e) {
+                    longerthan.addEventListener("change", function () {
                         longerthan.clause.subject = this.options[this.value];
                     });
                     container.appendChild(longerthan);
@@ -1362,8 +1358,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -1409,7 +1405,7 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        function collidingwith(e) {
+        function collidingwith() {
             //
             // remove previous
             //
@@ -1426,7 +1422,7 @@ localplay.game.storyeditor = (function () {
             var count = 0;
             var obstacle = StoryEditor.createVariableImage(index, obstacles);
             obstacle.clause = clause ? clause : container.sentence.addClause("colliding with", obstacles[index]);
-            obstacle.addEventListener("change", function (e) {
+            obstacle.addEventListener("change", function () {
                 //
                 // update target pickup
                 //
@@ -1452,9 +1448,9 @@ localplay.game.storyeditor = (function () {
                 options.push(i);
                 if (clause && clause.subject == i) value = i - 1;
             }
-            var number = StoryEditor.createVariableSpan(value, options);
+            number = StoryEditor.createVariableSpan(value, options);
             number.clause = clause ? clause : container.sentence.addClause("count", options[0]);
-            number.addEventListener("change", function (e) {
+            number.addEventListener("change", function () {
                 number.clause.subject = this.options[this.value];
             });
             container.appendChild(number);
@@ -1468,7 +1464,7 @@ localplay.game.storyeditor = (function () {
             container.appendChild(StoryEditor.createTextSpan(", then go to level&nbsp;"));
             container.appendChild(level);
         }
-        function takinglongerthan(e) {
+        function takinglongerthan() {
             //
             // remove previous
             //
@@ -1486,7 +1482,7 @@ localplay.game.storyeditor = (function () {
             }
             var longerthan = StoryEditor.createVariableSpan(clause ? times.indexOf(clause.subject) : times.length - 1, times);
             longerthan.clause = clause ? clause : container.sentence.addClause("longer than", times[times.length - 1]);
-            longerthan.addEventListener("change", function (e) {
+            longerthan.addEventListener("change", function () {
                 longerthan.clause.subject = this.options[this.value];
             });
             container.appendChild(longerthan);
@@ -1523,8 +1519,8 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        this.scrollpane.appendChild(container);
-        this.scrollpane.scrollTop = this.scrollpane.scrollHeight;
+        this.content.appendChild(container);
+        this.content.scrollTop = this.content.scrollHeight;
         //
         //
         //
@@ -1556,7 +1552,7 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        button.addEventListener("click", function (e) {
+        button.addEventListener("click", function () {
             if (container.sentence !== undefined) {
                 editor.gameplay.removeSentence(container.sentence);
                 //
@@ -1564,7 +1560,7 @@ localplay.game.storyeditor = (function () {
                 //
                 editor.serialise();
             }
-            editor.scrollpane.removeChild(container);
+            editor.content.removeChild(container);
         });
         return button;
     }
@@ -1638,7 +1634,7 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        down.addEventListener("click", function (e) {
+        down.addEventListener("click", function () {
             if (!this.classList.contains("disabled") && container.value > 0) {
                 container.value--;
                 variable.innerHTML = container.options[container.value];
@@ -1646,7 +1642,7 @@ localplay.game.storyeditor = (function () {
                 container.dispatchEvent(changeEvent);
             }
         });
-        up.addEventListener("click", function (e) {
+        up.addEventListener("click", function () {
             if (!this.classList.contains("disabled") && container.value < container.options.length - 1) {
                 container.value++;
                 variable.innerHTML = container.options[container.value];
@@ -1693,7 +1689,7 @@ localplay.game.storyeditor = (function () {
             //
             //
             //
-            up.addEventListener("click", function (e) {
+            up.addEventListener("click", function () {
                 if (!this.classList.contains("disabled") && container.value > 0) {
                     container.value--;
                     variable.src = options[container.value];
@@ -1702,7 +1698,7 @@ localplay.game.storyeditor = (function () {
                     container.dispatchEvent(changeEvent);
                 }
             });
-            down.addEventListener("click", function (e) {
+            down.addEventListener("click", function () {
                 if (!this.classList.contains("disabled") && container.value < options.length - 1) {
                     container.value++;
                     variable.src = options[container.value];
@@ -1744,7 +1740,7 @@ localplay.game.storyeditor = (function () {
                     // hide other choices
                     //
                     container.value = this.value;
-                    for (var child = container.firstChild; child != null; child = child.nextSibling) {
+                    for (child = container.firstChild; child != null; child = child.nextSibling) {
                         if (child != this) {
                             child.classList.add("hidden");
                         }
@@ -1794,7 +1790,7 @@ localplay.game.storyeditor = (function () {
         //
         //
         //
-        container.addEventListener("click", function (e) {
+        container.addEventListener("click", function () {
             localplay.listview.createlibrarydialog(title, url, function (item) {
                 if (item.data.thumbnail !== item.data.url) {
                     //
@@ -1874,6 +1870,15 @@ localplay.game.storyeditor = (function () {
     //
     storyeditor.createstoryeditor = function (level) {
         return new StoryEditor(level);
+    }
+    storyeditor.createstoryeditordialog = function(level) {
+        var editor = storyeditor.createstoryeditor(level);
+        var dialog = localplay.dialogbox.createfullscreendialogbox( 'Edit gameplay', editor.container, [], [], function() {
+            editor.save();
+        });
+        dialog.show();
+        editor.initialise();
+        return editor;
     }
     //
     //

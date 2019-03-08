@@ -1,0 +1,14 @@
+.admin-form-container
+    form.admin( action= '/admin/group' method= 'post' enctype= 'application/x-www-form-urlencoded' )
+        .form-content
+        if error
+            .form-item#register-error( style='color: red' ) #{error}
+        .form-item
+            label.form-item( for='name' ) Group Name
+            input.form-item#name( type='text' name='name' placeholder='enter group name' required minlength="6" value= name || '' )
+        .form-item
+            label.form-item( for='description' ) Description
+            textarea.form-item( id='description' name='description' )
+        div( style="display: flex; flex-direction: row; justify-content: space-between;")
+            input.form-item#button-cancel( type='button' value='Cancel' data-action= 'get' data-url= '/admin/groups' )
+            input.form-item( type='submit' value='Add' )

@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 var Strategy = require('passport-local').Strategy
@@ -58,6 +60,7 @@ module.exports = function( passport, config, db ) {
                 done(null, false, { message: 'username or email already registered' });
             } else {
                 console.log( 'registering user :  adding user : ' + user.username );
+                user.groups = ["public"];
                 db.insert( 'users', user ).then( function(response) {
                     console.log( 'registering user :  added user : ' + user.username );
                     //res.redirect('/');

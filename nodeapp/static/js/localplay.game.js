@@ -26,12 +26,11 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
-localplay = window.localplay ? window.localplay : {};
 //
 // game module
 //
+/*eslint-env browser*/
+/*global localplay*/
 localplay.game = (function () {
     if (localplay.game) return localplay.game;
 
@@ -151,8 +150,8 @@ localplay.game = (function () {
                                     //
                                     _this.metadata = {
                                         name: response.data.name,
-                                        place: response.data.place,
-                                        change: response.data.change,
+                                        about: response.data.about || '',
+                                        instructions: response.data.instructions || '',
                                         published: response.data.published == "1",
                                         creatorid: response.data.creatorid,
                                         creator: response.data.creator,
@@ -217,9 +216,9 @@ localplay.game = (function () {
         var data = {
             name: _this.metadata.name,
             published: _this.metadata.published ? 1 : 0,
-            place: _this.metadata.place,
-            change: _this.metadata.change,
-            tags: _this.metadata.tags ? _this.metadata.tags : "",
+            about: _this.metadata.about || '',
+            instructions: _this.metadata.instructions || '',
+            tags: _this.metadata.tags || '',
             data: json,
             thumbnail: thumbnail.toDataURL("image/png")
         };

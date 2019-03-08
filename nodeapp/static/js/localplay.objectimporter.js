@@ -26,8 +26,9 @@
  * for the JavaScript code in this page.
  *
  */
-;
-localplay.objectimporter = (function () {
+/*eslint-env browser*/
+/*global localplay, Mustache*/
+localplay.objectimporter = localplay.objectimporter || (function () {
     var objectimporter = {};
     //
     //
@@ -147,6 +148,7 @@ localplay.objectimporter = (function () {
             if ( _this.uicanvas ) {
                 _this.uicanvas.width    = _this.uicanvas.offsetWidth;
                 _this.uicanvas.height   = _this.uicanvas.offsetHeight;
+                _this.sizeCanvas();
                 _this.setZoom( _this.zoom );
             }
         }, { passive: true });
@@ -198,7 +200,7 @@ localplay.objectimporter = (function () {
                 return false;
             },
             pointerscroll : function(d) {
-                console.log( 'pointerscroll : ' + d.tostring() );
+                //console.log( 'pointerscroll : ' + d.tostring() );
                 if ( _this.canvas.offsetWidth > _this.content.offsetWidth ) {
                     _this.content.scrollLeft -= d.x;
                 }
@@ -278,10 +280,10 @@ localplay.objectimporter = (function () {
                 reader.addEventListener( 'load', function(e) {
                     var image = new Image();
                     image.addEventListener( 'load', function(e) {
-                        var scale = Math.min( 1024/image.naturalWidth, 1024/image.naturalHeight );
+                        var scale = Math.min( 1.0, Math.min( 1024/image.naturalWidth, 1024/image.naturalHeight ) );
                         var canvas = document.createElement('canvas');
-                        canvas.width = Math.round( image.naturalWidth * ( scale < 1.0 ? scale : 1.0 ) );   
-                        canvas.height = Math.round( image.naturalHeight * ( scale < 1.0 ? scale : 1.0 ) ); 
+                        canvas.width = Math.round( image.naturalWidth * scale );   
+                        canvas.height = Math.round( image.naturalHeight * scale ); 
                         var context = canvas.getContext('2d');
                         context.drawImage(image,0,0,canvas.width,canvas.height);
                         _this.import(canvas);
@@ -407,9 +409,9 @@ localplay.objectimporter = (function () {
                     };
                     localplay.datasource.post( '/media', media, {},
                     localplay.datasource.createprogressdialog("Updating database...", 
-                            function (e) {
+                            function (/*e*/) {
                                 _this.close();
-                            }));
+                            }), media);
                 } else {
                     // 
                     // TODO: error alert
@@ -698,7 +700,7 @@ localplay.objectimporter = (function () {
                 //var pixelAspect = new Point( _this.canvas.offsetWidth / _this.canvas.width, _this.canvas.offsetHeight / _this.canvas.height );
                 //console.log( 'pixel aspect : ' + pixelAspect.tostring() );
                 var imageBounds = _this.imageEditor.imageBounds();
-                console.log( 'p.x= ' + p.x + ' imageBounds.width=' + imageBounds.width );
+                //console.log( 'p.x= ' + p.x + ' imageBounds.width=' + imageBounds.width );
                 p.x -= imageBounds.x;
                 p.y -= imageBounds.y;
                 if ( hTrack === "none" && vTrack === "none" && _this.options.crop.contains(p) ) {
@@ -728,7 +730,7 @@ localplay.objectimporter = (function () {
                 }
                 _this.drawOverlay();
             },
-            pointerup: function(p) {
+            pointerup: function(/*p*/) {
                 hTrack = "none";
                 vTrack = "none";
                 trackingCrop = false;
@@ -798,14 +800,14 @@ localplay.objectimporter = (function () {
                 this.drawOverlay();
                 break;
             case 'adjust' :
-                console.log( 'hooking sliders');
+                //console.log( 'hooking sliders');
                 var adjustments = tooloptions.querySelectorAll('input[type=range]');
                 adjustments.forEach( function( adjustment ) {
                     var value = ( _this.options[ adjustment.id ] + 255.0 ) / 512.0;
                     adjustment.value = value;
-                    console.log( 'hooking slider : ' + adjustment.id);
-                    function updateIndicator(e) {
-                        console.log( 'setting slider adjustment : ' + adjustment.id + '=' + adjustment.value);
+                    //console.log( 'hooking slider : ' + adjustment.id);
+                    function updateIndicator() {
+                        //console.log( 'setting slider adjustment : ' + adjustment.id + '=' + adjustment.value);
                         adjustment.style.setProperty('--adjustment',adjustment.value);
                         //
                         // apply to edit target item
@@ -824,7 +826,7 @@ localplay.objectimporter = (function () {
                 });
                 break;
             case 'draw' :
-                console.log( 'hooking pens');
+                //console.log( 'hooking pens');
                 var pens = tooloptions.querySelectorAll('.pen');
                 pens.forEach( function(pen) {
                     if ( parseFloat( pen.getAttribute('data-size') ) === _this.penSize ) {
@@ -849,7 +851,7 @@ localplay.objectimporter = (function () {
                 });
                 break
             case 'erase' :
-                console.log( 'hooking erasers');
+                //console.log( 'hooking erasers');
                 var erasers = tooloptions.querySelectorAll('.eraser');
                 erasers.forEach( function(eraser) {
                     if ( parseFloat( eraser.getAttribute('data-size') ) === _this.eraserSize ) {
@@ -875,18 +877,18 @@ localplay.objectimporter = (function () {
                 
                 var autoErase = tooloptions.querySelector('#auto-erase');
                 if ( autoErase ) {
-                    autoErase.addEventListener( 'click', function(e) {
+                    autoErase.addEventListener( 'click', function() {
                          _this.imageEditor.autoMask(32); // TODO: slider for threshold
                     });
                     
                 }
                 var autoThreshold = tooloptions.querySelector('#auto-threshold');
                 if ( autoThreshold ) {
-                    autoThreshold.addEventListener('change', function(e) {
+                    autoThreshold.addEventListener('change', function() {
                         var context = _this.mask.getContext('2d');
                         context.fillRect(0,0,_this.mask.width,_this.mask.height);
                         if ( autoThreshold.value > 0 ) {
-                            console.log( 'autoThreshold=' + autoThreshold.value);
+                            //console.log( 'autoThreshold=' + autoThreshold.value);
                             _this.imageEditor.autoMask(parseInt(autoThreshold.value));
                         } else {
                             _this.imageEditor.compositeRect(0,0,_this.mask.width,_this.mask.height)
@@ -895,7 +897,7 @@ localplay.objectimporter = (function () {
                 }
                 break;
             case 'properties' :
-                console.log( 'hooking properties');
+                //console.log( 'hooking properties');
                 var fields = tooloptions.querySelectorAll('input[type=text]');
                 fields.forEach( function(field) {
                      field.addEventListener("change", function(e) {
@@ -940,7 +942,7 @@ localplay.objectimporter = (function () {
         //
         var closeButton = dialog.dialog.querySelector('#editor-tools-close');
         if ( closeButton ) {
-            closeButton.addEventListener('click', function(e) {
+            closeButton.addEventListener('click', function() {
                 importer.close();
                 dialog.close();
             });

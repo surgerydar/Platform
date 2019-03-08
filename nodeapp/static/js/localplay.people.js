@@ -54,7 +54,7 @@ localplay.arcade = (function () {
             if ( menu ) {
                 menu.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log( 'menu item : ' + e.target.id );
+                    //console.log( 'menu item : ' + e.target.id );
                     var selector = e.target.id.split('.');
                     if ( selector.length === 3 && selector[ 1 ] === 'people' ) {
                         location = '/arcade/' + selector[ 2 ] + '?title=' + e.target.innerHTML;

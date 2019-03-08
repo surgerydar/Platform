@@ -1,4 +1,5 @@
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.homepage = (function () {
     if (localplay.homepage) return localplay.homepage;
     return { 
@@ -8,8 +9,8 @@ localplay.homepage = (function () {
             //
             var logo = document.querySelector('#title-logo');
             if ( logo ) {
-                logo.addEventListener('click', function(e) {
-                    location = '/';
+                logo.addEventListener('click', function() {
+                    window.location = '/';
                 });
             }
             //
@@ -50,7 +51,7 @@ localplay.homepage = (function () {
             if ( menu ) {
                 menu.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log( 'menu item : ' + e.target.id );
+                    //console.log( 'menu item : ' + e.target.id );
                     var selector = e.target.id.split('.');
                     if ( selector.length === 2 ) {
                         showmenu(false);
@@ -59,9 +60,9 @@ localplay.homepage = (function () {
                                 window.location = '/edit/create'
                                 break;
                             case "gallery":
-                                //localplay.game.arcade.showarcadedialog();
-                                location = '/arcade/latest?title=Latest';
+                                window.location = '/arcade/latest?title=Latest';
                                 break;
+                            /*
                             case 'people':
                                 localplay.creator.showpeopledialog();
                                 break;
@@ -71,6 +72,10 @@ localplay.homepage = (function () {
                             case 'logout':
                                 window.location = '/logout';
                                 break;
+                            */
+                            default:
+                                window.location = '/' + selector[1];
+                                break;
                         }
                     }
                 });
@@ -78,18 +83,6 @@ localplay.homepage = (function () {
             //
             // resize body text
             //
-            /*
-            var content = document.querySelector('#homepage-content');
-            if ( content ) {
-                var contentHeader = document.querySelector('#homepage-header');
-                if ( contentHeader ) {
-                    while( contentHeader.offsetWidth > content.offsetWidth ) {
-                        contentHeader.style.fontSize = contentHeader.style.fontSize / 2.0;
-                    }
-                }
-                var contentBody = document.querySelector('#homepage-body');
-            }
-            */
             var content = document.querySelector('#homepage-content');
             var contentHeader = document.querySelector('#homepage-header');
             var contentBody = document.querySelector('#homepage-body');
@@ -108,10 +101,6 @@ localplay.homepage = (function () {
                     var newHeaderFontSize = Math.max( 18, Math.floor( originalHeaderFontsize * ( ( content.offsetWidth - 20 ) / headerWidth ) ) );
                     var vScale = content.offsetHeight / ( contentHeight - ( originalHeaderFontsize - newHeaderFontSize ) );
                     var newBodyFontsize = Math.max( 12, Math.min( newHeaderFontSize - 8, Math.floor( originalBodyFontsize * vScale ) ) );
-                    //
-                    //
-                    //
-                    console.log( 'fitContent : header : ' + originalHeaderFontsize + ' ==> ' + newHeaderFontSize + ' : body : ' + originalBodyFontsize + ' ==> ' + newBodyFontsize );
                     //
                     //
                     //

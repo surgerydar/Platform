@@ -26,10 +26,10 @@
  * for the JavaScript code in this page.
  *
  */
-
-localplay.game.addthingseditor = (function () {
+/*eslint-env browser*/
+/*global localplay*/
+localplay.game.addthingseditor = localplay.game.addthingseditor || (function () {
     var addthingseditor = {};
-
     //
     //
     //
@@ -37,11 +37,11 @@ localplay.game.addthingseditor = (function () {
       <div style="width: 200px; height: 200px; padding: 8px;"> \
         <h3>Add item as</h3> \
         <hr class="white" style="width: 100%"></hr><br /> \
-        <input type="radio" id="layout.goal" name="layout.type" value="goal"><label for="layout.goal"></label>Goal<br/> \
-        <input type="radio" id="layout.obstacle" name="layout.type" value="obstacle"><label for="layout.obstacle"></label>Obstacle<br/> \
-        <input type="radio" id="layout.pickup" name="layout.type" value="pickup"><label for="layout.pickup"></label>Pickup<br/> \
-        <input type="radio" id="layout.platform" name="layout.type"  value="platform" checked="true"><label for="layout.platform"></label>Platform<br/> \
-        <input type="radio" id="layout.prop"  value="prop" name="layout.type"><label for="layout.prop"></label>Prop<br/> \
+        <input type="radio" id="layout.goal" name="layout.type" value="goal" class="editor" /><label for="layout.goal"></label>Goal<br/> \
+        <input type="radio" id="layout.obstacle" name="layout.type" value="obstacle" class="editor" /><label for="layout.obstacle"></label>Obstacle<br/> \
+        <input type="radio" id="layout.pickup" name="layout.type" value="pickup" class="editor" /><label for="layout.pickup"></label>Pickup<br/> \
+        <input type="radio" id="layout.platform" name="layout.type"  value="platform" checked="true" class="editor" /><label for="layout.platform"></label>Platform<br/> \
+        <input type="radio" id="layout.prop"  value="prop" name="layout.type" class="editor" /><label for="layout.prop"></label>Prop<br/> \
         <div style="height: 42px; width: 200px">\
             <div id="button.layout.cancel" class="menubaritem" style="float: right;" > \
                 <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
@@ -68,29 +68,12 @@ localplay.game.addthingseditor = (function () {
         var _this = this;
         this.level = level;
         //
-        // attach to game
-        //
-        localplay.game.controller.attachcontroller(level.game,this);
-        this.boundstatechange = this.onstatechange.bind(this); // TODO: this should probably be moved to game.controller
-        this.level.addEventListener("statechange", this.boundstatechange);
-        //
-        //
-        //
-        var titleBar = document.querySelector('#title-bar');
-        var vOffset = 0;
-        if ( titleBar ) {
-            vOffset = titleBar.offsetTop + titleBar.offsetHeight;
-            window.addEventListener('resize', function(e) {
-                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
-            });
-        }
-        //
         // container
         //
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = vOffset + 'px';
-        this.container.style.left = "8px";
+        this.container.style.top = '2px';
+        this.container.style.left = "0px";
         this.container.style.bottom = "0px";
         this.container.style.right = "8px";
         this.container.style.display = "flex";
@@ -144,7 +127,7 @@ localplay.game.addthingseditor = (function () {
                 itemposn.x += item.offsetWidth / 2;
                 itemposn.y += item.offsetHeight / 2;
                 localplay.dialogbox.pinnedpopupatpoint(itemposn, addthingtemplate, null, function (e) {
-                    var selector = e.target.id.split('.');
+                    var selector = e.currentTarget.id.split('.');
                     if (selector.length >= 3) {
                         var command = selector[2];
                         switch (command) {
@@ -244,6 +227,22 @@ localplay.game.addthingseditor = (function () {
 
     addthingseditor.createaddthingseditor = function (level) {
         return new AddThingsEditor(level);
+    }
+    addthingseditor.createaddthingseditordialog = function(level, callback) {
+        var editor = addthingseditor.createaddthingseditor(level);
+        var dialog = localplay.dialogbox.createfullscreendialogbox( 'Add items', editor.container, [], [], function() {
+            if( callback ) {
+                callback();
+            }
+        });
+        dialog.show();
+        editor.initialise(function() {
+            dialog.close();
+            if( callback ) {
+                callback();
+            }
+        });
+        return editor;
     }
     return addthingseditor;
 

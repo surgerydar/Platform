@@ -26,8 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
+/*eslint-env browser*/
+/*global localplay, Mustache*/
 localplay.listview = (function () {
     if ( localplay.listview ) return localplay.listview;
     var listview = {};
@@ -37,9 +37,9 @@ localplay.listview = (function () {
     /*
     listview.editablecontainer = '\
         <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
+            <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-01.png" /> \
             <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+            <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-01.png" /> \
             <input type="search" class="listviewsearch" placeholder="creator, name or tags"/> \
             <div id="{{prefix}}.localplay.addlistitem" class="menubaritem" style="float: right;"> \
                 <img class="menubaritem" id="localplay.addlistitem" src="/images/icons/add-01.png" />\
@@ -51,15 +51,18 @@ localplay.listview = (function () {
     */
     listview.editablecontainer = '\
         <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <div id="{{prefix}}.pagination" class="menubaritem"> \
-                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
+            <div id="{{prefix}}.pagination" class="listviewheadergroup"> \
+                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-01.png" /> \
                 <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-01.png" /> \
             </div> \
-            <input type="search" class="listviewsearch" placeholder="creator, name or tags"/> \
+            <div class="listviewheadergroup"> \
+                <label for="search" class="listviewheader">Search</label> \
+                <input type="search" name="search" class="listviewheader" placeholder="creator, name or tags"/> \
+            </div> \
             <div style="flex-grow:1; flex-shrink:1; width: 16px;"></div>\
-            <div id="{{prefix}}.localplay.addlistitem" class="menubaritem"> \
-                <img class="menubaritem" id="localplay.addlistitem" src="/images/icons/add-01.png" />\
+            <div id="{{prefix}}.localplay.addlistitem" class="listviewheadergroup"> \
+                <img class="listviewheader" id="localplay.addlistitem" src="/images/add.png" />\
                 {{{addlabel}}} \
             </div> \
         </div> \
@@ -68,13 +71,15 @@ localplay.listview = (function () {
 
     listview.container = '\
          <div id="{{prefix}}.listview.header" class="listviewheader"> \
-            <div id="{{prefix}}.pagination" class="menubaritem"> \
-                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-02.png" /> \
+            <div id="{{prefix}}.pagination" class="listviewheadergroup"> \
+                <img id="{{prefix}}.prev.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-previous-01.png" /> \
                 <div id="{{prefix}}.pagenumbers.medialibrary" class="listviewpagination"></div> \
-                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-02.png" /> \
+                <img id="{{prefix}}.next.medialibrarypage" class="listviewpagination" src="/images/icons/arrow-next-01.png" /> \
             </div> \
-            <input type="search" class="listviewsearch" placeholder="creator, name or tags" value="{{filter}}"/> \
-            <div style="flex-grow:1; flex-shrink:1; width: 16px;"></div>\
+            <div class="listviewheadergroup"> \
+                <label for="search" class="listviewheader">Search</label> \
+                <input type="search" name="search" class="listviewheader" placeholder="creator, name or tags"/> \
+            </div> \
         </div> \
         <div class="listviewcontent"></div>\
     ';
@@ -201,6 +206,7 @@ localplay.listview = (function () {
                     }
                 }
             }
+            /*
             //
             // initialise search
             // TODO: replace this with document.getElementById( "listview.search" )
@@ -216,6 +222,8 @@ localplay.listview = (function () {
                     }
                 }
             }
+            */
+            this.searchfield = this.view.querySelector('input[type=search]');
             if (this.searchfield) {
                 this.searchfield.onkeyup = function (e) {
                     e.preventDefault();
@@ -388,27 +396,6 @@ localplay.listview = (function () {
         localplay.flagitem("Flag", item.data.name, item.data.tablename, item.data.id, function () {
             _this.source.update();
         });
-        /*
-        var _this = this;
-        var data = item.data;
-        //
-        // TODO: flag comment dialog
-        //
-        var command = "putflag.php";
-        localplay.datasource.put(command, { tablename: data.tablename, targetid: data.id }, {},
-            {
-                datasourceonloadend: function (e) {
-                    var xhr = e.target;
-                    try {
-                        var response = JSON.parse(xhr.datasource.response);
-                        localplay.dialogbox.alert("Flag", response.message);
-                    } catch (error) {
-                        localplay.dialogbox.alert("Flag", "Unknown error!");
-                    }
-                    _this.source.update();
-                }
-            });
-            */
     }
 
     ListView.prototype.attachDataToItem = function (item, data) {
@@ -482,12 +469,12 @@ localplay.listview = (function () {
                     if ( selector.length >= 4 && selector[1] === 'rating' ) {
                         var score = parseInt(selector[3]);
                         var request = '/rating/' + data.tablename + '/' + data._id;
-                        localplay.datasource.put(request, { score: score }, {}, {
+                        localplay.datasource.put(request, {}, {
                             datasourceonloadend : function(e) {
                                 //getRating(category,tablename,targetid);
                                 getRating();
                             }
-                        } );
+                        }, { score: score } );
                     }
                 };
             } else {
@@ -532,19 +519,23 @@ localplay.listview = (function () {
                     this.prev.style.opacity = "0";
                 }
             } else {
-                if (this.next && pagenumber < pagecount - 1) {
-                    this.next.style.display = "inline";
-                    this.next.style.opacity = "1";
-                } else {
-                    //this.next.style.display = "none";
-                    this.next.style.opacity = "0";
+                if (this.next) { 
+                    if( pagenumber < pagecount - 1) {
+                        this.next.style.display = "inline";
+                        this.next.style.opacity = "1";
+                    } else {
+                        //this.next.style.display = "none";
+                        this.next.style.opacity = "0";
+                    }
                 }
-                if (this.prev && pagenumber > 0) {
-                    this.prev.style.display = "inline";
-                    this.prev.style.opacity = "1";
-                } else {
-                    //this.prev.style.display = "none";
-                    this.prev.style.opacity = "0";
+                if (this.prev ) {
+                    if ( pagenumber > 0) {
+                        this.prev.style.display = "inline";
+                        this.prev.style.opacity = "1";
+                    } else {
+                        //this.prev.style.display = "none";
+                        this.prev.style.opacity = "0";
+                    }
                 }
             }
             if (this.pagenumbers) {
@@ -553,8 +544,9 @@ localplay.listview = (function () {
                 this.pagenumbers.innerHTML = "";
                 if (pagecount > 1) {
                     for (var i = 0; i < pagecount; i++) {
+                        var a;
                         if (i == pagenumber || i < lowerlimit || i >= upperlimit) {
-                            var a = document.createElement("a");
+                            a = document.createElement("a");
                             a.className = "listviewpagination";
                             if (i == pagenumber) {
                                 a.style.color = "white";
@@ -570,7 +562,7 @@ localplay.listview = (function () {
                             a.innerHTML = (i + 1);
                             this.pagenumbers.appendChild(a);
                         } else if (i < lowerlimit + 3) {
-                            var a = document.createElement("a");
+                            a = document.createElement("a");
                             a.innerHTML = ".";
                             this.pagenumbers.appendChild(a);
                         }
@@ -904,9 +896,9 @@ localplay.listview = (function () {
             if (header) {
                 var addcontainer = document.createElement("div");
                 addcontainer.id = prefix + ".localplay.addlistitem";
-                addcontainer.classList.add("menubaritem");
-                addcontainer.classList.add("right");
-                addcontainer.innerHTML = '<img class="menubaritem" src="/images/icons/add-01.png" />&nbsp;' + addlabel;
+                addcontainer.classList.add("listviewheadergroup");
+                //addcontainer.classList.add("right");
+                addcontainer.innerHTML = '<img class="listviewheader" src="/images/add.png" />&nbsp;' + addlabel;
                 addcontainer.onclick = function () {
                     onadd(container.controller);
                 };

@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 
@@ -22,6 +24,7 @@ module.exports = function( authentication, db ) {
                     res.redirect('/images/deleted.png');
                 }
             }).catch( function( error ) {
+                console.log('/levels/thumbnal/' + req.params.id + ' : error : ' + error );
                 res.redirect('/images/deleted.png');
             });
         } catch( error ) {
@@ -38,8 +41,14 @@ module.exports = function( authentication, db ) {
         var filter      = req.query.filter;
         var offset      = req.query.offset ? parseInt(req.query.offset) : undefined;
         var limit       = req.query.limit ? parseInt(req.query.limit) : undefined;
-        
+        //
+        // build conditions
+        //
         var conditions = [];
+        //
+        // group
+        //
+        conditions.push( { group: req.session.group || 'public' } );
         //
         // public / private
         //
@@ -62,12 +71,16 @@ module.exports = function( authentication, db ) {
             conditions.push({ $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] });
         }
         //
+        //
+        //
+        console.log( 'levels / finding levels : ' + JSON.stringify(conditions) );
+        //
         // build query
         //
         var query = {};
         if ( conditions.length === 1 ) {
             query = conditions[ 0 ];
-        } else {
+        } else if ( conditions.length > 1 ) {
             query = { $and: conditions };
         }
         //
@@ -115,13 +128,14 @@ module.exports = function( authentication, db ) {
         level.creator   = req.user.username;
         level.created   = Date.now();
         level.modified  = level.created;
+        level.group     = req.session.group || 'public';
         db.insert( 'levels',  level ).then( function( response ) {
             res.json({ status: 'OK', data: { _id: response.insertedId, name: level.name }, message: 'Saved level \'' + level.name + '\'' });
         }).catch( function( error ) {
             res.json({ status: 'ERROR', error: error});
         });
     });    
-    router.put('/:id', authentication, function (req, res) { // update level, TODO: check for change in creator and save copy
+    router.put('/:id', authentication, function (req, res) { // update level
         var _id         = db.ObjectId(req.params.id);
         var level       = req.body;
         level.creatorid = req.user._id;

@@ -30,7 +30,9 @@
 //
 // game module
 //
-localplay.game.level = (function () {
+/*eslint-env browser*/
+/*global localplay*/
+localplay.game.level = localplay.game.level || (function () {
     if (localplay.game.level) return localplay.game.level;
 
     var level = {};
@@ -68,8 +70,8 @@ localplay.game.level = (function () {
         this.music = null;
         this.winsoundplayer = null;
         this.winsound = null;
-        this.loosesoundplayer = null;
-        this.loosesound = null;
+        this.losesoundplayer = null;
+        this.losesound = null;
         this.instructions = "";
         this.winmessage = "";
         this.losemessage = "";
@@ -166,7 +168,7 @@ localplay.game.level = (function () {
     }
 
     Level.prototype.clear = function () {
-        console.log( 'Level.clear' );
+        //console.log( 'Level.clear' );
         this.loaded = false;
         this.setstate(level.states.clear);
         if (this.avatar) {
@@ -239,11 +241,11 @@ localplay.game.level = (function () {
             delete this.winsoundplayer;
             this.winsoundplayer = null;
         }
-        this.loosesound = null;
-        if (this.loosesoundplayer) {
-            this.loosesoundplayer.pause();
-            delete this.loosesoundplayer;
-            this.loosesoundplayer = null;
+        this.losesound = null;
+        if (this.losesoundplayer) {
+            this.losesoundplayer.pause();
+            delete this.losesoundplayer;
+            this.losesoundplayer = null;
         }
         this.instructions = "";
         this.winmessage = "";
@@ -274,13 +276,13 @@ localplay.game.level = (function () {
         var _this = this;
         var currentSentence = null;
         var currentClause = null;
-        console.log( 'Level.reset : parsing JSON' );
+        //console.log( 'Level.reset : parsing JSON' );
         JSON.parse(this.json, function (key, value) {
             if (key === 'background') {
-                _this.background = localplay.game.background.createbackground(_this, value.images);
+                _this.background = localplay.game.background.createbackground(_this, value.backgrounds||value.images);
                 _this.background.setscale(_this.canvas.height / localplay.defaultsize.height);
             } else if (key === 'avatar') {
-                console.log( 'Level.reset : adding avatar' );
+                //console.log( 'Level.reset : adding avatar' );
                 _this.avatar = localplay.game.avatar.createavatar(_this, value);
             } else if (localplay.game.item.isitemtype(key)) {
                 var item = localplay.game.item.createitem(_this, key, value, false);
@@ -314,9 +316,9 @@ localplay.game.level = (function () {
             } else if (key === 'subject') {
                 currentClause.subject = value;
             } else if (key === 'music') {
-                _this.music = value;
-            } else if (key === 'loosesound') {
-                _this.loosesound = value;
+                //_this.music = value;
+            } else if (key === 'losesound'||key === 'looseshound') { // legacy spelling error
+                _this.losesound = value;
             } else if (key === 'winsound') {
                 _this.winsound = value;
             } else if (key === 'instructions') {
@@ -329,7 +331,7 @@ localplay.game.level = (function () {
 
             return value;
         });
-        console.log( 'Level.reset : done parsing JSON' );
+        //console.log( 'Level.reset : done parsing JSON' );
         //
         // default gameplay
         //
@@ -345,43 +347,48 @@ localplay.game.level = (function () {
         //
         // default audio
         //
-        if (this.music == null) {
+        if ( this.background && this.background.backgrounds.length > 0 && this.background.backgrounds[0].audio.duration > 0 ) {
+            this.music = this.background.backgrounds[0].audio;   
+        } else if (this.music == null) {
             this.music = { id: 0, type: "music", name: "music", mp3: "/audio/music.mp3", ogg: "/audio/music.ogg" };
         }
         try {
+            /*
             this.musicplayer = new Audio();
             this.musicplayer.addEventListener("canplaythrough", function () {
                 _this.musicready = true;
                 _this.musicplayer.loop = true;
             });
             this.musicplayer.addEventListener("ended", function () {
-                console.log( 'musicplayer : onended : audio ready : ' + _this.music[localplay.domutils.getTypeForAudio()] );
-                console.log( 'musicplayer : onended : audio readyState : ' + _this.musicplayer.readyState );
+                //console.log( 'musicplayer : onended : audio ready : ' + _this.music[localplay.domutils.getTypeForAudio()] );
+                //console.log( 'musicplayer : onended : audio readyState : ' + _this.musicplayer.readyState );
                 _this.musicplayer.load();
                 _this.musicready = true;
             });
             this.musicplayer.addEventListener("error", function (e) {
-                console.log( 'musicplayer : error for audio : ' + _this.music[localplay.domutils.getTypeForAudio()] );
+                //console.log( 'musicplayer : error for audio : ' + _this.music[localplay.domutils.getTypeForAudio()] );
                 switch (_this.musicplayer.error.code) {
                      case _this.musicplayer.error.MEDIA_ERR_ABORTED:
-                       console.log('musicplayer error : aborted : ' + _this.musicplayer.error.message );
+                       console.error('musicplayer error : aborted : ' + _this.musicplayer.error.message );
                        break;
                      case _this.audioplayer.error.MEDIA_ERR_NETWORK:
-                       console.log('musicplayer error : network error : ' + _this.musicplayer.error.message);
+                       console.error('musicplayer error : network error : ' + _this.musicplayer.error.message);
                        break;
                      case _this.audioplayer.error.MEDIA_ERR_DECODE:
-                       console.log('musicplayer error : decode error : ' + _this.musicplayer.error.message);
+                       console.error('musicplayer error : decode error : ' + _this.musicplayer.error.message);
                        break;
                      case _this.audioplayer.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                       console.log('musicplayer error : format error : ' + _this.musicplayer.error.message);
+                       console.error('musicplayer error : format error : ' + _this.musicplayer.error.message);
                        break;
                      default:
-                       console.log('musicplayer error : unknown : ' + _this.musicplayer.error.message );
+                       console.error('musicplayer error : unknown : ' + _this.musicplayer.error.message );
                        break;
                    }                    
             });
-            this.musicplayer.src = this.music[localplay.domutils.getTypeForAudio()];
+            this.musicplayer.volume = this.music.volume !== undefined ? this.music.volume :  1.0;
+            this.musicplayer.src    = this.music[localplay.domutils.getTypeForAudio()];
             this.musicplayer.load();
+            */
         } catch (error) {
             this.musicplayer = null;
             //localplay.log("GameItem : unable to load audio '" + this.musicplayer.src + "'");
@@ -394,25 +401,27 @@ localplay.game.level = (function () {
             this.winsoundplayer.addEventListener("canplaythrough", function () {
                 _this.winsoundready = true;
             });
-            this.winsoundplayer.src = this.winsound[localplay.domutils.getTypeForAudio()];
+            this.winsoundplayer.volume  = this.winsound.volume !== undefined ? this.winsound.volume : 1.0;
+            this.winsoundplayer.src     = this.winsound[localplay.domutils.getTypeForAudio()];
             this.winsoundplayer.load();
         } catch (error) {
             this.winsoundplayer = null;
             //localplay.log("GameItem : unable to load audio '" + this.winsound[localplay.domutils.getTypeForAudio()] + "'");
         }
-        if (this.loosesound == null) {
-            this.loosesound = { id: 0, type: "effect", name: "effect", mp3: "/audio/boo.mp3", ogg: "/audio/boo.ogg" };
+        if (this.losesound == null) {
+            this.losesound = { id: 0, type: "effect", name: "effect", mp3: "/audio/boo.mp3", ogg: "/audio/boo.ogg" };
         }
         try {
-            this.loosesoundplayer = new Audio();
-            this.loosesoundplayer.addEventListener("canplaythrough", function () {
-                _this.loosesoundready = true;
+            this.losesoundplayer = new Audio();
+            this.losesoundplayer.addEventListener("canplaythrough", function () {
+                _this.losesoundready = true;
             });
-            this.loosesoundplayer.src = this.loosesound[localplay.domutils.getTypeForAudio()];
-            this.loosesoundplayer.load();
+            this.losesoundplayer.volume = this.losesound.volume !== undefined ? this.losesound.volume : 1.0;
+            this.losesoundplayer.src    = this.losesound[localplay.domutils.getTypeForAudio()];
+            this.losesoundplayer.load();
         } catch (error) {
-            this.loosesoundplayer = null;
-            //localplay.log("Level : unable to load audio '" + this.loosesound[localplay.domutils.getTypeForAudio()] + "'");
+            this.losesoundplayer = null;
+            //localplay.log("Level : unable to load audio '" + this.losesound[localplay.domutils.getTypeForAudio()] + "'");
         }
         //
         // update loading progress
@@ -425,6 +434,7 @@ localplay.game.level = (function () {
         //
         // serialise background TODO: encapsulate this in background
         //
+        /*
         json += '"background" : { "images" : [';
         for (var i = 0; i < this.background.images.length; i++) {
             var backgroundUrl = this.background.images[i].src;
@@ -435,6 +445,20 @@ localplay.game.level = (function () {
             }
         }
         json += '] } ,';
+        */
+        json += '"background" : { "backgrounds" : ';
+        json += JSON.stringify( this.background.backgrounds );
+        /*
+        for (var i = 0; i < this.background.images.length; i++) {
+            var backgroundUrl = this.background.images[i].src;
+            var backgroundMedia = backgroundUrl.substring(backgroundUrl.lastIndexOf('/media'));
+            json += '"' + backgroundMedia + '"';
+            if (i < this.background.images.length - 1) {
+                json += ',';
+            }
+        }
+        */
+        json += ' } ,';
         //
         // serialise avatar
         //
@@ -503,7 +527,7 @@ localplay.game.level = (function () {
         }
         json += ', "music" : ' + JSON.stringify(this.music);
         json += ', "winsound" : ' + JSON.stringify(this.winsound);
-        json += ', "loosesound" : ' + JSON.stringify(this.loosesound);
+        json += ', "losesound" : ' + JSON.stringify(this.losesound);
         //
         //
         //
@@ -817,6 +841,7 @@ localplay.game.level = (function () {
     }
 
     Level.prototype.update = function () {
+        var _this = this;
         //
         //
         //
@@ -848,8 +873,8 @@ localplay.game.level = (function () {
                     }
                     this.gameover = true;
                 } else if (this.gamestate.isLost()) {
-                    if (this.loosesoundplayer) {
-                        this.loosesoundplayer.play();
+                    if (this.losesoundplayer) {
+                        this.losesoundplayer.play();
                     }
                     this.gameover = true;
                 }
@@ -860,9 +885,12 @@ localplay.game.level = (function () {
                     //
                     // stop music
                     //
+                    /*
                     if (this.musicplayer) {
                         this.musicplayer.pause();
                     }
+                    */
+                    this.background.stopaudio();
                     //
                     // update score
                     //
@@ -903,7 +931,6 @@ localplay.game.level = (function () {
                 this.avatar.applyimpulse(this.impulse);
             }
             this.avatar.update(time);
-       
             //
             // center world viewport on avatar
             //
@@ -923,6 +950,25 @@ localplay.game.level = (function () {
         }
         if (this.gamestarted) {
             this.updateitems(time);
+            //
+            // update audio
+            //
+            /*
+            var dominantbackground = this.background.getdominantbackground();
+            if ( dominantbackground >= 0 ) {
+                var audio = this.background.backgrounds[dominantbackground].audio;   
+                if ( audio.duration > 0 && audio.name !== this.music.name ) {
+                    this.music = audio; 
+                    this.musicplayer.volume = this.music.volume !== undefined ? this.music.volume :  1.0;
+                    this.musicplayer.src    = this.music[localplay.domutils.getTypeForAudio()];
+                    this.musicplayer.addEventListener('canplay',function() {
+                        _this.musicplayer.play();
+                    },{once:true});
+                    this.musicplayer.load();
+                    
+                }
+            }
+            */
         }
         //
         // remove / replace items
@@ -1345,9 +1391,13 @@ localplay.game.level = (function () {
             this.gamestarted = true;
             this.timer.start();
             this.ongamestart();
+            /*
             if (this.musicplayer) {
                 this.musicplayer.play();
             }
+            */
+            this.background.playaudio();
+            
             this.setstate(level.states.playing);
         }
 
@@ -1356,6 +1406,7 @@ localplay.game.level = (function () {
     Level.prototype.pause = function (pause) {
         this.paused = pause === undefined | pause;
         this.timer.pause(this.paused);
+        /*
         if (this.musicplayer) {
             if (this.paused) {
                 this.musicplayer.pause();
@@ -1363,6 +1414,8 @@ localplay.game.level = (function () {
                 this.musicplayer.play();
             }
         }
+        */
+        this.background.stopaudio();
 
     }
 

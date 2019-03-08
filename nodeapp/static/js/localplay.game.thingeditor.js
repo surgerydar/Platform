@@ -26,9 +26,30 @@
  * for the JavaScript code in this page.
  *
  */
-
+/*eslint-env browser*/
+/*global localplay*/
 localplay.game.thingeditor = (function () {
     var thingeditor = {};
+    //
+    //
+    //
+    var confirmdeletetemplate = '\
+      <div style="width: 200px; height: 200px; padding: 8px;"> \
+        <h3>Delete item</h3> \
+        <hr class="white" style="width: 100%"></hr><br /> \
+        <div style="height: 42px; width: 200px">\
+            <div id="button.layout.cancel" class="menubaritem" style="float: right;" > \
+                <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
+                &nbsp;Cancel \
+            </div> \
+            <div id="button.layout.delete" class="menubaritem" style="float: right;" > \
+                <img class="menubaritem" src="/images/icons/add-01.png" /> \
+                &nbsp;Delete \
+            </div> \
+        </div> \
+      </div>\
+    ';
+
     //
     //
     //
@@ -340,16 +361,22 @@ localplay.game.thingeditor = (function () {
         this.level.paused = true;
         this.thingpropertyeditor = null;
         //
-        // ensure level update is called until loaded 
+        // monitor level load
         //
-        var monitor = function() {
-            _this.level.update();
-            _this.redraw();
-            if ( !_this.level.loaded ) {
-                setTimeout( monitor, 10 );
-            }
-        };
-        monitor();
+        this.monitor();
+    }
+    //
+    //
+    //
+    ThingEditor.prototype.monitor = function () {
+        var _this = this;
+        this.level.update();
+        this.redraw();
+        if ( !this.level.loaded ) {
+            setTimeout( function() {
+                _this.monitor();
+            }, 10 );
+        }
     }
     //
     // required editor methods
@@ -565,9 +592,7 @@ localplay.game.thingeditor = (function () {
     //
     //
     //
-
     ThingEditor.prototype.starttrackingmouse = function (mode) {
-        
         this.mousetrackingmode = mode;
         this.firstmousetrackingupdate = true;
         this.mousetrackingduplicate = null;
@@ -682,14 +707,6 @@ localplay.game.thingeditor = (function () {
             if (item) {
                 var _this = this;
                 localplay.showtip();
-                /*
-                this.thingpropertyeditor = localplay.game.thingpropertyeditor.createthingpropertyeditor(item, function() {
-                    item.options = _this.thingpropertyeditor.options;
-                    _this.level.reserialise();
-                });
-                this.container.parentElement.appendChild(this.thingpropertyeditor.container);
-                this.thingpropertyeditor.initialise();
-                */
                 this.thingpropertyeditor = localplay.game.thingpropertyeditor.createthingpropertyeditordialog(item, function() {
                     item.options = _this.thingpropertyeditor.options;
                     _this.level.reserialise();
@@ -697,56 +714,34 @@ localplay.game.thingeditor = (function () {
                     _this.selectedsprite = item.sprite;
                     _this.selection.setsprite(item.sprite);
                 });
-                /*
-                var propertyeditor = item.geteditor();
-                if (propertyeditor) {
-                    localplay.showtip();
-                    var title = _this.level.avatar === item ? "Avatar properties" : "Thing properties";
-                    var dialog = localplay.dialogbox.createfullscreendialogbox(title, [propertyeditor],
-                        [],
-                        [], function () {
-                            _this.level.reserialise();
-                            _this.selectedsprite = item.sprite;
-                            _this.selection.setsprite(item.sprite);
-                            item.closeeditor();
-                            if ( !localplay.touchsupport() ) {
-                                localplay.showtip("Press the alt key whilst moving, rotating or scaling to duplicate", _this.container);
-                            }
-                        });
-                    dialog.show();
-                    //
-                    //
-                    //
-                    item.initialiseeditor();
-                }
-                */
             }
         }
     }
 
-    ThingEditor.prototype.confirmdelete = function () {
+    ThingEditor.prototype.confirmdelete = function (itemposition) {
         if (this.selectedsprite) {
             var item = this.selectedsprite.userdata;
             if (item) {
-                if (true) {//this.level.gameplay.containsItem(item)) {
-                    var _this = this;
-                    localplay.dialogbox.confirm("Delete item", "Are you sure you want to delete this item?",
-                    function (confirm) {
-                        if (confirm) {
-                            _this.level.removeitem(item, true);
-                            _this.level.reserialise();
-                            _this.selectedsprite = null;
-                            _this.selection.setsprite(null);
+                var _this = this;
+                localplay.dialogbox.pinnedpopupatpoint(itemposition, confirmdeletetemplate, null, function (e) {
+                    var selector = e.currentTarget.id.split('.');
+                    if (selector.length >= 3) {
+                        var command = selector[2];
+                        switch (command) {
+                            case "delete":
+                                _this.level.removeitem(item, true);
+                                _this.level.reserialise();
+                                _this.selectedsprite = null;
+                                _this.selection.setsprite(null);
+                                break;
+                            case "cancel":
+                                break;
                         }
-                    });
-
-                } else {
-                    this.selectedsprite = null;
-                    this.selection.setsprite(null);
-                    this.level.removeitem(item, true);
-                    this.level.reserialise();
-                }
-            }
+                    }
+                    _this.redraw();
+                    return true;
+                });
+             }
         }
     }
     //
@@ -782,7 +777,7 @@ localplay.game.thingeditor = (function () {
                     this.showpropertyeditor();
                     break;
                 case "delete":
-                    this.confirmdelete();
+                    this.confirmdelete(mp);
                     break;
                 case "duplicate":
                     var duplicate = this.selectedsprite.userdata.duplicate();

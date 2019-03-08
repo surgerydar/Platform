@@ -1,4 +1,5 @@
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.objectcache = (function () {
     var objectcache = {};
     //
@@ -8,30 +9,7 @@ localplay.objectcache = (function () {
     //
     //
     //
-    //    {
-    //        //
-    //        // geometry
-    //        //
-    //        scale: 1,
-    //        crop: {
-    //            x: 0, y: 0, width: 1, height: 1
-    //        }
-    //        //
-    //        // pixel processing
-    //        //
-    //        adjustments: {
-    //            brightness: 1,
-    //            contrast: 1,
-    //            saturation: 1
-    //        },
-    //        //
-    //        // mask ( 1 bit pixel mask )
-    //        // array of hex values
-    //        //
-    //        mask: [ ] 
-    //            
-    //    }
-    objectcache.get = function( url, transform ) {
+    objectcache.get = function( url ) {
         //
         // find existing
         //
@@ -49,7 +27,7 @@ localplay.objectcache = (function () {
             image: new Image(),
             loader: new Image()
         };
-        entry.loader.onload = function(e) {
+        entry.loader.onload = function() {
             //
             // apply crop
             //
@@ -80,7 +58,7 @@ localplay.objectcache = (function () {
         entry.loader.src = url;
         return entry.image;
     }
-    objectcache.getTriangles = function( url, transform ) {
+    objectcache.getTriangles = function( url ) {
         //
         // find existing
         //
@@ -92,7 +70,7 @@ localplay.objectcache = (function () {
         }
         return [];
     }
-    objectcache.getPoints = function( url, transform ) {
+    objectcache.getPoints = function( url ) {
         //
         // find existing
         //

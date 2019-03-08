@@ -26,7 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
+/*eslint-env browser*/
+/*global localplay, Mustache*/
 localplay.game.mobileleveleditor = (function () {
     if (localplay.game.mobileleveleditor) return localplay.game.mobileleveleditor;
     var mobileleveleditor = {};
@@ -62,31 +63,32 @@ localplay.game.mobileleveleditor = (function () {
     ';
     
     var savedialog = '\
-        <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 8px; margin: auto;">\
-            <h2>Save Level</h2> \
-            <div><input id="savelevel.name" class="required" style="width: 80vw;" type="text" placeholder="Name for level" value="{{name}}"/></p>\
-            <p><input id="savelevel.place" class="required" style="width: 80vw;" type="text" placeholder="Place for level" value="{{place}}"/></p>\
-            <p><input id="savelevel.change" class="required" style="width: 80vw;" type="text" placeholder="What is the change?" value="{{change}}"/></p>\
-            <p><textarea id="savelevel.instructions" style="width: 80vw; height: 80px;" class="required" placeholder="What is the mission?" >{{instructions}}</textarea></p>\
-            <p><input id="savelevel.winmessage" style="width: 80vw;" type="text" placeholder="message for winner" value="{{winmessage}}"/></p>\
-            <p><input id="savelevel.losemessage" style="width: 80vw;" type="text" placeholder="message for loser" value="{{losemessage}}"/></p>\
-            <p style="width: 80vw; text-align: left;">\
-                Visibility&nbsp;\
-                <input type="radio" id="savelevel.private" name="savelevel.visibility" value="private" /><label for="savelevel.private"></label>&nbsp;private \
-                <input type="radio" id="savelevel.public" name="savelevel.visibility" value="public" /><label for="savelevel.public"></label>&nbsp;public<br/> \
-            </p>\
-            <p style="max-width: 80vw; text-align: left;">\
-                 <input type="checkbox" id="savelevel.savecopy" name="savelevel.savecopy" /><label for="savelevel.savecopy"></label>&nbsp;save a copy<br/> \
-            </p> \
-            <div style="display: flex; flex-direction: row; justify-content: space-between; height: 42px; width: 80vw;">\
-                <div id="button.savelevel.cancel" class="menubaritem"  > \
-                    <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
-                    &nbsp;Cancel \
+        <div class="menubar"> \
+            <div class="menubaritem disabled"> \
+                Save Game\
+            </div>\
+            <img id="button.savelevel.cancel" class="listviewheader" src="/images/close.png" /> \
+        </div> \
+        <div style="position: absolute; top: 5vw; left: 0px; bottom: 0px; right: 0px; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 2vw;">\
+            <div class="form-item">\
+                <label class="form-item" for="name">Name</label> \
+                <input id="savelevel.name" name="name" class="form-item" style="width: 80vw;" type="text" placeholder="What is your game called?" value="{{name}}"/> \
+            </div> \
+            <div class="form-item">\
+                <label for="savelevel.visibility" class="form-item">Visibility</label>\
+                <div class="horizontal-option-container"> \
+                    <input type="radio" id="savelevel.private" name="savelevel.visibility" class="editor" value="private" /><label for="savelevel.private">&nbsp;Private</label> \
+                    <input type="radio" id="savelevel.public" name="savelevel.visibility" class="editor" style="margin-left: 1.5vw;" value="public" /><label for="savelevel.public">&nbsp;Public</label> \
                 </div> \
-                <div id="button.savelevel.save" class="menubaritem" > \
-                    <img class="menubaritem" src="/images/icons/save-01.png" /> \
-                    &nbsp;Save \
+            </div> \
+            <div class="form-item">\
+                <label for="savelevel.savecopy" class="form-item">Save a copy</label> \
+                <div class="horizontal-option-container"> \
+                    <input type="checkbox" id="savelevel.savecopy" name="savelevel.savecopy" class="editor" /> \
                 </div> \
+            </div> \
+            <div style="display: flex; flex-direction: row; justify-content: center; width: 100vw;">\
+                <div id="button.savelevel.save" class="editor-tool" style="background-image:url(/images/tools/save.png);" /> \
             </div> \
         </div>\
     ';
@@ -282,11 +284,13 @@ localplay.game.mobileleveleditor = (function () {
     var createlevelphase = 0;
 
     var createlevelsequence = [
-        thingeditor,
+        thingeditor
+        /*,
         backgroundeditor,
         addthingseditor,
         storyeditor,
         soundeditor
+        */
     ];
     
     var createlevelcontainer = null;
@@ -455,12 +459,33 @@ localplay.game.mobileleveleditor = (function () {
             //
             // add editors
             //
+            /*
             for (var i = 0; i < createlevelsequence.length; i++) {
                 items.push({
                     name: createlevelsequence[i].breadcrumb,
                     id: "phase." + i
                 });
             }
+            */
+            //
+            // add property editors
+            // 
+            items.push({
+                name: "Edit background",
+                id: "background"
+            });
+            items.push({
+                name: "Add items",
+                id: "items"
+            });
+            items.push({
+                name: "Edit gameplay",
+                id: "story"
+            });
+            items.push({
+                name: "About game",
+                id: "about"
+            });
             //
             // add global commands
             //
@@ -482,13 +507,15 @@ localplay.game.mobileleveleditor = (function () {
             var menuButton = document.querySelector('#title-menu');
             if ( menuButton ) {
                 menuButton.addEventListener('click',function(e) {
+                    localplay.showtip();
                     menu.classList.toggle('open'); 
                     menuBackdrop.classList.toggle('open');
                 });
             }
             var menuBackdrop = document.querySelector('#menu-backdrop');
             if ( menuBackdrop ) {
-                menuBackdrop.addEventListener('click', function(e) {
+                menuBackdrop.addEventListener('click', function() {
+                    localplay.showtip();
                     menu.classList.remove('open'); 
                     menuBackdrop.classList.remove('open'); 
                 });
@@ -504,12 +531,31 @@ localplay.game.mobileleveleditor = (function () {
                     // save etc
                     //
                     switch( command[ 1 ] ) {
-                        case 'add' :
+                        case 'items' :
+                            localplay.game.addthingseditor.createaddthingseditordialog(level,function() {
+                                if ( level.game.controller ) {
+                                    if ( level.game.controller.monitor ) {
+                                        level.loaded = false;
+                                        level.setstate(localplay.game.level.states.loading);
+                                        level.game.controller.monitor();
+                                    }
+                                }
+                            });
+                            break;
+                        case 'background' :
+                            localplay.game.backgroundeditor.createbackgroundeditordialog(level);
+                            break;
+                        case 'story' :
+                            localplay.game.storyeditor.createstoryeditordialog(level);
+                            break;
+                        case 'about' :
+                            localplay.game.abouteditor.createabouteditordialog(level);
                             break;
                         case 'save' :
                             savelevel();
                             break;
                         case 'play' :
+                            // TOD0: preview in place ???
                             closeeditor( '/play/' + level.game.levelid );
                             break;
                     }
@@ -536,16 +582,7 @@ localplay.game.mobileleveleditor = (function () {
         // get dialog position
         //
         var metadata = {
-            name: level.game.metadata.name,
-            place: level.game.metadata.place,
-            change: level.game.metadata.change,
-            published: level.game.metadata.published,
-            instructions: level.instructions,
-            winmessage: level.winmessage,
-            losemessage: level.losemessage,
-            music: level.music[localplay.domutils.getTypeForAudio()],
-            winsound: level.winsound[localplay.domutils.getTypeForAudio()],
-            losesound: level.winsound[localplay.domutils.getTypeForAudio()]
+            name: level.game.metadata.name
         };
         //
         // show save dialog
@@ -564,28 +601,15 @@ localplay.game.mobileleveleditor = (function () {
                             //
                             var copy = document.getElementById("savelevel.savecopy").checked;
                             var name = document.getElementById("savelevel.name").value;
-                            var place = document.getElementById("savelevel.place").value;
                             var published = localplay.domutils.valueOfRadioGroup("savelevel.visibility") === "public";
-                            var change = document.getElementById("savelevel.change").value;
-                            //
-                            // level data
-                            //
-                            var instructions = document.getElementById("savelevel.instructions").value;
-                            var winmessage = document.getElementById("savelevel.winmessage").value;
-                            var losemessage = document.getElementById("savelevel.losemessage").value;
                             //
                             // update game metadata
                             //
                             level.game.metadata.name = name;
-                            level.game.metadata.place = place;
                             level.game.metadata.published = published;
-                            level.game.metadata.change = change;
                             //
                             // update level data
                             //
-                            level.instructions = instructions;
-                            level.winmessage = winmessage;
-                            level.losemessage = losemessage;
                             level.reserialise();
                             level.reset();
                             //
@@ -692,7 +716,7 @@ localplay.game.mobileleveleditor = (function () {
             published: 0
         }
         //
-        // 
+        // TODO: final default level
         //
         var defaultJSON = '\
             {   "background" : { \

@@ -26,8 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.ratingpanel = (function () {
     if (localplay.ratingpanel) return localplay.ratingpanel;
     //
@@ -64,7 +64,7 @@ localplay.ratingpanel = (function () {
                     if (this.disabled) {
                         star.classList.add("disabled");
                     } else {
-                        star.onclick = function (e) {
+                        star.onclick = function () {
                             _this.addScore(this.category, this.score);
                             _this.put(this.category);
                         }
@@ -135,7 +135,7 @@ localplay.ratingpanel = (function () {
                     this.setScore(category, response.score);
                 }
                 */
-                console.log( 'RatingPanel.datasourceonloadend : reponse : ' + json );
+                //console.log( 'RatingPanel.datasourceonloadend : reponse : ' + json );
                 var response = JSON.parse(json);
                 if ( response.status === 'OK' ) {
                     if ( response.data ) {
@@ -175,19 +175,8 @@ localplay.ratingpanel = (function () {
     }
 
     RatingPanel.prototype.put = function (category) {
-        /*
-        var data = {
-            "category": this.label[category],
-            "tablename": this.tablename,
-            "targetid": this.targetid,
-            "score": this.score[category]
-        };
-        localplay.datasource.put("putrating.php", data, {}, {
-
-        });
-        */
         var url = '/rating/' + this.canonicalCategory(category) + '/' + this.tablename + '/' + this.targetid;
-        localplay.datasource.put(url, { score: this.score[category] }, {}, {} );
+        localplay.datasource.put(url, {}, {}, { score: this.score[category] } );
     }
 
     /*

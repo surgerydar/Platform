@@ -26,12 +26,9 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
-//
-// TODO: templating
-//
-localplay.game.backgroundeditor = (function () {
+/*eslint-env browser*/
+/*global localplay*/
+localplay.game.backgroundeditor = localplay.game.backgroundeditor || (function () {
     var backgroundeditor = {};
     //
     //
@@ -45,26 +42,14 @@ localplay.game.backgroundeditor = (function () {
         this.hit = null;
         this.movebackground = -1;
         //
-        // allow for titlebar
-        //
-        var vOffset = 0;
-        var titleBar = document.querySelector( '#title-bar' );
-        if ( titleBar ) {
-            vOffset = titleBar.offsetHeight + 16;
-            window.addEventListener('resize', function(e) {
-                _this.container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';
-            });
-
-        }
-        //
         // create container
         //
         this.container = document.createElement("div");
         this.container.style.position = "absolute";
-        this.container.style.top = vOffset + "px";
-        this.container.style.left = "8px";
+        this.container.style.top = "2px";
+        this.container.style.left = "0px";
         this.container.style.bottom = "0px";
-        this.container.style.right = "8px";
+        this.container.style.right = "0px";
         this.container.style.display = "flex";
         this.container.style.flexDirection = "column";
         this.container.style.justifyContent = "flex-start";
@@ -79,30 +64,26 @@ localplay.game.backgroundeditor = (function () {
         //
         //
         interact('#backgroundview').dropzone({
-          // only accept elements matching this CSS selector
-          //accept: '#yes-drop',
-          // Require a 75% element overlap for a drop to be possible
-          overlap: 0.25,
-          // listen for drop related events:
-          ondropactivate: function (e) {
-          },
-          ondragenter: function (e) {
-              if (!_this.isFull()) _this.backgroundview.classList.add('over');
-          },
-          ondragleave: function (e) {
-              _this.backgroundview.classList.remove('over');  // this / e.target is previous target element.
-          },
-          ondrop: function (e) {
-            _this.backgroundview.classList.remove('over');
-            var url = localplay.mediaurl(e.relatedTarget.src);
-            if (_this.movebackground >= 0) {
-                _this.removeImage(_this.movebackground);
-                _this.movebackground = -1;
+            overlap: 0.25,
+            ondropactivate: function (e) {
+            },
+            ondragenter: function (e) {
+                if (!_this.isFull()) _this.backgroundview.classList.add('over');
+            },
+            ondragleave: function (e) {
+                _this.backgroundview.classList.remove('over');  // this / e.target is previous target element.
+            },
+            ondrop: function (e) {
+                _this.backgroundview.classList.remove('over');
+                var url = localplay.mediaurl(e.relatedTarget.src);
+                if (_this.movebackground >= 0) {
+                    _this.removeBackground(_this.movebackground);
+                    _this.movebackground = -1;
+                }
+                _this.addBackground(url);
+            },
+            ondropdeactivate: function (e) {
             }
-            _this.addImage(url);
-          },
-          ondropdeactivate: function (e) {
-          }
         });
         //
         //
@@ -130,10 +111,10 @@ localplay.game.backgroundeditor = (function () {
         this.medialibrary.controller = localplay.listview.createlistview(this.prefix, "/media?type=background&listview=true", 20);
         this.medialibrary.controller.onselect = function (item) {
             //image.src = item.data.url;
-            //this.level.background.addimage(item.image.src);
+            //this.level.background.addbackground(item.image.src);
             //this.level.reserialise();
             if (!_this.isFull()) {
-                _this.addImage(item.data.url);
+                _this.addBackground(item.data.url);
             } 
         };
         //
@@ -201,12 +182,10 @@ localplay.game.backgroundeditor = (function () {
                     item.style.width = item.style.height;
                     item.background = i;
                     item.onclick = function (e) {
-                        localplay.domutils.fixEvent(e);
-                        localplay.log(" e.offsetX=" + e.offsetX + " e.offsetY=" + e.offsetY);
-                        if (e.offsetX < 26  && e.offsetY < 42) {
-                            _this.removeImage(e.target.background);
-                        }
                     }
+                    //
+                    //
+                    //
                     var image = new Image();
                     image.className = "backgroundview";
                     image.style.visibility = 'hidden';
@@ -227,6 +206,41 @@ localplay.game.backgroundeditor = (function () {
                     });
                     item.appendChild(image);
                     image.src = background.images[i].src;
+                    //
+                    //
+                    //
+                    var control = new Image();
+                    control.className = 'backgroundviewcontrol';
+                    control.src = '/images/selection/background-editor.png';
+                    control.background = i;
+                    control.addEventListener('click',function(e) {
+                        localplay.domutils.fixEvent(e);
+                        if ( e.offsetY < e.target.offsetHeight / 3 ) {
+                            _this.removeBackground(e.target.background);
+                        } else if ( e.offsetY < ( e.target.offsetHeight / 3 ) * 2 ) {
+                            // audio
+                            var audio = background.getaudio(e.target.background) || { type: 'music', name: '', mp3: '', ogg: '', duration: 0, volume: 1 };
+                            var dialog = localplay.game.soundeditor.createaudiodialog("Select collison sound", "effect", audio);
+                            dialog.addEventListener("save", function () {
+                                audio.id = dialog.selection.id;
+                                audio.type = dialog.selection.type;
+                                audio.duration = dialog.selection.duration;
+                                audio.name = dialog.selection.name;
+                                audio.mp3 = dialog.selection.mp3;
+                                audio.ogg = dialog.selection.ogg;
+                                audio.volume = 1.0;
+                                background.setaudio(e.target.background,audio);                         
+                            });
+                            dialog.show();
+                        } else {
+                            // duplicate
+                            _this.insertBackground(e.target.background+1,background.images[e.target.background].src);
+                        }
+                    });
+                    item.appendChild(control);
+                    //
+                    //
+                    //
                     this.backgroundview.appendChild(item);
                 }
                 //
@@ -275,12 +289,12 @@ localplay.game.backgroundeditor = (function () {
                         var url = localplay.mediaurl(e.relatedTarget.src);
                         var newimage = true;
                         if (_this.movebackground >= 0) {
-                            _this.removeImage(_this.movebackground);
+                            _this.removeBackground(_this.movebackground);
                             if (i > _this.movebackground) i--;
                             _this.movebackground = -1;
                             newimage = false;
                         }
-                        _this.insertImage(i, url);
+                        _this.insertBackground(i, url);
                         if (newimage&&_this.isFull()) {
                             localplay.showtip("You have reached the limit of 7 backgrounds<br />Drag to reorder your backgrounds<br />Delete backgrounds to add new ones", _this.backgroundview);
                         }
@@ -348,7 +362,7 @@ localplay.game.backgroundeditor = (function () {
         }
     }
 
-    BackgroundEditor.prototype.addImage = function (url) {
+    BackgroundEditor.prototype.addBackground = function (url) {
         //
         // add image to background
         //
@@ -356,7 +370,7 @@ localplay.game.backgroundeditor = (function () {
             if (this.isFull()) {
                 localplay.showtip("You have reached the limit of 7 backgrounds<br />Drag to reorder your backgrounds<br />Delete backgrounds to add new ones", this.backgroundview);
             } else { 
-                this.level.background.addimage(url);
+                this.level.background.addbackground(url);
                 this.level.reserialise();
             }
         }
@@ -366,12 +380,12 @@ localplay.game.backgroundeditor = (function () {
         this.refresh();
     }
 
-    BackgroundEditor.prototype.insertImage = function (i, url) {
+    BackgroundEditor.prototype.insertBackground = function (i, url) {
         //
         // add image to background
         //
         if (this.level) {
-            this.level.background.insertimage(i, url);
+            this.level.background.insertbackground(i, url);
             this.level.reserialise();
         }
         //
@@ -380,12 +394,12 @@ localplay.game.backgroundeditor = (function () {
         this.refresh();
     }
 
-    BackgroundEditor.prototype.removeImage = function (i) {
+    BackgroundEditor.prototype.removeBackground = function (i) {
         //
         // remove image from background
         //
         if (this.level) {
-            this.level.background.removeimage(i);
+            this.level.background.removebackground(i);
             this.level.reserialise();
             localplay.showtip();
         }
@@ -573,11 +587,11 @@ localplay.game.backgroundeditor = (function () {
                                         _this.canvas.getContext('2d').clearRect(0, 0, _this.canvas.width, _this.canvas.height);
                                         _this.enableEditControls(false);
                                     }
-                                } catch (error) {
+                                } catch (/*error*/) {
 
                                 }
 
-                            }));
+                            }), media);
                 } else {
                     //????
                 }
@@ -743,7 +757,18 @@ localplay.game.backgroundeditor = (function () {
     backgroundeditor.createbackgroundeditor = function (level) {
         return new BackgroundEditor(level);
     }
-    backgroundeditor.createbackgrounduploader = function (level) {
+    backgroundeditor.createbackgroundeditordialog = function(level) {
+        var editor = backgroundeditor.createbackgroundeditor(level);
+        var dialog = localplay.dialogbox.createfullscreendialogbox( 'Edit background', editor.container, [], [], function() {
+            var scale = level.canvas.height / localplay.defaultsize.height;
+            level.background.setscale(scale);
+            level.adjustviewport();
+        });
+        dialog.show();
+        editor.initialise();
+        return editor;
+    }
+   backgroundeditor.createbackgrounduploader = function (level) {
         return new BackgroundUploader();
     }
     //

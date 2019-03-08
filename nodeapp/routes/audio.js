@@ -105,7 +105,7 @@ module.exports = function( authentication, db ) {
     //
     router.get( '/search/:term', function (req, res) {
         try {
-            let url = 'https://freesound.org/apiv2/search/text/?token=kKVkzONrJQCpynFL6SPM7UnRVC9tjeQ9r5915UV9&filter=type:(wav%20OR%20mp3)&fields=name,username,tags,download,type,previews&query=' + req.params.term;
+            let url = 'https://freesound.org/apiv2/search/text/?token=kKVkzONrJQCpynFL6SPM7UnRVC9tjeQ9r5915UV9&filter=type:(wav%20OR%20mp3)&fields=name,username,tags,download,type,previews,duration&query=' + req.params.term;
             let page = req.query.page;
             if ( page ) {
                 url += '&page=' + page;

@@ -406,7 +406,7 @@ localplay.game.metadataeditor = (function () {
             <div id="button.metadataeditor.winsound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for winners \
             </div></p>\
-            <p><audio controls id="metadataeditor.losesound.player" src="{{loosesound}}"></audio> \
+            <p><audio controls id="metadataeditor.losesound.player" src="{{losesound}}"></audio> \
             <div id="button.metadataeditor.losesound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for losers \
             </div></p>\
@@ -440,7 +440,7 @@ localplay.game.metadataeditor = (function () {
         var data = {
             music: level.music[localplay.domutils.getTypeForAudio()],
             winsound: level.winsound[localplay.domutils.getTypeForAudio()],
-            loosesound: level.loosesound[localplay.domutils.getTypeForAudio()]
+            losesound: level.losesound[localplay.domutils.getTypeForAudio()]
         };
         this.container.innerHTML = Mustache.render(metadataeditortemplate, data);
      }
@@ -469,7 +469,7 @@ localplay.game.metadataeditor = (function () {
                         break;
                     case "losesound":
                         title = "Sound for Losers";
-                        audio = _this.level.loosesound;
+                        audio = _this.level.losesound;
                         player = document.getElementById("metadataeditor.losesound.player");
                         break;
                 }

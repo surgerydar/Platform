@@ -1,0 +1,36 @@
+- var filter        = pagination.filter ? '&filter=' + pagination.filter : '';
+- var previousurl   = '/admin/group/' + group._id + '/' + collection + '?offset=' + pagination.previousoffset + filter;
+- var nexturl       = '/admin/group/' + group._id + '/' + collection + '?offset=' + pagination.nextoffset + filter;
+.listviewheader( id= 'admin-listview-header')
+    .listviewheadergroup
+        img.imagebutton( id= 'button-back' data-action= 'get' data-url= '/admin/group/' + group._id src= '/images/icons/arrow-previous-02.png' )
+    .listviewheadergroup
+        h3 #{group.name} : #{collection}
+    if pagination.pagecount > 1
+        - var pagenumber = pagination.pagenumber + 1;
+        .listviewheadergroup
+            if pagenumber > 1
+                img.listviewpagination( id= 'button-previouspage' data-action= 'get' data-url= previousurl src= '/images/icons/arrow-previous-02.png' )
+            .listviewpagination( id= 'admin-pagecount') #{pagenumber} of #{pagination.pagecount}
+            if pagenumber < pagination.pagecount
+                img.listviewpagination( id= 'button-nextpage' data-action= 'get' data-url= nexturl src='/images/icons/arrow-next-02.png' )
+    .listviewheadergroup
+        - var searchurl = '/admin/group/' + group._id + '/' + collection + '?filter={filter}';
+        label( for='search' class='listviewheader' ) Search
+        input( id='search-' + collection type='search' class='listviewheader' name='search' placeholder='name' data-url= searchurl value= pagination.filter )
+.listviewcontent( id= 'admin.listviewcontent' )
+    each item in items
+        .listitem( data-action= 'get' data-url= '/admin/group/' + collection + '/' + item._id )
+            .admin-imagelist-buttons
+                - var query         = 'offset=' + pagination.offset + '&limit=' + pagination.limit + filter;
+                - var itemurl       = '/admin/group/' + group._id + '/' + collection + '/' + item._id + '?' + query;
+                - var flagopacity   = item.flagged ? 1. : .5;
+                - var flagpayload   = '{ "flagged": ' + !item.flagged + '}';
+                - var imageurl      = imagetemplate.replace('{_id}', item._id);
+                div( id= 'button-delete-' + item._id class= 'deletebutton white' data-action= 'delete' data-confirm= 'true' data-url= itemurl)
+                div( id= 'button-flag-' + item._id class= 'flagbutton white' style= 'opacity:' + flagopacity data-action= 'put' data-url= itemurl data-payload= flagpayload)            
+            img.listitemimage( src= imageurl )
+            .listitemfooter
+                span.listitemheader= item.name 
+                p= item.creator
+               

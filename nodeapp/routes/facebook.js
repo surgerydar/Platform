@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 var Strategy = require('passport-facebook').Strategy;
@@ -14,7 +16,7 @@ module.exports = function( passport, config, db ) {
         } else {
             db.findOne('users', { $or : [ { facebookId: profile.id }, { email: email } ] } ).then( function(user) {
                 if (!user) {
-                    db.insert('users', { facebookId: profile.id, username: profile.displayName, email: email } ).then( function(response) {
+                    db.insert('users', { facebookId: profile.id, username: profile.displayName, email: email, groups: ["public"] } ).then( function(response) {
                         authenticate( accessToken, refreshToken, profile, callback );
                     }).catch( function( error ) {
                         callback(error);

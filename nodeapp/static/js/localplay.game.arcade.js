@@ -26,12 +26,11 @@
  * for the JavaScript code in this page.
  *
  */
-;
-localplay = window.localplay ? window.localplay : {};
-localplay.game = localplay.game ? localplay.game : {};
 //
 // arcade module
 //
+/*eslint-env browser*/
+/*global localplay, Mustache*/
 localplay.game.arcade = (function () {
     if (localplay.game.arcade) return localplay.game.arcade;
 

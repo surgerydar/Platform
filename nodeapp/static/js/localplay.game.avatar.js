@@ -30,7 +30,8 @@
 //
 // Avatar
 //
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.game.avatar = (function () {
     if (localplay.game.avatar) return localplay.game.avatar;
 

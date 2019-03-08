@@ -1,6 +1,9 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
+
 var env = process.env;
 var config = require('./config.js');
-var fs = require('fs');
+//var fs = require('fs');
 //
 // connect to database
 //
@@ -11,7 +14,7 @@ db.connect(
 	env.APP_NAME,
     env.MONGODB_DB_USERNAME,
 	env.MONGODB_DB_PASSWORD
-).then( function( db_connection ) {
+).then( function() {/*function( db_connection ) {*/
     try {
         //
         // configure express
@@ -27,8 +30,8 @@ db.connect(
         //
         //
         //
-        app.use(bodyParser.json( {limit:'5mb'} ));
-        app.use(bodyParser.urlencoded({'limit': '5mb', 'extended': true }));
+        app.use(bodyParser.json( {limit:'10mb'} ));
+        app.use(bodyParser.urlencoded({'limit': '10mb', 'extended': true }));
         //
         // configure express
         //
@@ -55,13 +58,32 @@ db.connect(
         //
         console.log('general routes');
         app.get('/', function (req, res) {
-			res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated() });
+            let group = req.session && req.session.group ? req.session.group : "public";
+            console.log('/ looking for links : group=' + group );
+            db.find('levels', {published:1,group:group},{_id:1},{modified:-1},0,1).then( function( levels ) {
+                let links = [ 
+                    {
+                        url: '/play/' + levels[ 0 ]._id,
+                        thumbnail: '/levels/thumbnail/' + levels[ 0 ]._id
+                    }
+                ];
+                res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated(), admin: req.user && req.user.role === 'admin', links: links });
+            }).catch( function( error ) {
+                console.log('/ unable to find levels for links : error : ' + error );
+                res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated() });
+            });
         });
         app.get('/privacy', function (req, res) {
-			res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated() });
+			res.render('static',{title: 'Platform - Privacy', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
         });
-        app.get('/termsofservice', function (req, res) {
-			res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated() });
+        app.get('/terms', function (req, res) {
+			res.render('static',{title: 'Platform - Terms & Conditions', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+        });
+        app.get('/about', function (req, res) {
+			res.render('static',{title: 'Platform - About', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+        });
+        app.get('/help', function (req, res) {
+			res.render('static',{title: 'Platform - Help', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
         });
         //
         // game content
@@ -79,6 +101,11 @@ db.connect(
         app.use( '/arcades', arcades );
         let rating = require('./routes/rating')( passport.isAuthenticated, db );
         app.use( '/rating', rating );
+        //
+        //
+        //
+        let group = require('./routes/group')( passport.isAuthenticated, db );
+        app.use( '/group', group );
         //
         // ui
         //
@@ -99,10 +126,8 @@ db.connect(
         //
         // admin
         //
-        /*
-        let admin = require('./routes/admin')( pasportAuth, db );
+        let admin = require('./routes/admin')( passport.isAuthenticated, db, mailer );
         app.use( '/admin', admin );
-        */
         //
         // remove these in production
         //

@@ -26,9 +26,9 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
-localplay.game.soundeditor = (function () {
+/*eslint-env browser*/
+/*global localplay*/
+localplay.game.soundeditor = localplay.game.soundeditor || (function () {
     var soundeditor = {};
     //
     //
@@ -57,28 +57,30 @@ localplay.game.soundeditor = (function () {
     AudioDialog.prototype.show = function () {
         var _this = this;
         var template = '\
-            <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: stretch;  padding: 16px;"> \
-                <div style="font-size: larger; font-weight: bold; padding: 8px;">{{prompt}}</div>\
-                <div id="audiodialog.title"></div><br/>\
-                <div id="audiodialog.listing" class="audiolistingcontainer">\
-                </div>\
-                <div id="audiodialog.pagination" style="display: flex; flex-direction: row; justify-content: space-between; margin: 8px 0 8px 0;">\
-                    <img id="audiodialog.pagination.prev" src="/images/icons/arrow-previous-02.png" />\
-                    <img id="audiodialog.pagination.next" src="/images/icons/arrow-next-02.png" />\
-                </div>\
-                <h2 id="audiodialog.soundname" style="color: white;"></h2>\
-                <audio id="audiodialog.player" controls></audio>\
-                <div id="audiodialog.tags" style="display: flex; flex-direction: row; flex-wrap: wrap; margin: 8px 0 8px 0;">\
-                </div>\
-                <input id="audiodialog.search" type="search" style="width: calc( 100% - 16px ); margin: 8px 0 8px 0;"/>\
-                <div style="height: 42px; width: 100%;">\
-                    <div id="button.audiodialog.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
-                        <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
-                        &nbsp;Cancel \
+            <div class="dialog-container"> \
+                <div class="dialog-column"> \
+                    <div id="audiodialog.listing" class="audiolistingcontainer"></div>\
+                    <div id="audiodialog.pagination" style="display: flex; flex-direction: row; justify-content: space-between; margin: 8px 0 8px 0;">\
+                        <img id="audiodialog.pagination.prev" src="/images/icons/arrow-previous-02.png" />\
+                        <img id="audiodialog.pagination.next" src="/images/icons/arrow-next-02.png" />\
+                    </div>\
+                </div> \
+                <div class="dialog-column"> \
+                     <div class="form-item"> \
+                        <label for="search" class="form-item">Search <img class="form-item" src="/images/tools/search.png" /></label> \
+                        <input id="audiodialog.search" name="search" type="search" class="form-item" placeholder="Enter your search term" />\
                     </div> \
-                    <div id="button.audiodialog.save" class="menubaritem" style="float: right;" > \
-                        <img class="menubaritem" src="/images/icons/save-01.png" /> \
-                        &nbsp;Save \
+                    <div id="audiodialog.tags" class="tags-container"></div>\
+                    <audio id="audiodialog.player" ></audio>\
+                    <div style="height: 42px; width: 100%;">\
+                        <div id="button.audiodialog.cancel" class="menubaritem" style="float: left; margin-left: 0px;" > \
+                            <img class="menubaritem" src="/images/icons/close-cancel-01.png" /> \
+                            &nbsp;Cancel \
+                        </div> \
+                        <div id="button.audiodialog.save" class="menubaritem" style="float: right;" > \
+                            <img class="menubaritem" src="/images/icons/save-01.png" /> \
+                            &nbsp;Save \
+                        </div> \
                     </div> \
                 </div> \
             </div>\
@@ -89,10 +91,9 @@ localplay.game.soundeditor = (function () {
         this.title = document.getElementById("audiodialog.title");
         this.searchTerm = document.getElementById("audiodialog.search");
         this.soundname = document.getElementById("audiodialog.soundname");
-        this.player = document.getElementById("audiodialog.player");
-        this.player.addEventListener('ended', function(e){
-            _this.player.load();
-        });
+        var player = document.getElementById("audiodialog.player");
+        player.setAttribute('data-audio', JSON.stringify(this.selection||{name:'',duration:'',mp3:'',ogg:''}));
+        localplay.audioplayer.attach(player);
         //
         //
         //
@@ -161,14 +162,7 @@ localplay.game.soundeditor = (function () {
         if ( this.tags ) {
             ['background music', 'crash', 'bang', 'dog', 'cat', 'explosion' ].forEach( function( tag ) {
                 var tagContainer = document.createElement('div');
-                tagContainer.style.height = '42px';
-                tagContainer.style.borderRadius = '21px';
-                tagContainer.style.backgroundColor = 'white';
-                tagContainer.style.color = 'black';
-                tagContainer.style.padding = '0 4px 0 4px';
-                tagContainer.style.margin = '4px';
-                tagContainer.style.lineHeight = '42px';
-                tagContainer.style.fontWeight = '900';
+                tagContainer.classList.add('tag');
                 tagContainer.innerHTML = tag;
                 tagContainer.onclick = function( e ) {
                     if ( _this.searchTerm ) {
@@ -190,14 +184,21 @@ localplay.game.soundeditor = (function () {
                 _this.scrollpane.innerHTML = '';
                 var results = '';
                 try {
+                    var itemTemplate = '\
+                        <div class="audiolistingitem" style="color: black;" data-mp3="/audio/file?url={{mp3}}" data-ogg="/audio/file?url={{ogg}}" data-name="{{name}}" data-duration="{{duration}}"> \
+                            {{name}} \
+                        </div> \
+                    ';
                     var response = JSON.parse(xhr.datasource.response);
                     for ( var i = 0; i < response.results.length; i++ ) {
                         // TODO: use mustache
-                        results += 
-                        '<div class="audiolistitem" style="color: black;" data-mp3="/audio/file?url={audiosource-mp3}" data-ogg="/audio/file?url={audiosource-ogg}" data-name="{audioname}"> \
-                            <h3>{audioname}</h3> \
-                        </div>'.replace(/{audioname}/g, response.results[i].name ).replace(/{audiosource-mp3}/g, response.results[i].previews['preview-hq-mp3'] ).replace(/{audiosource-ogg}/g, response.results[i].previews['preview-hq-ogg'] );
-                    }
+                        results += Mustache.render(itemTemplate,{
+                            name:response.results[i].name,
+                            mp3: response.results[i].previews['preview-hq-mp3'],
+                            ogg: response.results[i].previews['preview-hq-ogg'],
+                            duration: response.results[i].duration
+                        });
+                     }
                     _this.pageNo = 0;
                     _this.pageCount = 0;
                     if ( response.results.length < parseInt(response.count ) ) {
@@ -220,21 +221,26 @@ localplay.game.soundeditor = (function () {
                 } catch (error) {
                 }
                 _this.scrollpane.innerHTML = results;
-                var items = _this.scrollpane.querySelectorAll('.audiolistitem');
+                var items = _this.scrollpane.querySelectorAll('.audiolistingitem');
                 items.forEach( function( item ) {
                     item.onclick = function( e ) {
                         //
                         // update ui
                         //
-                        _this.soundname.innerHTML = item.getAttribute('data-name');
+                        // _this.soundname.innerHTML = item.getAttribute('data-name');
                         //var audioSelector = 'data-' + localplay.domutils.getTypeForAudio();
-                        _this.player.src = item.getAttribute('data-mp3');
+                        //_this.player.src = item.getAttribute('data-mp3');
                         //
                         // update selection
                         //
-                        _this.selection.name    = item.getAttribute('data-name');
-                        _this.selection.mp3     = item.getAttribute('data-mp3');
-                        _this.selection.ogg     = item.getAttribute('data-ogg');
+                        _this.selection.name        = item.getAttribute('data-name');
+                        _this.selection.mp3         = item.getAttribute('data-mp3');
+                        _this.selection.ogg         = item.getAttribute('data-ogg');
+                        _this.selection.duration    = item.getAttribute('data-duration');
+                        var player = document.querySelector( '#' + CSS.escape( 'audiodialog.player.audio' ) );
+                        if ( player ) {
+                            player.setAttribute('data-audio',JSON.stringify(_this.selection));
+                        }
                     };
                 });
             }
@@ -406,7 +412,7 @@ localplay.game.soundeditor = (function () {
             <div id="button.soundeditor.winsound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for winners \
             </div></p>\
-            <p><audio controls id="soundeditor.losesound.player" src="{{loosesound}}"></audio> \
+            <p><audio controls id="soundeditor.losesound.player" src="{{losesound}}"></audio> \
             <div id="button.soundeditor.losesound" class="menubaritem"> \
                 <img id="" class="menubaritem" src="/images/icons/edit-01.png" />&nbsp;Sound for losers \
             </div></p>\
@@ -440,7 +446,7 @@ localplay.game.soundeditor = (function () {
         var data = {
             music: level.music[localplay.domutils.getTypeForAudio()],
             winsound: level.winsound[localplay.domutils.getTypeForAudio()],
-            loosesound: level.loosesound[localplay.domutils.getTypeForAudio()]
+            losesound: level.losesound[localplay.domutils.getTypeForAudio()]
         };
         this.container.innerHTML = Mustache.render(soundeditortemplate, data);
      }
@@ -469,7 +475,7 @@ localplay.game.soundeditor = (function () {
                         break;
                     case "losesound":
                         title = "Sound for Losers";
-                        audio = _this.level.loosesound;
+                        audio = _this.level.losesound;
                         player = document.getElementById("soundeditor.losesound.player");
                         break;
                 }

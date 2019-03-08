@@ -27,7 +27,8 @@
  *
  */
 
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.sprite = (function () {
     if (localplay.sprite) return localplay.sprite;
     //

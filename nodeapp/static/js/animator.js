@@ -72,7 +72,6 @@ Animator.prototype.unlock = function (owner) {
     this.owner = null;
     this.locked = false;
     return true;
-    return true;
 }
 
 Animator.prototype.start = function () {

@@ -5,7 +5,7 @@
  * @licstart  The following is the entire license notice for the 
  *  JavaScript code in this page.
  *
- *  Copyright (C) 2013 Local Play
+ *  Copyright (C) 2018 Platform
  *
  *
  * The JavaScript code in this page is free software: you can
@@ -27,16 +27,17 @@
  *
  */
 
+/* eslint-env worker, es6 */
+
 //
 // web worker interface
 //
-addEventListener('message', function (e) {
-    var command = e.data.command;
-    var colour  = e.data.colour;
-    var mask    = e.data.mask;
-    var width   = colour.width;
-    var height  = colour.height;
-    var threshold = e.data.threshold;
+self.addEventListener('message', function (e) {
+    let colour  = e.data.colour;
+    let mask    = e.data.mask;
+    let width   = colour.width;
+    let height  = colour.height;
+    let threshold = e.data.threshold;
     //
     // 
     //
@@ -127,7 +128,7 @@ addEventListener('message', function (e) {
     //
     // top
     //
-    for (x = 0; x < colour.width - 1; x++) {
+    for (x = 0; x < width - 1; x++) {
         index = (y * rowbytes) + (x * bpp);
         seed[ 0 ] = pixels[index];
         seed[ 1 ] = pixels[index+1];
@@ -141,7 +142,7 @@ addEventListener('message', function (e) {
     // right
     //
     x = colour.width - 1;
-    for (y = 0; y < colour.height - 1; y++) {
+    for (y = 0; y < height - 1; y++) {
         index = (y * rowbytes) + (x * bpp);
         seed[ 0 ] = pixels[index];
         seed[ 1 ] = pixels[index+1];
@@ -155,7 +156,7 @@ addEventListener('message', function (e) {
     // bottom
     //
     y = colour.height - 1;
-    for (x = 1; x < colour.width; x++) {
+    for (x = 1; x < width; x++) {
         index = (y * rowbytes) + (x * bpp);
         seed[ 0 ] = pixels[index];
         seed[ 1 ] = pixels[index+1];
@@ -169,7 +170,7 @@ addEventListener('message', function (e) {
     // left
     //
     x = 0;
-    for (y = 1; y < colour.height; y++) {
+    for (y = 1; y < height; y++) {
         index = (y * rowbytes) + (x * bpp);
         seed[ 0 ] = pixels[index];
         seed[ 1 ] = pixels[index+1];

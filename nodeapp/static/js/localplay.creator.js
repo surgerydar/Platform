@@ -160,7 +160,7 @@ localplay.creator = (function () {
                 name: name,
                 thumbnail: thumbnail
             };
-            localplay.datasource.put("/users/"+creatorid, data, {}, localplay.datasource.createprogressdialog("Updating profil...", function (e) {
+            localplay.datasource.put("/users/"+creatorid, {}, localplay.datasource.createprogressdialog("Updating profil...", function (e) {
                 var xhr = e.target;
                 try {
                     var response = JSON.parse(xhr.datasource.response);
@@ -168,7 +168,7 @@ localplay.creator = (function () {
                     }
                  } catch (error) {
                 }
-            }));
+            }), data);
 
         }
     }

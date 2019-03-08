@@ -26,7 +26,6 @@
  * for the JavaScript code in this page.
  *
  */
-
 //
 // install localplay
 //
@@ -211,7 +210,7 @@ var localplay = (function () {
                                 targetid: targetid,
                                 comment: document.getElementById("flag.comment").value
                             };
-                            localplay.datasource.put(command, data, {},
+                            localplay.datasource.put(command, {},
                                 {
                                     datasourceonloadend: function (e) {
                                         var xhr = e.target;
@@ -225,7 +224,7 @@ var localplay = (function () {
                                             callback();
                                         }
                                     }
-                                });
+                                }, data);
 
                         }
                         break;
@@ -245,7 +244,7 @@ var localplay = (function () {
             targetid: targetid,
             flag: 0
         };
-        localplay.datasource.put(command, data, {},
+        localplay.datasource.put(command, {},
             {
                 datasourceonloadend: function (e) {
                     var xhr = e.target;
@@ -259,7 +258,7 @@ var localplay = (function () {
                         callback();
                     }
                 }
-            });
+            }, data);
 
     }
     //

@@ -1,9 +1,29 @@
 html
     head
-        title Platfom - Login
         
-        link(rel='stylesheet', href='/css/default.css')
-        meta( name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' )
+        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1, viewport-fit=cover" )
+
+        // default app icon
+        link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
+
+        // apple standalone config
+        meta( name="apple-mobile-web-app-capable" content="yes" )
+        meta( name="apple-mobile-web-app-status-bar-style" content="black-translucent" )
+        link( rel="apple-touch-icon" href="/appicons/icon32x32.png" )
+        link( rel="apple-touch-icon" sizes="57x57" href="/appicons/icon57x57.png" )
+        link( rel="apple-touch-icon" sizes="76x76" href="/appicons/icon76x76.png" )
+        link( rel="apple-touch-icon" sizes="120x120" href="/appicons/icon120x120.png" )
+        link( rel="apple-touch-icon" sizes="152x152" href="/appicons/icon152x152.png" )
+        link( rel="apple-touch-icon" sizes="167x167" href="/appicons/icon167x167.png" )
+        link( rel="apple-touch-icon" sizes="180x180" href="/appicons/icon180x180.png" )
+
+        // android webapp config TODO: manifest
+        meta( name="mobile-web-app-capable" content="yes" )
+        link( rel="manifest" href="/manifest.json" )
+        link(rel='stylesheet', href='/css/platform.css')
+        meta( name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover' )
+        
+        title Platfom - Login
         
         // supporting libraries
         script( src="/lib/mustache.js" )
@@ -18,9 +38,8 @@ html
         script( src="/js/localplay.log.js" )
         script( src="/js/localplay.datasource.js" )
         script( src="/js/localplay.dialogbox.js" )
-        script( src='/js/localplay.mainmenu.js' )
         
-    body( style="background-color: #41AEE4;" )
+    body( style="background-color: var(--light-blue);" )
         .login-container
             .login-column.
                 Create or sign into your account here so you can build and share your own Platform games! Your Username will be visible in the games. #[br] By Signing up you agree to our #[a( href='javascript:localplay.navigateto("/terms")' ) Terms and Conditions ]
@@ -43,8 +62,8 @@ html
                             input.form-item( type='submit' value='Login' )
                             input.form-item( type='button' value='Forgotten\nPassword' style='font-size: 1.5vw; background-color: transparent; border: 1px solid white;' )
                 div( style="display: flex; flex-direction: row; justify-content: space-between;")
-                    img( src='/images/icons/facebook.png' class='imagebutton' style='height: 5vw;' data-href='/facebook/login' )
-                    img( src='/images/icons/twitter.png' class='imagebutton' style='height: 5vw;' data-href='/twitter/login' )
+                    img( src='/images/icons/facebook.png' class='imagebutton' style='height: 3vw;' data-href='/facebook/login' )
+                    img( src='/images/icons/twitter.png' class='imagebutton' style='height: 3vw;' data-href='/twitter/login' )
         #menu-backdrop
         #title-bar
             img#title-logo( src="/images/bc-logo-white.png" )

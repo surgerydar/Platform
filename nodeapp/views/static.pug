@@ -1,0 +1,62 @@
+doctype html
+html
+    head
+        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1, viewport-fit=cover" )
+        
+        // default app icon
+        link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
+        
+        // apple standalone config
+        meta( name="apple-mobile-web-app-capable" content="yes" )
+        meta( name="apple-mobile-web-app-status-bar-style" content="black-translucent" )
+        link( rel="apple-touch-icon" href="/appicons/icon32x32.png" )
+        link( rel="apple-touch-icon" sizes="57x57" href="/appicons/icon57x57.png" )
+        link( rel="apple-touch-icon" sizes="76x76" href="/appicons/icon76x76.png" )
+        link( rel="apple-touch-icon" sizes="120x120" href="/appicons/icon120x120.png" )
+        link( rel="apple-touch-icon" sizes="152x152" href="/appicons/icon152x152.png" )
+        link( rel="apple-touch-icon" sizes="167x167" href="/appicons/icon167x167.png" )
+        link( rel="apple-touch-icon" sizes="180x180" href="/appicons/icon180x180.png" )
+
+        // android webapp config TODO: manifest
+        meta( name="mobile-web-app-capable" content="yes" )
+        link( rel="manifest" href="/manifest.json" )
+
+        if title
+            title #{title}
+        else
+            title Platform
+
+        // styles
+        link( href="/css/platform.css" rel="stylesheet" )
+
+        // supporting libraries
+        script( src="/lib/mustache.js" )
+        
+        // legacy objects
+        script( src="/js/graphicsprimitives.js" )
+        
+        // app scripts
+        script( src="/js/localplay.js" )
+        script( src="/js/localplay.domutils.js" )
+        script( src="/js/localplay.log.js" )
+        script( src="/js/localplay.staticpage.js" )
+    
+    body( style="background-color: var(--light-blue);" ) 
+        #homepage-container
+            #homepage-content !{content}
+        #menu-backdrop
+        #title-bar
+            img#title-logo( src="/images/bc-logo-white.png" )
+            img#title-menu( src="/images/logo-menu.png" )
+        .main-menu#main-menu
+            .main-menu-item( id="menu.create" ) MAKE A GAME
+            .main-menu-item( id="menu.gallery" ) GALLERY
+            .main-menu-item( id="menu.help" ) HELP
+            .main-menu-item( id="menu.about" ) ABOUT
+            if authorised
+                .main-menu-item( id="menu.logout" ) LOGOUT
+            else
+                .main-menu-item( id="menu.login" ) LOGIN/SIGN UP
+
+        script.
+            localplay.staticpage.init();

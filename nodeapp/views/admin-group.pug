@@ -1,0 +1,13 @@
+.listviewheader( id= 'admin-listview-header')
+    .listviewheadergroup
+        img.imagebutton( id= 'button-back' data-action= 'get' data-url= '/admin/groups' src= '/images/icons/arrow-previous-02.png' )
+    .listviewheadergroup
+        h3= group.name
+.listviewcontent( id= 'admin.listviewcontent' )
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/users/' )
+        h2 Users
+    unless group.name === 'system'
+        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/levels/' )
+            h2 Levels
+        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/media/' )
+            h2 Media

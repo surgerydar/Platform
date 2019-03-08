@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var express = require('express')
 var router = express.Router()
 var Strategy = require('passport-twitter').Strategy;
@@ -14,7 +16,7 @@ module.exports = function( passport, config, db ) {
         } else {
             db.findOne('users', { $or : [ { twitterId: profile.id }, { email: email } ] } ).then( function(user) {
                 if (!user) {
-                    db.insert('users', { twitterId: profile.id, username: profile.displayName, email: profile.emails[0].value } ).then( function(response) {
+                    db.insert('users', { twitterId: profile.id, username: profile.displayName, email: profile.emails[0].value, groups: ["public"] } ).then( function(response) {
                         authenticate( token, tokenSecret, profile, callback );
                     }).catch( function( error ) {
                         callback(error);

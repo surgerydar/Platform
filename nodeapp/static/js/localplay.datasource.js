@@ -26,13 +26,12 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
 //
 // datasource module
 // queries to server and eventually local storage
 //
-//
+/*eslint-env browser*/
+/*global localplay*/
 localplay.datasource = (function () {
     if (localplay.datasource) return localplay.datasource;
     //
@@ -75,7 +74,7 @@ localplay.datasource = (function () {
 
     datasource.transactions = [];
 
-    datasource.put = function (target, data, param, delegate) {
+    datasource.put = function (target, param, delegate, data) {
         //
         // create request object
         //
@@ -85,7 +84,9 @@ localplay.datasource = (function () {
         //
         if (data != null) {
             xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(data));
+            var json = JSON.stringify(data);
+            console.log( 'datasource.put : ' + json.length + ' characters' );
+            xhr.send(json);
         } else {
             xhr.send();
         }
@@ -93,7 +94,7 @@ localplay.datasource = (function () {
     //
     //
     //
-    datasource.post = function (target, data, param, delegate) {
+    datasource.post = function (target, param, delegate, data) {
         //
         // create request object
         //
@@ -103,7 +104,9 @@ localplay.datasource = (function () {
         //
         if (data != null) {
             xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(data));
+            var json = JSON.stringify(data);
+            console.log( 'datasource.put : ' + json.length + ' characters' );
+            xhr.send(json);
         } else {
             xhr.send();
         }

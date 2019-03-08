@@ -10,20 +10,45 @@ module.exports = function( authentication, db ) {
     console.log( 'setting media routes')
     router.get( '/', function (req, res) {
         var listview    = req.query.listview || false;
+        var creator     = req.query.creator;
         var filter      = req.query.filter;
         var type        = req.query.type;
         var urlonly     = req.query.urlonly;
         var offset      = req.query.offset ? parseInt(req.query.offset) : undefined;
         var limit       = req.query.limit ? parseInt(req.query.limit) : undefined;
-        
-        var query = {};
+        //
+        // build conditions
+        //
+        var conditions = [];
+        //
+        // group
+        //
+        conditions.push( { group: req.session.group || 'public' } );
+        //
+        // specific user
+        //
+        if ( creator ) {
+            conditions.push({ creatorid: creator });
+        }
+        //
+        // text filter
+        //
         if ( filter ) {
             var test = new RegExp(filter,'i');
-            query = { $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] };
+            conditions.push({ $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] });
         }
-        if ( type ) {
-            query = Object.keys(query).length > 0 ? { $and: [ { type: type }, query ] } : { type: type };  
+        //
+        // build query
+        //
+        var query = {};
+        if ( conditions.length === 1 ) {
+            query = conditions[ 0 ];
+        } else if ( conditions.length > 1 ) {
+            query = { $and: conditions };
         }
+        //
+        // projection
+        //
         var projection = {};
         if ( urlonly ) {
             projection = { path: 1 };
@@ -104,6 +129,8 @@ module.exports = function( authentication, db ) {
         media.creator   = req.user.username;
         media.created   = Date.now();
         media.modified  = media.created;
+        media.group     = req.session.group || 'public';
+        console.log( 'media.post : saving new media to group : ' + media.group );
         db.insert( 'media',  media ).then( function( response ) {
             res.json({ status: 'OK', data: { _id: response._id, name: media.name } });
         }).catch( function( error ) {
@@ -124,7 +151,7 @@ module.exports = function( authentication, db ) {
             res.json({ status: 'ERROR', error: error});
         });
     });
-    /*
+    /* NOTE: media now immutable
     router.put('/:id', authentication, function (req, res) { // update media entry
         var _id         = db.ObjectId(req.params.id);
         var level       = req.body;

@@ -26,8 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
+/*eslint-env browser*/
+/*global localplay, Mustache*/
 localplay.game.item = (function () {
     if (localplay.game.item) return localplay.game.item;
     var item = {};
@@ -114,43 +114,44 @@ localplay.game.item = (function () {
     GameItem.prototype.setupaudio = function () {
         var _this = this;
         if (this.audio) {
-            console.log( 'setupaudio : ' + this.audio[localplay.domutils.getTypeForAudio()] );
+            //console.log( 'setupaudio : ' + this.audio[localplay.domutils.getTypeForAudio()] );
             this.audioready = false;
             try {
                 if (!this.audioplayer) {
                     this.audioplayer = new Audio();
                     this.audioplayer.addEventListener("canplaythrough", function () {
-                        console.log( 'oncanplaythrough : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
+                        //console.log( 'oncanplaythrough : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
                         _this.audioready = true;
                     });
                     this.audioplayer.addEventListener("ended", function () {
-                        console.log( 'onended : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
-                        console.log( 'onended : audio readyState : ' + _this.audioplayer.readyState );
+                        //console.log( 'onended : audio ready : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
+                        //console.log( 'onended : audio readyState : ' + _this.audioplayer.readyState );
                         _this.audioplayer.load();
                         _this.audioready = true;
                     });
                     this.audioplayer.addEventListener("error", function (e) {
-                        console.log( 'error : audio : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
+                        //console.log( 'error : audio : ' + _this.audio[localplay.domutils.getTypeForAudio()] );
                         switch (_this.audioplayer.error.code) {
                              case _this.audioplayer.error.MEDIA_ERR_ABORTED:
-                               console.log('audioplayer error : aborted : ' + _this.audioplayer.error.message );
+                               console.error('audioplayer error : aborted : ' + _this.audioplayer.error.message );
                                break;
                              case _this.audioplayer.error.MEDIA_ERR_NETWORK:
-                               console.log('audioplayer error : network error : ' + _this.audioplayer.error.message);
+                               console.error('audioplayer error : network error : ' + _this.audioplayer.error.message);
                                break;
                              case _this.audioplayer.error.MEDIA_ERR_DECODE:
-                               console.log('audioplayer error : decode error : ' + _this.audioplayer.error.message);
+                               console.error('audioplayer error : decode error : ' + _this.audioplayer.error.message);
                                break;
                              case _this.audioplayer.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                               console.log('audioplayer error : format error : ' + _this.audioplayer.error.message);
+                               console.error('audioplayer error : format error : ' + _this.audioplayer.error.message);
                                break;
                              default:
-                               console.log('audioplayer error : unknown : ' + _this.audioplayer.error.message );
+                               console.error('audioplayer error : unknown : ' + _this.audioplayer.error.message );
                                break;
                            }                    
                     });
 
                 }
+                this.audioplayer.volume = this.audio.volume !== undefined ? this.audio.volume : 1.0;
                 this.audioplayer.src = this.audio[localplay.domutils.getTypeForAudio()];
                 this.audioplayer.load();
             } catch (error) {
@@ -473,7 +474,7 @@ localplay.game.item = (function () {
                     //
                     // TODO: if there are no other instances of the item's original media then remove all rules associated with media, should be accompanied by confirmation dialog
                     //
-                    console.log( 'localplay.game.item.changeimage : url : ' + item.data.url );
+                    //console.log( 'localplay.game.item.changeimage : url : ' + item.data.url );
                     image.src = item.data.url;
 
                 }, 20, "",

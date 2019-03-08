@@ -1,0 +1,24 @@
+.admin-form-container
+    form.admin( action= '/admin/group/' + group._id + '/inviteusers' method= 'post' enctype= 'application/x-www-form-urlencoded' )
+        .form-content
+        if error
+            .form-item#register-error( style='color: red' ) #{error}
+        label.form-item() Invite Emails
+        .form-item#user-emails
+            input.form-item( type='email' name='email0' placeholder='enter user email' )
+        img.imagebutton#add-user( style='width: 48px; height: auto; margin-bottom: 16px; align-self: flex-end; ' src='/images/add.png' )
+        div( style="display: flex; flex-direction: row; justify-content: space-between;")
+            input.form-item#button-cancel( type='button' value='Cancel' data-action= 'get' data-url= '/admin/group/' + group._id + '/users' )
+            input.form-item( type='submit' value='Invite' )
+script.
+    document.querySelector('#add-user').addEventListener('click',function() {
+        var emails = document.querySelector( '#user-emails' );
+        var count = emails.childElementCount;
+        var email = document.createElement('input');
+        email.classList.add('form-item');
+        email.setAttribute('type','text');
+        email.setAttribute('name','email' + count);
+        email.setAttribute('placeholder', 'enter user email');
+        emails.appendChild(email);
+    });
+            

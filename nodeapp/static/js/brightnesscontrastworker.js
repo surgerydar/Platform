@@ -27,32 +27,33 @@
  *
  */
 
+/* eslint-env worker, es6 */
+
 //
 // web worker interface
 //
-addEventListener('message', function (e) {
-    var command = e.data.command;
-    var brightness = e.data.brightness;
-    var contrast = e.data.contrast;
-    var imageData = e.data.imagedata;
-    var data = imageData.data;
-    var width   = e.data.width;
-    var height = e.data.height;
+self.addEventListener('message', function (e) {
+    let brightness = e.data.brightness;
+    let contrast = e.data.contrast;
+    let imageData = e.data.imagedata;
+    let data = imageData.data;
+    let width   = e.data.width;
+    let height = e.data.height;
     //
     //
     //
-    var cfactor = Math.abs(contrast/255.0);
-    var bfactor = Math.abs(brightness/255.0);
+    let cfactor = Math.abs(contrast/255.0);
+    let bfactor = Math.abs(brightness/255.0);
     for (var y = 0, i = 0; y < height; y++) {
         for (var x = 0; x < width; x++, i += 4) {
-            var b = (0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2]);
+            let b = (0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2]);
             if (brightness > 0) {
                 b += (255.0 - b) * bfactor;
             } else if (brightness < 0) {
                 b *= 1.0 - bfactor;
             }
             for (var j = 0; j < 3; j++) {
-                var value = data[i + j];
+                let value = data[i + j];
                 if (brightness > 0) {
                     value += (255.0 - value) * bfactor;
                 } else if (brightness < 0) {

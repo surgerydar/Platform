@@ -26,8 +26,8 @@
  * for the JavaScript code in this page.
  *
  */
-
-;
+/*eslint-env browser*/
+/*global localplay*/
 localplay.objecteditor = (function () {
     var objecteditor = {};
     //
@@ -153,11 +153,11 @@ localplay.objecteditor = (function () {
         //
         this.brightnessslider = document.getElementById("objecteditor.slider.brightness");
         if (this.brightnessslider) {
-            this.brightnessslider.onchange = function (e) {
+            this.brightnessslider.onchange = function () {
                 _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
                 _this.adjustImage();
             }
-            this.brightnessslider.addEventListener('input', function(e) {
+            this.brightnessslider.addEventListener('input', function() {
                 _this.brightnessslider.style.setProperty('--adjustment',_this.brightnessslider.value);
             });
             if (this.brightnessslider.type == "text") {
@@ -166,11 +166,11 @@ localplay.objecteditor = (function () {
         }
         this.contrastslider = document.getElementById("objecteditor.slider.contrast");
         if (this.contrastslider) {
-            this.contrastslider.onchange = function (e) {
+            this.contrastslider.onchange = function () {
                 _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
                 _this.adjustImage();
             }
-            this.contrastslider.addEventListener('input', function(e) {
+            this.contrastslider.addEventListener('input', function() {
                 _this.contrastslider.style.setProperty('--adjustment',_this.contrastslider.value);
             });
             if (this.contrastslider.type == "text") {
@@ -273,7 +273,7 @@ localplay.objecteditor = (function () {
                 ctx.stroke();
                 _this.eraserPrevious.set(p.x,p.y);
             } 
-            console.log( 'erasing : ' + p.tostring() );
+            //console.log( 'erasing : ' + p.tostring() );
         };
         function endErase( ctx, p ) {
             _this.eraserPrevious = null;
@@ -670,7 +670,7 @@ localplay.objecteditor = (function () {
                         type: 'object',
                         path: 'uploads/' + baseFilename + 'object.png'
                     };
-                    localplay.datasource.post( '/media', media, {},
+                    localplay.datasource.post( '/media', {},
                     localplay.datasource.createprogressdialog("Updating database...", 
                             function (e) {
                                 _this.showSavePanel(false);
@@ -686,44 +686,13 @@ localplay.objecteditor = (function () {
 
                                 }
                                 */
-                            }));
+                            }), media);
                 } else {
                     //????
                 }
             } );
         } );
-        /*
-        //
-        // convert canvas to image for upload
-        //
-        var data = {};
-        data.data = this.cropcanvas.toDataURL("image/png");
-        //
-        // upload
-        //
-        var param = {
-            type: 'object'
-        };
-        if (this.objectid > 0) param.id = this.objectid;
-        param.name = this.name.value;
-        param.tags = this.tags.value;
-        if (param.name.length > 0) {
-            param.filename = param.name + ".png";
-        } else {
-            //
-            // TODO: unsafe move to server
-            //
-            param.filename = "object" + (new Date()).getTime() + ".png";
-        }
-        //
-        // 
-        //
-        var _this = this;
-        localplay.datasource.put('upload.php', data, param, localplay.datasource.createprogressdialog(param.name.length > 0 ? "Saving '" + param.name + "'..." : "Saving object...", function () {
-            _this.showSavePanel(false);
-        }));
-        */
-    }
+     }
 
     var patternoffsets = [
         { x: -1, y: -1 },
