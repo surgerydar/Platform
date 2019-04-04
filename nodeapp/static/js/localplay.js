@@ -266,6 +266,7 @@ var localplay = (function () {
     //
     var tipbox = null;
     var tipstack = [];
+    var tiptimer = -1;
     localplay.showtip = function (tip,target) {
         if (tip && tip.length > 0) {
             if (!tipbox) {
@@ -276,7 +277,7 @@ var localplay = (function () {
                     localplay.showtip();
                 }
             }
-            
+            /*
             var titleBar = document.querySelector('#title-bar');
             var p = new Point(document.body.offsetWidth, titleBar ? titleBar.offsetHeight + 16: 0);
             if (target) {
@@ -284,7 +285,7 @@ var localplay = (function () {
                 p.y = Math.max( titleBar.offsetHeight + 16, p.y );
                 p.x += target.offsetWidth;
             }
-            
+            */
             /*
             var p = new Point(document.body.scrollWidth, document.body.scrollHeight);
             if (target) {
@@ -294,11 +295,22 @@ var localplay = (function () {
             }
             */
             tipbox.innerHTML =  tip + '<img class="imagebutton" src="/images/icons/close-cancel-02.png" style="position: absolute; top: 2px; right: 2px;" /><br />';
-            tipbox.style.top = p.y + "px";
-            tipbox.style.right = ( 8 + ( document.body.offsetWidth - p.x )) + "px";
+            //tipbox.style.top = p.y + "px";
+            //tipbox.style.right = ( 8 + ( document.body.offsetWidth - p.x )) + "px";
             //tipbox.style.bottom = Math.max( 0, ( document.body.scrollWidth - p.y ) ) + "px";
             tipbox.classList.remove("hidden");
+            if ( tiptimer >= 0 ) {
+                clearTimeout(tiptimer);
+            }
+            tiptimer = setTimeout( 3000, function() {
+                tiptimer = -1;
+                localplay.showtip();    
+            });
         } else if (tipbox) {
+            if ( tiptimer >= 0 ) {
+                clearTimeout(tiptimer);
+                tiptimer = -1;
+            }
             tipbox.classList.add("hidden");
             tipbox.innerHTML = "";
         }
@@ -316,8 +328,8 @@ var localplay = (function () {
         if (tipstack.length > 0) {
             var tipboxstate = tipstack.pop();
             tipbox.innerHTML = tipboxstate.content;
-            tipbox.style.right = ( document.body.offsetWidth - tipboxstate.position.x ) + "px";
-            tipbox.style.top = tipboxstate.position.y + "px";
+            //tipbox.style.right = ( document.body.offsetWidth - tipboxstate.position.x ) + "px";
+            //tipbox.style.top = tipboxstate.position.y + "px";
             tipbox.classList.remove("hidden");
         }
     }

@@ -155,6 +155,25 @@ Db.prototype.updateOne = function( collection, query, update ) {
     });
 }
 
+Db.prototype.updateMany = function( collection, query, update ) {
+    var db = this.db;
+    return new Promise( function( resolve, reject ) {
+         try {
+             db.collection( collection ).updateMany( query, update, function( err, result ) {
+                if ( err ) {
+                    console.log( 'update : ' + collection + ' : error : ' + err );
+                    reject( err );
+                } else {
+                    resolve( result );
+                }
+             });
+        } catch( err ) {
+            console.log( 'update : ' + collection + ' : error : ' + err );
+            reject( err );
+        }
+    });
+}
+
 Db.prototype.find = function( collection, query, projection, order, offset, limit ) {
     var db = this.db;
     return new Promise( function( resolve, reject ) {

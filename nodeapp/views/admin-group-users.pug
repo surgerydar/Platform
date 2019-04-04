@@ -15,8 +15,9 @@
             if pagenumber < pagination.pagecount
                 img.listviewpagination( id= 'button-nextpage' data-action= 'get' data-url= nexturl src='/images/icons/arrow-next-02.png' )
     .listviewheadergroup
+        - var searchurl = '/admin/group/' + group._id + '/users' + filter;
         label( for='search' class='listviewheader' ) Search
-        input( type='search' class='listviewheader' name='search' placeholder='name' )
+        input#search-users( type='search' class='listviewheader' name='search' placeholder='name' value= pagination.filter data-url= searchurl )
     div( style= 'flex-grow:1; flex-shrink:1; width: 16px;' )
     .listviewheadergroup
         img.listviewheader#button-add( src='/images/add.png' data-action= 'get' data-url = '/admin/group/' + group._id + '/user/add' )

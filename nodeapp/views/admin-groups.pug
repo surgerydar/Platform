@@ -1,13 +1,13 @@
 .listviewheader#admin-listview-header
     .listviewheadergroup
         h3 Groups
-    .listviewheadergroup
-        img.listviewpagination( id= 'admin.prev.medialibrarypage' src= '/images/icons/arrow-previous-02.png' )
-        .listviewpagination( id= 'admin.pagenumbers.medialibrary')
-        img.listviewpagination( id= 'admin.next.medialibrarypage' src='/images/icons/arrow-next-02.png' )
+    //.listviewheadergroup
+    //    img.listviewpagination( id= 'admin.prev.medialibrarypage' src= '/images/icons/arrow-previous-02.png' )
+    //    .listviewpagination( id= 'admin.pagenumbers.medialibrary')
+    //    img.listviewpagination( id= 'admin.next.medialibrarypage' src='/images/icons/arrow-next-02.png' )
     .listviewheadergroup
         label( for='search' class='listviewheader' ) Search
-        input( type='search' class='listviewheader' name='search' placeholder='name' )
+        input#search-groups( type='search' class='listviewheader' name='search' placeholder='name' data-url= '/admin/groups' value= filter )
     div( style= 'flex-grow:1; flex-shrink:1; width: 16px;' )
     .listviewheadergroup
         img.listviewheader#button-add( src='/images/add.png' data-action= 'get' data-url = '/admin/group/add' )

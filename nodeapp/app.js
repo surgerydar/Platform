@@ -47,12 +47,24 @@ db.connect(
         // authentication
         //
         let passport = require('./passportauth')( app, db );
-        let local = require('./routes/local')( passport.passport, config, db );
+        let local = require('./routes/local')( passport.passport, config, db, mailer );
         app.use( '/local', local );
         let facebook = require('./routes/facebook')( passport.passport, config, db );
         app.use( '/facebook', facebook );
         let twitter = require('./routes/twitter')( passport.passport, config, db );
         app.use( '/twitter', twitter );
+        //
+        // utility functions
+        //
+        let renderPageContent = function( req, res, page, title ) {
+            let group = req.session && req.session.group ? req.session.group : "public";
+            db.findOne( 'pages', { group: group, name: page} ).then( function( page ) {
+                let content = page ? page.content : undefined;
+                res.render('static',{title: 'Platform - ' + title, authorised: req.user && req.isAuthenticated(), content: content || "<h2>coming soon</h2>" });
+            }).catch( function( error ) {
+                res.render('static',{title: 'Platform - ' + title, authorised: req.user && req.isAuthenticated(), content: '<h2>' + error + '</h2>' });
+            });
+        }
         //
         // express routes
         //
@@ -60,30 +72,43 @@ db.connect(
         app.get('/', function (req, res) {
             let group = req.session && req.session.group ? req.session.group : "public";
             console.log('/ looking for links : group=' + group );
-            db.find('levels', {published:1,group:group},{_id:1},{modified:-1},0,1).then( function( levels ) {
-                let links = [ 
-                    {
-                        url: '/play/' + levels[ 0 ]._id,
-                        thumbnail: '/levels/thumbnail/' + levels[ 0 ]._id
-                    }
-                ];
-                res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated(), admin: req.user && req.user.role === 'admin', links: links });
+            db.findOne( 'pages', { group: group, name: 'homepage'} ).then( function( page ) {
+                let content = page ? page.content : undefined;
+                let param = {
+                    title: 'Platform', 
+                    authorised: req.user && req.isAuthenticated(), 
+                    admin: req.user && req.user.role === 'admin', 
+                    groupname: group, 
+                    content: content    
+                };
+                db.find('levels', {published:1,group:group},{_id:1},{modified:-1},0,1).then( function( levels ) {
+                    let links = levels.length > 0 ? [ 
+                        {
+                            url: '/play/' + levels[ 0 ]._id,
+                            thumbnail: '/levels/thumbnail/' + levels[ 0 ]._id
+                        }
+                    ] : [];
+                    param.links = links;
+                    res.render('index',param);
+                }).catch( function( error ) {
+                    console.log('/ unable to find levels for links : error : ' + error );
+                    res.render('index', param);
+                });
             }).catch( function( error ) {
-                console.log('/ unable to find levels for links : error : ' + error );
-                res.render('index',{title: 'Platform', authorised: req.user && req.isAuthenticated() });
+                res.render('static',{title: 'Platform', authorised: req.user && req.isAuthenticated(), content: '<h2>' + error + '</h2>' });
             });
-        });
+         });
         app.get('/privacy', function (req, res) {
-			res.render('static',{title: 'Platform - Privacy', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+            renderPageContent( req, res, 'privacy', 'Privacy' );
         });
         app.get('/terms', function (req, res) {
-			res.render('static',{title: 'Platform - Terms & Conditions', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+            renderPageContent( req, res, 'terms', 'Terms & Conditions' );
         });
         app.get('/about', function (req, res) {
-			res.render('static',{title: 'Platform - About', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+            renderPageContent( req, res, 'terms', 'About' );
         });
         app.get('/help', function (req, res) {
-			res.render('static',{title: 'Platform - Help', authorised: req.user && req.isAuthenticated(), content: "<h2>coming soon</h2>" });
+            renderPageContent( req, res, 'help', 'Help' );
         });
         //
         // game content

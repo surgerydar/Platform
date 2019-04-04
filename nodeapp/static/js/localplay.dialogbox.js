@@ -71,7 +71,7 @@ localplay.dialogbox = (function () {
                 this.dialog.style.width = properties.width + "px";
             }
             if (properties.height && properties.height > 0) {
-                this.dialog.style.height = properties.width + "px";
+                this.dialog.style.height = properties.height + "px";
             }
         }
     

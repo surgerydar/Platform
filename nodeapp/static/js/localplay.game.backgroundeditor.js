@@ -139,6 +139,7 @@ localplay.game.backgroundeditor = localplay.game.backgroundeditor || (function (
                     }
                 });
                 */
+                localplay.showtip();
                 localplay.objectimporter.createobjectimporterdialog('Add Background','background',function() {
                     _this.medialibrary.controller.refresh();    
                     if (_this.level.background.images.length > 1) {
@@ -577,7 +578,7 @@ localplay.game.backgroundeditor = localplay.game.backgroundeditor || (function (
                         type: 'background',
                         path: 'uploads/' + baseFilename + 'background.png'
                     };
-                    localplay.datasource.post( '/media', media, {},
+                    localplay.datasource.post( '/media', {},
                     localplay.datasource.createprogressdialog("Updating database...", 
                             function (e) {
                                 var xhr = e.target;
@@ -587,7 +588,7 @@ localplay.game.backgroundeditor = localplay.game.backgroundeditor || (function (
                                         _this.canvas.getContext('2d').clearRect(0, 0, _this.canvas.width, _this.canvas.height);
                                         _this.enableEditControls(false);
                                     }
-                                } catch (/*error*/) {
+                                } catch (error) {
 
                                 }
 
@@ -763,7 +764,14 @@ localplay.game.backgroundeditor = localplay.game.backgroundeditor || (function (
             var scale = level.canvas.height / localplay.defaultsize.height;
             level.background.setscale(scale);
             level.adjustviewport();
-        });
+            if ( level.game.controller ) {
+                if ( level.game.controller.monitor ) {
+                    level.loaded = false;
+                    level.setstate(localplay.game.level.states.loading);
+                    level.game.controller.monitor();
+                }
+            }
+       });
         dialog.show();
         editor.initialise();
         return editor;

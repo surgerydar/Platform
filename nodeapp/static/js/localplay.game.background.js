@@ -51,7 +51,6 @@ localplay.game.background = (function () {
         this.width = localplay.defaultsize.width;
         this.height = localplay.defaultsize.height;
         this.loaded = false;
-        var _this = this;
         this.images = [];
         this.audioplaying = false;
         this.players = [];
@@ -311,7 +310,7 @@ localplay.game.background = (function () {
         //
         var player = createPlayer();
         this.players.splice(i, 0, player);
-        if ( audio.duration > 0 ) {
+        if ( audio && audio.duration > 0 ) {
             player.src = audio[localplay.domutils.getTypeForAudio()];
             player.load();   
         }

@@ -45,13 +45,21 @@ localplay.game.controller.mobile = (function () {
     //
     var loading = 'Loading 0%';
     var intro = '<h3>{{name}}</h3> \
-                by&nbsp;<a href="creatorpage.php?id={{creatorid}}">{{creator}}</a><p/> \
+                by&nbsp;{{creator}}<p/> \
+                {{about}}<p/> \
+                {{instructions}}<p/> \
+                <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="/images/icons/play-game-01.png" />';
+    /*
+    var intro = '<h3>{{name}}</h3> \
+                by&nbsp;{{creator}}<p/> \
                 <img id="mobileplayer.list" title="go to mobile" class="imagebutton" style="margin: 4px;" src="/images/list.png" /> \
                 <img id="mobileplayer.new" title="create new level" class="imagebutton" style="margin: 4px;" src="/images/new.png" /> \
                 <img id="mobileplayer.edit" title="edit" class="imagebutton" style="margin: 4px;" src="/images/edit.png" /> \
                 <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="/images/play.png" />';
-     var outro = '<h3>{{outcome}}</h3> \
-                {{{score}}}<p/>';
+    */
+    var outro = '<h3>{{outcome}}</h3> \
+                {{{score}}}<p/> \
+                <img id="mobileplayer.play" title="play" class="imagebutton" style="margin: 4px;" src="/images/icons/play-game-01.png" />';
     var info = '<h3>{{name}}</h3> \
                 <img src="{{thumbnail}}" /><p/> \
                 place - {{place}}<p/> \
@@ -95,7 +103,7 @@ localplay.game.controller.mobile = (function () {
         this.upbutton                   = document.querySelector('#play-bar-button-up');
         this.leftbutton                 = document.querySelector('#play-bar-button-left');
         this.rightbutton                = document.querySelector('#play-bar-button-right');
-        this.playbutton                 = document.querySelector('#play-button');
+        //this.playbutton                 = document.querySelector('#play-button');
         this.menubutton                 = document.querySelector('#title-menu');
         this.menu                       = document.querySelector('#main-menu');
         this.backdrop                   = document.querySelector('#menu-backdrop');
@@ -424,7 +432,7 @@ localplay.game.controller.mobile = (function () {
                     break;
                 case localplay.game.level.states.ready:
                     this.timelimit = this.game.level.gamestate.getTimelimit();
-                    this.showbanner();
+                    this.showbanner(intro,this.game.metadata);
                     this.showcontrols(false);
                     break;
                 case localplay.game.level.states.playing:

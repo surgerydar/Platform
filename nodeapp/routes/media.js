@@ -31,6 +31,12 @@ module.exports = function( authentication, db ) {
             conditions.push({ creatorid: creator });
         }
         //
+        // specific type
+        //
+        if ( type ) {
+            conditions.push({ type: type});
+        }
+        //
         // text filter
         //
         if ( filter ) {

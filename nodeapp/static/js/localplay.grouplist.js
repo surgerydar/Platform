@@ -1,7 +1,7 @@
 /*eslint-env browser*/
 /*global localplay*/
-localplay.homepage = (function () {
-    if (localplay.homepage) return localplay.homepage;
+localplay.grouplist = (function () {
+    if (localplay.grouplist) return localplay.grouplist;
     return { 
         init: function() {
             //
@@ -69,44 +69,6 @@ localplay.homepage = (function () {
                     }
                 });
             } 
-            //
-            // resize body text
-            //
-            var content = document.querySelector('#homepage-content');
-            var contentHeader = document.querySelector('#homepage-header');
-            var contentBody = document.querySelector('#homepage-body');
-            function fitContent() {
-                //
-                //
-                //
-                var originalHeaderFontsize = parseInt( contentHeader.style.fontSize );
-                var originalBodyFontsize = parseInt( contentBody.style.fontSize );
-                var headerWidth = Math.max( content.offsetWidth, content.scrollWidth );
-                var contentHeight = Math.max( content.offsetHeight, content.scrollHeight );
-                if ( headerWidth >= content.offsetWidth ) {
-                    //
-                    // resize content to fit
-                    //
-                    var newHeaderFontSize = Math.max( 18, Math.floor( originalHeaderFontsize * ( ( content.offsetWidth - 20 ) / headerWidth ) ) );
-                    var vScale = content.offsetHeight / ( contentHeight - ( originalHeaderFontsize - newHeaderFontSize ) );
-                    var newBodyFontsize = Math.max( 12, Math.min( newHeaderFontSize - 8, Math.floor( originalBodyFontsize * vScale ) ) );
-                    //
-                    //
-                    //
-                    contentHeader.style.fontSize = newHeaderFontSize + 'px';
-                    contentBody.style.fontSize = newBodyFontsize + 'px';
-                }
-                resizeTimer = -1;
-            }
-            var resizeTimer = -1;
-            window.addEventListener('resize', function() {
-                if ( resizeTimer <= 0 ) {
-                    contentHeader.style.fontSize = '64px';
-                    contentBody.style.fontSize = '48px';
-                    resizeTimer = setTimeout(fitContent,1);
-                }
-            }, { passive: true } );
-            resizeTimer = setTimeout(fitContent,100);
         }
     };
 })();

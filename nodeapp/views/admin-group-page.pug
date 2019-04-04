@@ -1,0 +1,45 @@
+.listviewheader#admin-listview-header
+    .listviewheadergroup
+        img.imagebutton( id= 'button-back' data-action= 'get' data-url= '/admin/group/' + group._id + '/pages' src= '/images/icons/arrow-previous-02.png' )
+    .listviewheadergroup
+        h3= page.name
+    div( style= 'flex-grow:1; flex-shrink:1; width: 16px;' )
+    .listviewheadergroup
+        - var payload = JSON.stringify( { group: group.name, name: page.name, content: page.content } );
+        img.listviewheader#button-save( src='/images/tools/save.png' data-action= 'put' data-url = '/admin/group/' + group._id + '/pages/' + page.name data-payload= payload)
+div( style='position: absolute; top: 5.5vw; left: 2vw; bottom: 2vw; right: 2vw; background-color: var(--light-blue); color: white;' )
+    div( id="scrolling-container" )
+        div( id='quill-container' style='height: auto; min-height: 100%; padding: 16px; font-family: BritishCouncilSansW29-Lt, sans-serif;' ) !{page.content}
+script.
+    var toolbarOptions = [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['link', 'image'],
+      [{ 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': [1, 2, 3, false] }],
+
+      [{ 'align': [] }],
+
+      ['clean']
+    ];
+    var quill = new Quill('#quill-container', {
+      modules: {
+        toolbar: toolbarOptions
+      },
+      bounds: '#scrolling-container',
+      scrollingContainer: '#scrolling-container', 
+      placeholder: 'Compose page content...',
+      theme: 'snow'
+    }); 
+    var payload = {
+        group: "#{group.name}",
+        name: "#{page.name}",
+        content: "#{page.content}"
+    };
+    var saveButton = document.querySelector('#button-save');
+    quill.on('text-change',function() {
+        payload.content = quill.container.firstChild.innerHTML;
+        saveButton.setAttribute('data-payload', JSON.stringify(payload) );
+    });

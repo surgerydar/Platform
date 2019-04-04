@@ -4,7 +4,7 @@
   "description": "Platform WebApp",
   "main": "platform.js",
   "scripts": {
-    "start": "node --use_strict platform.js"
+    "start": "node —use_strict platform.js"
   },
   "author": "Jonathan Jones-Morris <jons@soda.co.uk>",
   "license": "ISC",

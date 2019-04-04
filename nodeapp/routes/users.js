@@ -60,7 +60,6 @@ module.exports = function( authentication, db ) {
         });
     });    
     */
-    // TODO: **platform** sould perhaps be /:id
     router.put('/:id', authentication, function (req, res) { // update user
         var user       = req.body;
         user.modified  = Date.now();

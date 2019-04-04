@@ -1,0 +1,16 @@
+.listviewheader( id= 'admin-listview-header')
+    .listviewheadergroup
+        img.imagebutton( id= 'button-back' data-action= 'get' data-url= '/admin/group/' + group._id src= '/images/icons/arrow-previous-02.png' )
+    .listviewheadergroup
+        h3= group.name
+.listviewcontent( id= 'admin.listviewcontent' )
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages/homepage' )
+        h2 Homepage
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages/help' )
+        h2 Help
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages/about' )
+        h2 About
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages/terms' )
+        h2 Terms & Conditions
+    .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages/privacy' )
+        h2 Privacy

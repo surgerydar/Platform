@@ -41,7 +41,7 @@ module.exports = function( authentication, db, mailer ) {
         //
         if ( filter ) {
             var test = new RegExp(filter,'i');
-            conditions.push({ $or: [ { name: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] });
+            conditions.push({ $or: [ { name: { $regex: test } }, { username: { $regex: test } }, { creator: { $regex: test } }, { tags: { $regex: test } } ] });
         } else {
             filter = '';
         }
@@ -95,14 +95,26 @@ module.exports = function( authentication, db, mailer ) {
     //
     router.get('/groups', authentication, requireRole('admin'), function (req, res) {
         //
-        // build group list
+        // build conditions
         //
-        var query = {};
+        var conditions = [];
         if ( req.user.groups.indexOf('system') < 0 ) {
-            query = { name: { $in: req.user.groups } };  
+            conditions.push( { name: { $in: req.user.groups } } );  
+        }
+        if ( req.query.filter ) {
+            conditions.push({ name: { $regex: new RegExp(req.query.filter,'i') } });    
+        }
+        //
+        //
+        //
+        let query = {};
+        if ( conditions.length === 1 ) {
+            query = conditions[ 0 ];   
+        } else if ( conditions.length > 1 ) {
+            query = { $and: conditions }; 
         }
         db.find( 'groups', query ).then(function(groups) {
-            res.render('admin-groups', {groups:groups});
+            res.render('admin-groups', {groups:groups,filter:req.query.filter});
         }).catch( function( error ) {
             res.render('admin-error', {error:'error : ' + error });
         });
@@ -119,7 +131,11 @@ module.exports = function( authentication, db, mailer ) {
             //
             let id = db.ObjectId(req.params.id);
             db.findOne( 'groups', {_id: id} ).then(function(group) {
-                res.render('admin-group', {group:group});
+                if ( group ) {
+                    res.render('admin-group', {group:group});
+                } else {
+                    res.render('admin-error', {error: 'unknown group : ' + req.params.id });
+                }
             }).catch( function( error ) {
                 res.render('admin-error', {error:'error : ' + error });
             });
@@ -144,9 +160,14 @@ module.exports = function( authentication, db, mailer ) {
                     //
                     db.remove( 'media', {group:group.name} ).then( function() {
                         //
+                        // remove group from user lists
                         //
-                        //
-                        res.redirect('/admin/groups');
+                        db.update( 'users', {}, { $pull: {group:group.name} } ).then( function() {
+                            //
+                            //
+                            //
+                            res.redirect('/admin/groups');
+                        });
                     });
                 });
             });
@@ -246,32 +267,71 @@ module.exports = function( authentication, db, mailer ) {
         });
     });
     router.post('/group/:groupid/inviteusers', authentication, requireRole('admin'), function (req, res) {
+        //
+        // check for valid group
+        //
         let id = db.ObjectId(req.params.groupid);
         db.findOne( 'groups', {_id: id} ).then(function(group) {
             //
-            // store pending invites 
+            // extract emails from request body
             //
-            console.log( 'inviting users: ' + JSON.stringify(req.body) );
-            let invites = [];
             let emails = [];
             for ( var key in req.body ) {
                 if ( key.indexOf( 'email' ) === 0 ) {
                     emails.push( req.body[key] );
-                    invites.push( { group: group.name, email: req.body[key], accepted: false} );
                 }
             }
-            db.insertMany('invites', invites).then( function(result) {
+            //
+            // find existing users
+            //
+            db.find( 'users', { email: {$in: emails} }, { username: 1, email: 1 } ).then( function( users ) {
                 //
-                // send mail invite
+                // merge lists
                 //
-                mailer.send( emails.join(','), 'Invite to platform game', 'Hi, you have been invited to join platform').then( function() {
-                    res.redirect('/admin/group/' + req.params.groupid + '/users');
+                function findEmail( email ) {
+                    return function( user ) {
+                        return user.email === email;    
+                    };
+                }
+                let invites = [];
+                emails.forEach( function( email ) {
+                    let invite = { group: group.name, email: email, accepted: false, date: Date.now()}
+                    let user = users.find(findEmail(email));
+                    if( user ) {
+                        invite.username = user.username;
+                        invite.userid = user._id;
+                    } 
+                    invites.push(invite);
+                });
+                //
+                // store pending invites
+                //
+                db.insertMany('invites', invites).then( function(result) {
+                    //
+                    // send invite emails
+                    // TODO: email templates should be stored in database
+                    //
+                    let title = 'Invite to join Platform group ' + group.name;
+                    let pendingEmails = [];
+                    invites.forEach( function( invite ) {
+                        let link = 'https://platformgame.net/group/join/' + group._id + '?email='  + invite.email;
+                        let content = 'Hi ' + ( invite.username ? invite.username : '' ) + ',<br>You have been invited to join platform group ' + group.name + '<br>click on link below to join<br><a href="' + link + '">join' + group.name + '</a>';
+                        pendingEmails.push(mailer.send( invite.email, title, content ));
+                    });
+                    Promise.all(pendingEmails).then( function() {
+                        //
+                        // redirect to user list
+                        //
+                        res.redirect('/admin/group/' + group._id + '/users');
+                    }).catch( function( error ) {
+                        res.render('admin-error', {error:'error : ' + error });    
+                    });
+                    //
+                    //
+                    //
                 }).catch( function( error ) {
                     res.render('admin-error', {error:'error : ' + error });    
                 });
-                //
-                //
-                //
             }).catch( function( error ) {
                 res.render('admin-error', {error:'error : ' + error });    
             });
@@ -282,6 +342,7 @@ module.exports = function( authentication, db, mailer ) {
             
     });
     router.put('/group/:groupid/user/:id', authentication, requireRole('admin'), function (req, res) {
+        console.log( 'updating user : ' + req.params.id );
         //
         // update user
         //
@@ -309,7 +370,7 @@ module.exports = function( authentication, db, mailer ) {
             //
             findContent('media', group.name, req).then( function(resolution) {
                 var imageTemplate = '/media/{_id}?thumbnail=true';
-                res.render('admin-group-imagelist', {group: group, collection: 'media', items:resolution.media, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                res.render('admin-group-imagelist', {group: group, collection: 'media', items:resolution.media, imagetemplate: imageTemplate, selecttemplate: 'https://platformgame.net/media/{_id}', pagination: resolution.pagination});
             });
         }).catch( function( error ) {
             res.render('admin-error', {error:'error : ' + error });
@@ -336,6 +397,7 @@ module.exports = function( authentication, db, mailer ) {
         });
     });
     router.put('/group/:groupid/media/:id', authentication, requireRole('admin'), function (req, res) {
+        console.log( 'updating media : ' + req.params.id );
         //
         // find group
         //
@@ -369,7 +431,7 @@ module.exports = function( authentication, db, mailer ) {
             //
             findContent('levels', group.name, req).then( function(resolution) {
                 const imageTemplate = '/levels/thumbnail/{_id}';          
-                res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, pagination: resolution.pagination});
+                res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, selecttemplate: 'https://platformgame.net/play/{_id}', pagination: resolution.pagination});
             });
         }).catch( function( error ) {
             res.render('admin-error', {error:'error : ' + error });
@@ -396,6 +458,7 @@ module.exports = function( authentication, db, mailer ) {
         });
     });
     router.put('/group/:groupid/levels/:id', authentication, requireRole('admin'), function (req, res) {
+        console.log( 'updating level : ' + req.params.id );
         //
         // find group
         //
@@ -410,6 +473,70 @@ module.exports = function( authentication, db, mailer ) {
                     const imageTemplate = '/levels/thumbnail/{_id}';          
                     res.render('admin-group-imagelist', {group: group, collection: 'levels', items:resolution.levels, imagetemplate: imageTemplate, pagination: resolution.pagination});
                 });
+            });
+        }).catch( function(error) {
+            res.render('admin-error', {error:'error : ' + error });    
+        });
+    });
+    //
+    //
+    //
+    router.get('/group/:groupid/pages', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            res.render('admin-group-pages', {group: group});
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.get('/group/:groupid/pages/:page', authentication, requireRole('admin'), function (req, res) {
+        //
+        // find group
+        //
+        let id = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: id} ).then(function(group) {
+            //
+            // find group page
+            //
+            db.findOne('pages', {group: group.name, name:req.params.page}).then( function(page) {
+                if ( !page ) {
+                    page = {
+                        name: req.params.page
+                    };
+                }
+                res.render('admin-group-page', {group: group, page:page});
+            }).catch(function(error) {
+                res.render('admin-error', {error:'error : ' + error });
+            });
+        }).catch( function( error ) {
+            res.render('admin-error', {error:'error : ' + error });
+        });
+    });
+    router.put('/group/:groupid/pages/:page', authentication, requireRole('admin'), function (req, res) {
+        console.log( 'updating page : ' +  req.params.page );
+        //
+        // find group
+        //
+        let groupid = db.ObjectId(req.params.groupid);
+        db.findOne( 'groups', {_id: groupid} ).then(function(group) {
+            //
+            //
+            //
+            let page = req.body;
+            console.log( 'saving page : ' + page.name + ' to ' + group.name );
+            db.findOne( 'pages', {group:group.name,name:page.name} ).then( function(existing) {
+                if ( existing ) {
+                    db.updateOne( 'pages', {_id: existing._id}, { $set: { content: page.content} } ).then( function() {
+                        res.render('admin-group-pages', {group: group});
+                    });    
+                } else {
+                    db.insert( 'pages', {group:group.name,name:page.name,content:page.content} ).then( function() {
+                        res.render('admin-group-pages', {group: group});
+                    });    
+                }
             });
         }).catch( function(error) {
             res.render('admin-error', {error:'error : ' + error });    

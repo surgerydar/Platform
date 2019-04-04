@@ -4,6 +4,7 @@ localplay.admin = (function () {
     if (localplay.homepage) return localplay.homepage;
     return { 
         init: function() {
+            var titleBar = document.querySelector('#title-bar');
             //
             //
             //
@@ -70,6 +71,12 @@ localplay.admin = (function () {
             //
             //
             //
+            window.addEventListener('resize', function() {
+                container.style.top = ( titleBar.offsetHeight + 16 ) + 'px';  
+            });
+            //
+            //
+            //
             function performAction( action, url, payload ) {
                 localplay.datasource[ action ]( url, {}, {
                     datasourceonloadend: function (e) {
@@ -91,17 +98,23 @@ localplay.admin = (function () {
                 function hookAction( element ) {
                     var action          = element.getAttribute('data-action');
                     var url             = element.getAttribute('data-url');
-                    var payload         = element.getAttribute('data-payload');
                     var confirmAction   = element.getAttribute('data-confirm');
                     if ( action && url ) {
-                        try {
-                            if ( payload ) payload = JSON.parse(payload);
-                        } catch( error ) {
-                            console.error( 'malformed payload : ' + payload + ' : error : ' + error);
-                            payload = null;
-                        }
                         element.addEventListener('click', function(e) {
                             e.preventDefault();
+                            //
+                            // check for payload
+                            //
+                            var payload = element.getAttribute('data-payload');
+                            try {
+                                if ( payload ) payload = JSON.parse(payload);
+                            } catch( error ) {
+                                console.error( 'malformed payload : ' + payload + ' : error : ' + error);
+                                payload = null;
+                            }
+                            //
+                            //
+                            //
                             if ( confirmAction ) {
                                 if ( confirm('do you want to ' + action + ' this item?') ) {
                                     performAction(action,url,payload);    
@@ -130,7 +143,11 @@ localplay.admin = (function () {
                             search.addEventListener('keyup',function(e) {
                                 e.preventDefault();
                                 if (e.keyCode == 13) {
-                                    performAction('get',searchUrl.replace('{filter}',search.value) ); 
+                                    var filterUrl = searchUrl;
+                                    if ( search.value.length > 0 ) {
+                                        filterUrl += '?filter=' + search.value;    
+                                    }
+                                    performAction('get',filterUrl ); 
                                 }
                                 return false;
                             });
@@ -161,6 +178,19 @@ localplay.admin = (function () {
                         hookAction(button);
                     });
                     
+                });
+                //
+                // hook list item images
+                //
+                var itemImages = container.querySelectorAll('.listitemimage');
+                itemImages.forEach(function(itemImage) {
+                    var selectUrl = itemImage.getAttribute('data-select');
+                    if ( selectUrl ) {
+                        var selectName = itemImage.getAttribute('data-name');
+                        itemImage.addEventListener('click',function() {
+                            window.open( selectUrl, selectName );
+                        });
+                    }
                 });
                 //
                 // hook forms

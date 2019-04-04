@@ -1,3 +1,5 @@
+/* eslint-env node, mongodb, es6 */
+/* eslint-disable no-console */
 var nodemailer = require('nodemailer');
 
 function Mailer() {   
@@ -14,14 +16,14 @@ Mailer.prototype.send = function( address, subject, html ) {
                 port: 465,
                 secure: true, // use SSL
                 auth: {
-                    user: 'aftertrauma@gmail.com',
-                    pass: 'Ta8le202'
+                    user: 'platformgame.net@gmail.com',
+                    pass: "saGtT'd{u48a.]jt"
                 }
             });
 
             // setup e-mail data
             var mailOptions = {
-                from: '"AfterTrauma " <aftertrauma@gmail.com>', // sender address (who sends)
+                from: '"Platform Game " <platformgame.net@gmail.com>', // sender address (who sends)
                 to: address, // list of receivers (who receives)
                 subject: subject, // Subject line
                 html: html // html body
@@ -38,7 +40,7 @@ Mailer.prototype.send = function( address, subject, html ) {
             });
         } catch( error ) {
             console.log( error );
-            reject( err );
+            reject( error );
         }
     });
 }

@@ -41,7 +41,9 @@ module.exports = function( app, db ) {
     // routes
     //
     app.get('/login', function(req, res){
-        res.render('login',{title: 'Log in to Platform'});
+        let param = req.query;
+        param.title = 'Log in to Platform';
+        res.render('login', param);
     });
     app.get('/logout', function(req, res){
         console.log( 'logout user : ' + JSON.stringify(req.user) + ' : xhr : ' + req.xhr );
@@ -81,7 +83,21 @@ module.exports = function( app, db ) {
                     // store original url for redirection after successful authentication
                     req.session.reqUrl = req.originalUrl;
                     //
-                    res.redirect('/login');
+                    // build query string
+                    //
+                    let query = '';
+                    for ( var key in req.query ) {
+                        if ( query.length === 0 ) {
+                            query += '?';
+                        } else {
+                            query += '&';
+                        }
+                        query += key + '=' + req.query[ key ];
+                    }
+                    //
+                    // redirect to login
+                    //
+                    res.redirect('/login' + query);
                 }
             }
         }

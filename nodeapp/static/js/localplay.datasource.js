@@ -394,10 +394,11 @@ localplay.datasource = (function () {
         this.callback = callback;
 
         var wrapper = document.createElement("div");
-        wrapper.style.width = "100%";
+        wrapper.style.width = '50vw';
+        wrapper.style.height = '25vw';
         this.progress = document.createElement('progress');
         this.progress.max = '100';
-        this.progress.style.margin = 'auto'; // TODO: move this etc into css
+        this.progress.style.width = '45vw'; // TODO: move this etc into css
         wrapper.appendChild(this.progress);
 
         this.dialog = localplay.dialogbox.createdialogbox(prompt, [wrapper]);

@@ -141,6 +141,7 @@ module.exports = function( authentication, db ) {
         level.creatorid = req.user._id;
         level.creator   = req.user.username;
         level.modified  = Date.now();
+        level.group     = req.session.group || 'public';
         db.findOne( 'levels', { _id:_id }, { creatorid:1 } ).then( function( existing ) {
             if ( level.creatorid.equals(existing.creatorid)  ) {
                 db.updateOne( 'levels',  { _id:_id }, { $set : level } ).then( function( response ) {
@@ -165,6 +166,9 @@ module.exports = function( authentication, db ) {
     //
     //
     router.delete('/:id', authentication, function (req, res) { // delete level
+        //
+        // only creator is authorised to delete
+        //
         var query = {
             _id: db.ObjectId(req.params.id),
             creatorid: req.user._id

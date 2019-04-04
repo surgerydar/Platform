@@ -16,7 +16,14 @@ module.exports = function( passport, config, db ) {
         } else {
             db.findOne('users', { $or : [ { facebookId: profile.id }, { email: email } ] } ).then( function(user) {
                 if (!user) {
-                    db.insert('users', { facebookId: profile.id, username: profile.displayName, email: email, groups: ["public"] } ).then( function(response) {
+                    let newUser = { 
+                        facebookId: profile.id, 
+                        username: profile.displayName, 
+                        email: email, 
+                        groups: ["public"],
+                        role: "creator"
+                    };
+                    db.insert('users', newUser ).then( function() {
                         authenticate( accessToken, refreshToken, profile, callback );
                     }).catch( function( error ) {
                         callback(error);

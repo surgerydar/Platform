@@ -222,7 +222,7 @@ localplay.game = (function () {
             data: json,
             thumbnail: thumbnail.toDataURL("image/png")
         };
-        localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), data, {},
+        localplay.datasource[ ( newLevel ? 'post' : 'put' ) ]('/levels' + ( newLevel ? '' : '/' + _this.levelid ), {},
             localplay.datasource.createprogressdialog("Saving level...", function( e ) {
                 var xhr = e.target;
                 try {
@@ -239,7 +239,7 @@ localplay.game = (function () {
                     if (callback) callback(false);
                 }
 
-            }));
+            }), data);
     }
     //
     // set current arcade

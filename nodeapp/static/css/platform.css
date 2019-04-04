@@ -104,6 +104,7 @@ src:url("../fonts/BritishCouncilSans/BritishCouncilSansW29-XLt.eot?#iefix") form
     --dark-grey: rgb(68,67,66);
     --dark-blue: rgb(0,69,124);
     --light-blue: rgb(30,174,229);
+    --logo-red: rgb(237,30,36);
     /*
         control colours
     */
@@ -122,12 +123,12 @@ a {
     text-decoration: none;
     font-weight: bolder;
 }
-
+    /*
     a:hover {
         background-color: white;
         color: rgb(102,57,13);
     }
-
+    */
     a.image {
         background-color: rgba( 0, 0, 0, 0);
         opacity: 1.0;
@@ -298,15 +299,14 @@ textarea {
 
 div.tipbox {
     position: absolute;
-    /*
     top: 0px;
-    right: 0px;
-    */
+    left: 50%;
     padding: 16px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     display: block;
     z-index: 14;
+    transform: translateX(-50%)
 }
     div.tipbox.hidden {
         display: none;
@@ -2290,6 +2290,27 @@ img.credits {
     align-self: center;
 }
 
+#title-menu {
+    height: 100%;
+    align-self: flex-start;
+}
+
+#title-group {
+    position: absolute;
+    top: 10vh;
+    right: 8px;
+    height: 5vh;
+    padding: 0 2.5vh 0 2.5vh;
+    line-height: 5vh;
+    vertical-align: middle;
+    color: white;
+    background-color: var(--logo-red);
+    font-size: 2.5vh;
+    font-weight: 300;
+    border-radius: 2.5vh;
+    opacity: 0.85;
+}
+
 #play-button {
     position: absolute;
     top: 50%;
@@ -2362,11 +2383,6 @@ progress[value]::-moz-progress-bar {
     background-color: var(--orange);
     height: 100%;
     border-radius: calc(height/2);
-}
-
-#title-menu {
-    height: 100%;
-    align-self: flex-start;
 }
 
 #menu-backdrop {
@@ -3052,7 +3068,7 @@ div.form-item {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    min-height: 5vw;
+    min-height: 7.5vw;
     margin-bottom: 16px;
     /*border-bottom: 2px solid var( --control-colour );*/
 }
@@ -3393,4 +3409,35 @@ div.tags-container {
     flex-direction: column;
     justify-content: flex-start;
     background-color: var(--light-blue);
+}
+
+.group-list {
+    position: absolute;
+    top: 20vh;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    padding: 2vw;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+a.group-link {
+    display: block;
+    padding: 2vw;
+    font-size: 2.5vw;
+    color: white;
+    text-decoration: none;
+    border-bottom: solid 2px white;
+}
+
+a.group-link:hover {
+    
+}
+
+.group-indicator {
+    
 }

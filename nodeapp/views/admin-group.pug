@@ -7,7 +7,9 @@
     .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/users/' )
         h2 Users
     unless group.name === 'system'
-        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/levels/' )
+        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/levels' )
             h2 Levels
-        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/media/' )
+        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/media' )
             h2 Media
+        .admin-list-item( data-action= 'get' data-url= '/admin/group/' + group._id + '/pages' )
+            h2 Pages

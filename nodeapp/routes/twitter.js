@@ -16,7 +16,14 @@ module.exports = function( passport, config, db ) {
         } else {
             db.findOne('users', { $or : [ { twitterId: profile.id }, { email: email } ] } ).then( function(user) {
                 if (!user) {
-                    db.insert('users', { twitterId: profile.id, username: profile.displayName, email: profile.emails[0].value, groups: ["public"] } ).then( function(response) {
+                    let newUser = {
+                        twitterId: profile.id, 
+                        username: profile.displayName, 
+                        email: profile.emails[0].value, 
+                        groups: ["public"],  
+                        role: "creator"
+                    };
+                    db.insert('users', newUser ).then( function() {
                         authenticate( token, tokenSecret, profile, callback );
                     }).catch( function( error ) {
                         callback(error);
@@ -45,7 +52,6 @@ module.exports = function( passport, config, db ) {
     //
     console.log( 'setting twitter routes' );
     router.get('/login', passport.authenticate('twitter', {scope:['include_email=true']}) );
-    //router.get('/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }));
     router.get('/callback', passport.authenticate('twitter', { failureRedirect: '/login' }),
                function (req, res) {
                     var redirectTo = '/'; // Set default redirect value

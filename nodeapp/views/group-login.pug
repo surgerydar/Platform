@@ -1,0 +1,55 @@
+html
+    head
+        
+        meta( name="viewport" content="user-scalable=no, width=device-width, height=device-height initial-scale=1, maximum-scale=1, viewport-fit=cover" )
+
+        // default app icon
+        link( rel="icon"  type="image/png" href="/appicons/icon32x32.png" )
+
+        // apple standalone config
+        meta( name="apple-mobile-web-app-capable" content="yes" )
+        meta( name="apple-mobile-web-app-status-bar-style" content="black-translucent" )
+        link( rel="apple-touch-icon" href="/appicons/icon32x32.png" )
+        link( rel="apple-touch-icon" sizes="57x57" href="/appicons/icon57x57.png" )
+        link( rel="apple-touch-icon" sizes="76x76" href="/appicons/icon76x76.png" )
+        link( rel="apple-touch-icon" sizes="120x120" href="/appicons/icon120x120.png" )
+        link( rel="apple-touch-icon" sizes="152x152" href="/appicons/icon152x152.png" )
+        link( rel="apple-touch-icon" sizes="167x167" href="/appicons/icon167x167.png" )
+        link( rel="apple-touch-icon" sizes="180x180" href="/appicons/icon180x180.png" )
+
+        // android webapp config TODO: manifest
+        meta( name="mobile-web-app-capable" content="yes" )
+        link( rel="manifest" href="/manifest.json" )
+        link(rel='stylesheet', href='/css/platform.css')
+        meta( name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover' )
+        
+        title Platfom - Login
+        
+        // supporting libraries
+        script( src="/lib/mustache.js" )
+        script( src="/lib/Box2dWeb-2.1.a.3.js" )
+        
+        // legacy objects
+        script( src="/js/graphicsprimitives.js" )
+        
+        // app scripts
+        script( src="/js/localplay.js" )
+        
+    body( style="background-color: var(--light-blue);" )
+        .login-container
+            .login-column
+                div( style="margin-bottom: 16px;" ) Login to #[b] #{group.name} 
+                form#login-form( action='/group/login/' + group._id method='post' enctype='application/x-www-form-urlencoded' )
+                    .form-content
+                        if error
+                            .form-item#register-error( style='color: red' ) #{error}
+                        input#username( type= 'hidden' name= 'username' value= username)
+                        .form-item
+                            label.form-item( for='password' ) Password #[img.form-item(src='/images/icons/password.png')]
+                            input.form-item#password( type='password' name='password' placeholder='enter your password'  required minlength="6" )
+                        div( style="display: flex; flex-direction: row; justify-content: space-between;")
+                            input.form-item( type='submit' value='Login' )
+                            input.form-item( type='button' value='Forgotten\nPassword' style='font-size: 1.5vw; background-color: transparent; border: 1px solid white;' )
+        #title-bar
+            img#title-logo( src="/images/bc-logo-white.png" )
+            img#title-menu( src="/images/logo-menu.png" )

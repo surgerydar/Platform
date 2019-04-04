@@ -47,8 +47,8 @@ localplay.objectimporter = localplay.objectimporter || (function () {
                 <div id="editor-tools-grid"> \
                     <div id="editor.crop" class="editor-tool" style="background-image: url(\'/images/tools/crop.png\');"></div> \
                     <div id="editor.adjust" class="editor-tool" style="background-image: url(\'/images/tools/adjust.png\');"></div> \
-                    <div id="editor.draw" class="editor-tool" style="background-image: url(\'/images/tools/pencil.png\');"></div> \
-                    <div id="editor.erase" class="editor-tool" style="background-image: url(\'/images/tools/rubber.png\');"></div> \
+                    <div id="editor.erase" class="editor-tool" style="background-image: url(\'/images/tools/erase.png\');"></div> \
+                    <div id="editor.restore" class="editor-tool" style="background-image: url(\'/images/tools/unerase.png\');"></div> \
                     <div id="editor.properties" class="editor-tool" style="background-image: url(\'/images/tools/properties.png\');"></div> \
                 </div> \
             </div> \
@@ -77,8 +77,8 @@ localplay.objectimporter = localplay.objectimporter || (function () {
                 <input class="editor saturation" id="saturation" type="range" min="0" max="1.0" step="0.01" value=".5" /> \
             </div> \
         ';
-    var drawtemplate = ' \
-            <h1 style="font-size: 2vw;">PENCIL</h1> \
+    var restoretemplate = ' \
+            <h1 style="font-size: 2vw;">RESTORE</h1> \
             <div class="horizontal-option-container"> \
                 <div class="pen" data-size="2" style= "width: 5vw; height: 5vw; --size: 0.2;" ></div> \
                 <div class="pen" data-size="4" style= "width: 5vw; height: 5vw; --size: 0.4;" ></div> \
@@ -88,7 +88,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
             </div> \
         ';
     var erasetemplate =  ' \
-            <h1 style="font-size: 2vw;">ERASER</h1> \
+            <h1 style="font-size: 2vw;">MASK</h1> \
             <div class="horizontal-option-container"> \
                 <div class="eraser" data-size="2" style= "width: 5vw; height: 5vw; --size: 0.2;" ></div> \
                 <div class="eraser" data-size="4" style= "width: 5vw; height: 5vw; --size: 0.4;" ></div> \
@@ -115,7 +115,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
     var optiontemplates = {
         crop: croptemplate,
         adjust: adjusttemplate,
-        draw: drawtemplate,
+        restore: restoretemplate,
         erase: erasetemplate,
         properties: propertiestemplate
     };
@@ -407,7 +407,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
                         type: _this.type,
                         path: 'uploads/' + filename
                     };
-                    localplay.datasource.post( '/media', media, {},
+                    localplay.datasource.post( '/media', {},
                     localplay.datasource.createprogressdialog("Updating database...", 
                             function (/*e*/) {
                                 _this.close();
@@ -630,7 +630,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
         }
     }
     //
-    // draw functions
+    // restore functions
     //
     ObjectImporter.prototype.initialiseDraw = function() {
         var _this = this;
@@ -638,7 +638,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
         //
         //
         //
-        this.toolFunction["draw"] = {
+        this.toolFunction['restore'] = {
             pointerdown: function(p) {
                 var imageBounds = _this.imageEditor.imageBounds();
                 p.x -= imageBounds.x;
@@ -825,7 +825,7 @@ localplay.objectimporter = localplay.objectimporter || (function () {
                     });                                
                 });
                 break;
-            case 'draw' :
+            case 'restore' :
                 //console.log( 'hooking pens');
                 var pens = tooloptions.querySelectorAll('.pen');
                 pens.forEach( function(pen) {

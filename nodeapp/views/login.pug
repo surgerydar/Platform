@@ -41,29 +41,55 @@ html
         
     body( style="background-color: var(--light-blue);" )
         .login-container
-            .login-column.
-                Create or sign into your account here so you can build and share your own Platform games! Your Username will be visible in the games. #[br] By Signing up you agree to our #[a( href='javascript:localplay.navigateto("/terms")' ) Terms and Conditions ]
-            .login-column
-                div( style="margin-bottom: 16px;" ) Login or #[a( class='button' href='javascript:localplay.navigateto("/local/register")' ) Sign up ] 
-                form#login-form( action='/local/login' method='post' enctype='application/x-www-form-urlencoded' )
-                    .form-content
-                        if error
-                            .form-item#register-error( style='color: red' ) #{error}
-                        .form-item
-                            label.form-item( for='username' ) Username #[img.form-item(src='/images/icons/user.png')]
-                            if username
-                                input.form-item#username( type='text' name='username' placeholder='enter your username or email' required minlength="6" value= username )
-                            else
-                                input.form-item#username( type='text' name='username' placeholder='enter your username or email' required minlength="6" )
-                        .form-item
-                            label.form-item( for='password' ) Password #[img.form-item(src='/images/icons/password.png')]
-                            input.form-item#password( type='password' name='password' placeholder='enter your password'  required minlength="6" )
-                        div( style="display: flex; flex-direction: row; justify-content: space-between;")
-                            input.form-item( type='submit' value='Login' )
-                            input.form-item( type='button' value='Forgotten\nPassword' style='font-size: 1.5vw; background-color: transparent; border: 1px solid white;' )
-                div( style="display: flex; flex-direction: row; justify-content: space-between;")
-                    img( src='/images/icons/facebook.png' class='imagebutton' style='height: 3vw;' data-href='/facebook/login' )
+            if istwitter
+                .login-column.
+                    Click to sign in with Twitter
+                .login-column
                     img( src='/images/icons/twitter.png' class='imagebutton' style='height: 3vw;' data-href='/twitter/login' )
+            else if isfacebook
+                .login-column.
+                     Click to sign in with Facebook
+                .login-column
+                    img( src='/images/icons/facebook.png' class='imagebutton' style='height: 3vw;' data-href='/facebook/login' )
+            else if email
+                .login-column.
+                    Enter your password for #[b #{email} ] 
+                .login-column
+                    form#login-form( action='/local/login' method='post' enctype='application/x-www-form-urlencoded' )
+                        .form-content
+                            input#username( type='hidden' name='username' value= email )
+                            if error
+                                .form-item#register-error( style='color: red' ) #{error}
+                            .form-item
+                                label.form-item( for='password' ) Password #[img.form-item(src='/images/icons/password.png')]
+                                input.form-item#password( type='password' name='password' placeholder='enter your password'  required minlength="6" )
+                            div( style="display: flex; flex-direction: row; justify-content: space-between;")
+                                input.form-item( type='submit' value='Login' )
+                                input.form-item( type='button' value='Forgotten\nPassword' style='font-size: 1.5vw; background-color: transparent; border: 1px solid white;' )
+            else
+                .login-column.
+                    Create or sign into your account here so you can build and share your own Platform games! Your Username will be visible in the games. #[br] By Signing up you agree to our #[a( href='javascript:localplay.navigateto("/terms")' ) Terms and Conditions ]
+                .login-column
+                    div( style="margin-bottom: 16px;" ) Login or #[a( class='button' href='javascript:localplay.navigateto("/local/register")' ) Sign up ] 
+                    form#login-form( action='/local/login' method='post' enctype='application/x-www-form-urlencoded' )
+                        .form-content
+                            if error
+                                .form-item#register-error( style='color: red' ) #{error}
+                            .form-item
+                                label.form-item( for='username' ) Username #[img.form-item(src='/images/icons/user.png')]
+                                if username
+                                    input.form-item#username( type='text' name='username' placeholder='enter your username or email' required minlength="6" value= username )
+                                else
+                                    input.form-item#username( type='text' name='username' placeholder='enter your username or email' required minlength="6" )
+                            .form-item
+                                label.form-item( for='password' ) Password #[img.form-item(src='/images/icons/password.png')]
+                                input.form-item#password( type='password' name='password' placeholder='enter your password'  required minlength="6" )
+                            div( style="display: flex; flex-direction: row; justify-content: space-between;")
+                                input.form-item( type='submit' value='Login' )
+                                input.form-item( type='button' value='Forgotten\nPassword' style='font-size: 1.5vw; background-color: transparent; border: 1px solid white;' onclick= 'javascript:localplay.navigateto("/local/requestpasswordreset");' )
+                    div( style="display: flex; flex-direction: row; justify-content: space-between;")
+                        img( src='/images/icons/facebook.png' class='imagebutton' style='height: 3vw;' data-href='/facebook/login' )
+                        img( src='/images/icons/twitter.png' class='imagebutton' style='height: 3vw;' data-href='/twitter/login' )
         #menu-backdrop
         #title-bar
             img#title-logo( src="/images/bc-logo-white.png" )

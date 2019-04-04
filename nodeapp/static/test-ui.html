@@ -2,49 +2,56 @@
     <head>
         <title>Platform UI Test</title>
         <link href="css/platform.css" rel="stylesheet" />
+        
+        <!-- Quill library -->
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        
         <script>
             localplay = {};
         </script>
         <script src="lib/mustache.js"></script>
         <script src="js/localplay.audioplayer.js"></script>
     </head>
-<body>
-    <div id="editor-container">
-        <div id="editor-content">
-            <canvas id="editor-content-canvas" class="editor-content" width="822" height="667" style="width: 950px; height: 418px;"></canvas>
-            <canvas id="editor-ui-canvas" class="editor-content" width="950" height="418" style="width: 950px; height: 418px;"></canvas>
-        </div>
-        <div id="editor-toolbox">
-            <div id="editor-tools">
-                <div id="editor-tools-titlebar">
-                    <h1 id="editor.title" style="font-size: 3vw;">edit obstacle</h1>
-                    <img id="editor-tools-close" src="/images/close.png" style="height: 4vw;">
-                </div>
-                <div id="editor-tools-grid">
-                    <div id="editor.crop" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/crop.png); visibility: visible;"></div>
-                    <div id="editor.adjust" class="editor-tool selected" style="background-image: url(https://platformgame.net/images/tools/adjust.png); visibility: visible;"></div>
-                    <div id="editor.erase" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/erase.png); visibility: visible;"></div>
-                    <div id="editor.restore" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/unerase.png); visibility: visible;"></div>
-                    <div id="editor.behaviour" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/movement.png); visibility: visible;"></div>
-                    <div id="editor.audio" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/sound.png); visibility: visible;"></div>
-                    <div id="editor.properties" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/properties.png); visibility: visible;"></div>
-                    <div id="editor.avatar" class="editor-tool" style="background-image: url(https://platformgame.net/images/tools/properties.png); visibility: hidden;"></div>
-                </div>
+    <body style='background-color: var(--light-blue);'>
+        <div style='position: absolute; top: 64px; left: 64px; height: 256px; right: 64px;'>
+            <!--
+            <div id='toolbar-container'>
+                <button class="ql-link"></button>
             </div>
-            <div id="editor-tool-options" content="">
-                <h1 style="font-size: 2vw;">ADJUST COLOUR</h1>
-                <div class="vertical-option-container">
-                    <audio src="/audio/ExitReached.mp3"></audio>
+            -->
+            <div id="scrolling-container"><!-- style='position: absolute; top: 64px; left 0px; right: 0px; padding: 32px;'> -->
+                <div id='quill-container' style='height: auto; min-height: 100%; padding: 50px;'>
+                  <p>Hello World!</p>
+                  <p>Some initial <strong>bold</strong> text</p>
+                  <p><br></p>
                 </div>
             </div>
         </div>
-        <div id="editor-zoom-control">
-            <div id="zoomin" class="editor-tool" style="background-image: url('/images/icons/zoom-in.png');"></div>
-            <div id="zoomout" class="editor-tool" style="background-image: url('/images/icons/zoom-out.png');"></div>
-        </div>     
-    </div>
-    <script>
-        localplay.audioplayer.attachAll(document);
-    </script>
+        <!-- Initialize Quill editor -->
+        <script>
+            var toolbarOptions = [
+              ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+              ['link', 'image'],
+              [{ 'list': 'bullet' }],
+              [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+
+              [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+              [{ 'header': [1, 2, 3, false] }],
+
+              [{ 'align': [] }],
+
+              ['clean']                                         // remove formatting button
+            ];
+            var quill = new Quill('#quill-container', {
+              modules: {
+                toolbar: toolbarOptions
+              },
+              bounds: '#scrolling-container',
+              scrollingContainer: '#scrolling-container', 
+              placeholder: 'Compose an epic...',
+              theme: 'snow'
+            });        
+        </script>
     </body>
 </html>
